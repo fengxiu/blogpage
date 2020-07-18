@@ -115,7 +115,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-18.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-19.png">
-<meta property="og:updated_time" content="2020-07-18T05:50:59.056Z">
+<meta property="og:updated_time" content="2020-07-18T14:34:03.175Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring源码解析之 27深入分析BeanPostProcessor接口">
 <meta name="twitter:description" content="Spring 作为优秀的开源框架，它为我们提供了丰富的可扩展点，除了前面提到的 Aware 接口，还包括其他部分，其中一个很重要的就是 BeanPostProcessor。这篇文章主要介绍 BeanPostProcessor 的使用以及其实现原理。我们先看 BeanPostProcessor 的定位： BeanPostProcessor 的作用：在Bean完成实例化后，如果我们需要对其进行一些配置">
@@ -767,13 +767,6 @@ Hello BeanPostProcessor
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/86d74f07/" rel="bookmark">spring源码解析之 18parentBeanFactory 与依赖处理</a></div>
-      
-    </li>
-  
-    <li class="popular-posts-item">
-      
-      
       <div class="popular-posts-title"><a href="/posts/48fb5eaf/" rel="bookmark">Spring源码解析之 08bean标签：BeanDefinition简单介绍与bean节点解析</a></div>
       
     </li>
@@ -781,21 +774,28 @@ Hello BeanPostProcessor
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/e84d4767/" rel="bookmark">spring源码解析之 04（下）获取验证模型</a></div>
+      <div class="popular-posts-title"><a href="/posts/c51c4fa0/" rel="bookmark">Spring源码解析之 01环境搭建</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/20cd1d0c/" rel="bookmark">spring源码解析之 11bean标签：解析自定义标签</a></div>
+      <div class="popular-posts-title"><a href="/posts/1284c29c/" rel="bookmark">Spring源码分析之 02IOC原理</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/fa9db44e/" rel="bookmark">spring源码解析之 26深入分析Aware接口</a></div>
+      <div class="popular-posts-title"><a href="/posts/a158638e/" rel="bookmark">spring源码解析之 03统一资源加载</a></div>
+      
+    </li>
+  
+    <li class="popular-posts-item">
+      
+      
+      <div class="popular-posts-title"><a href="/posts/f89484e0/" rel="bookmark">spring 源码解析之 04（上）加载bean</a></div>
       
     </li>
   
@@ -820,7 +820,7 @@ Hello BeanPostProcessor
   <p><span>本文标题:</span><a href="/posts/5e58b2ba/">spring源码解析之 27深入分析BeanPostProcessor接口</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2019年01月15日 - 06:39</p>
-  <p><span>最后更新:</span>2020年07月18日 - 13:50</p>
+  <p><span>最后更新:</span>2020年07月18日 - 22:34</p>
   <p><span>原始链接:</span>
      <a href="/posts/5e58b2ba/" title="spring源码解析之 27深入分析BeanPostProcessor接口">spring源码解析之 27深入分析BeanPostProcessor接口</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/5e58b2ba/" aria-label="复制成功！"></i></span>
@@ -961,7 +961,7 @@ Hello BeanPostProcessor
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">178</span>
+                    <span class="site-state-item-count">179</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1269,7 +1269,9 @@ Hello BeanPostProcessor
                     
                       
                     
-                    <span class="site-state-item-count">92</span>
+                      
+                    
+                    <span class="site-state-item-count">93</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1370,7 +1372,7 @@ Hello BeanPostProcessor
       总阅读时长
     </span>
     
-    <span title="站点阅读时长">21:06</span>
+    <span title="站点阅读时长">21:10</span>
   
 </div>
 

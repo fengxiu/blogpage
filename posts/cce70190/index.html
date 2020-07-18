@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="枫秀">
 <meta property="og:description" content="从这篇博客开始我们开始加载 bean 的第一个步骤，从缓存中获取 bean，代码片段如下： Object sharedInstance = getSingleton(beanName); if (sharedInstance != null &amp;amp;&amp;amp; args == null) {     if (logger.isDebugEnabled()) {         if (isSin">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-07-18T05:50:59.053Z">
+<meta property="og:updated_time" content="2020-07-18T14:34:03.175Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring源码解析之 17缓存中获取单例bean">
 <meta name="twitter:description" content="从这篇博客开始我们开始加载 bean 的第一个步骤，从缓存中获取 bean，代码片段如下： Object sharedInstance = getSingleton(beanName); if (sharedInstance != null &amp;amp;&amp;amp; args == null) {     if (logger.isDebugEnabled()) {         if (isSin">
@@ -875,13 +875,6 @@ private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/86d74f07/" rel="bookmark">spring源码解析之 18parentBeanFactory 与依赖处理</a></div>
-      
-    </li>
-  
-    <li class="popular-posts-item">
-      
-      
       <div class="popular-posts-title"><a href="/posts/48fb5eaf/" rel="bookmark">Spring源码解析之 08bean标签：BeanDefinition简单介绍与bean节点解析</a></div>
       
     </li>
@@ -889,21 +882,28 @@ private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/e84d4767/" rel="bookmark">spring源码解析之 04（下）获取验证模型</a></div>
+      <div class="popular-posts-title"><a href="/posts/c51c4fa0/" rel="bookmark">Spring源码解析之 01环境搭建</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/20cd1d0c/" rel="bookmark">spring源码解析之 11bean标签：解析自定义标签</a></div>
+      <div class="popular-posts-title"><a href="/posts/1284c29c/" rel="bookmark">Spring源码分析之 02IOC原理</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/fa9db44e/" rel="bookmark">spring源码解析之 26深入分析Aware接口</a></div>
+      <div class="popular-posts-title"><a href="/posts/a158638e/" rel="bookmark">spring源码解析之 03统一资源加载</a></div>
+      
+    </li>
+  
+    <li class="popular-posts-item">
+      
+      
+      <div class="popular-posts-title"><a href="/posts/f89484e0/" rel="bookmark">spring 源码解析之 04（上）加载bean</a></div>
       
     </li>
   
@@ -928,7 +928,7 @@ private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;
   <p><span>本文标题:</span><a href="/posts/cce70190/">spring源码解析之 17缓存中获取单例bean</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2019年01月15日 - 03:31</p>
-  <p><span>最后更新:</span>2020年07月18日 - 13:50</p>
+  <p><span>最后更新:</span>2020年07月18日 - 22:34</p>
   <p><span>原始链接:</span>
      <a href="/posts/cce70190/" title="spring源码解析之 17缓存中获取单例bean">spring源码解析之 17缓存中获取单例bean</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/cce70190/" aria-label="复制成功！"></i></span>
@@ -1060,7 +1060,7 @@ private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">178</span>
+                    <span class="site-state-item-count">179</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1368,7 +1368,9 @@ private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;
                     
                       
                     
-                    <span class="site-state-item-count">92</span>
+                      
+                    
+                    <span class="site-state-item-count">93</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1452,7 +1454,7 @@ private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;
       总阅读时长
     </span>
     
-    <span title="站点阅读时长">21:06</span>
+    <span title="站点阅读时长">21:10</span>
   
 </div>
 

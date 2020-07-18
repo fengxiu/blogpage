@@ -106,7 +106,7 @@
 
 
   <meta name="description" content="Synchronize 底层优化概述Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实">
-<meta name="keywords" content="并发,jvm,Synchronize">
+<meta name="keywords" content="jvm,Synchronize,并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Synchronize 底层优化">
 <meta property="og:url" content="http://fengxiu.club/posts/339349e1/index.html">
@@ -118,7 +118,7 @@
 <meta property="og:image" content="http://fengxiu.club/images/pasted-149.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-150.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-151.png">
-<meta property="og:updated_time" content="2020-07-18T05:50:59.033Z">
+<meta property="og:updated_time" content="2020-07-18T14:34:03.167Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Synchronize 底层优化">
 <meta name="twitter:description" content="Synchronize 底层优化概述Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实">
@@ -696,14 +696,14 @@ public class SynchronizedTest02 {
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/385b4be6/" rel="bookmark">java多线程系列 06  线程优先级和守护线程</a></div>
+      <div class="popular-posts-title"><a href="/posts/aa8f827d/" rel="bookmark">java多线程系列 02 sychronized关键字</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/1354fe55/" rel="bookmark">java多线程系列 08 ThreadLocal</a></div>
+      <div class="popular-posts-title"><a href="/posts/876c7808/" rel="bookmark"> java多线程系列 03 线程等待与唤醒，线程休眠</a></div>
       
     </li>
   
@@ -735,7 +735,7 @@ public class SynchronizedTest02 {
   <p><span>本文标题:</span><a href="/posts/339349e1/">Synchronize 底层优化</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2019年02月28日 - 09:55</p>
-  <p><span>最后更新:</span>2020年07月18日 - 13:50</p>
+  <p><span>最后更新:</span>2020年07月18日 - 22:34</p>
   <p><span>原始链接:</span>
      <a href="/posts/339349e1/" title="Synchronize 底层优化">Synchronize 底层优化</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/339349e1/" aria-label="复制成功！"></i></span>
@@ -772,11 +772,11 @@ public class SynchronizedTest02 {
       
         <div class="post-tags">
           
-            <a href="/tags/并发/" rel="tag">  <i class="fa fa-tag"></i> 并发</a>
-          
             <a href="/tags/jvm/" rel="tag">  <i class="fa fa-tag"></i> jvm</a>
           
             <a href="/tags/Synchronize/" rel="tag">  <i class="fa fa-tag"></i> Synchronize</a>
+          
+            <a href="/tags/并发/" rel="tag">  <i class="fa fa-tag"></i> 并发</a>
           
         </div>
       
@@ -880,7 +880,7 @@ public class SynchronizedTest02 {
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">178</span>
+                    <span class="site-state-item-count">179</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1188,7 +1188,9 @@ public class SynchronizedTest02 {
                     
                       
                     
-                    <span class="site-state-item-count">92</span>
+                      
+                    
+                    <span class="site-state-item-count">93</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1289,7 +1291,7 @@ public class SynchronizedTest02 {
       总阅读时长
     </span>
     
-    <span title="站点阅读时长">21:06</span>
+    <span title="站点阅读时长">21:10</span>
   
 </div>
 

@@ -106,14 +106,14 @@
 
 
   <meta name="description" content="概要本篇文章主要是对ThreadPoolExecutor进行源码分析，讲解线程池是如何实现的，这样也比较好理解Executors工具类中的集中特定的线程池，其实都是基于此来实现的。  线程池使用例子 线程池状态 任务执行流程分析">
-<meta name="keywords" content="线程池,JUC">
+<meta name="keywords" content="JUC,线程池">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析">
 <meta property="og:url" content="http://fengxiu.club/posts/ca60f1d2/index.html">
 <meta property="og:site_name" content="枫秀">
 <meta property="og:description" content="概要本篇文章主要是对ThreadPoolExecutor进行源码分析，讲解线程池是如何实现的，这样也比较好理解Executors工具类中的集中特定的线程池，其实都是基于此来实现的。  线程池使用例子 线程池状态 任务执行流程分析">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-07-18T05:50:59.028Z">
+<meta property="og:updated_time" content="2020-07-18T14:34:03.167Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析">
 <meta name="twitter:description" content="概要本篇文章主要是对ThreadPoolExecutor进行源码分析，讲解线程池是如何实现的，这样也比较好理解Executors工具类中的集中特定的线程池，其实都是基于此来实现的。  线程池使用例子 线程池状态 任务执行流程分析">
@@ -1107,13 +1107,6 @@ tryTerminate();
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/fac740ad/" rel="bookmark">java多线程系列-JUC线程池之06 CompletionService</a></div>
-      
-    </li>
-  
-    <li class="popular-posts-item">
-      
-      
       <div class="popular-posts-title"><a href="/posts/984191f2/" rel="bookmark">java多线程系列-JUC线程池之 01 线程池架构</a></div>
       
     </li>
@@ -1135,7 +1128,14 @@ tryTerminate();
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/3f86c9f8/" rel="bookmark">java多线程系列-JUC线程池之05 ScheduledThreadPoolExecutor</a></div>
+      <div class="popular-posts-title"><a href="/posts/fac740ad/" rel="bookmark">java多线程系列-JUC线程池之06 CompletionService</a></div>
+      
+    </li>
+  
+    <li class="popular-posts-item">
+      
+      
+      <div class="popular-posts-title"><a href="/posts/931a340/" rel="bookmark">Java多线程系列-JUC线程池之07 CompletionFuture</a></div>
       
     </li>
   
@@ -1160,7 +1160,7 @@ tryTerminate();
   <p><span>本文标题:</span><a href="/posts/ca60f1d2/">Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2018年07月23日 - 14:35</p>
-  <p><span>最后更新:</span>2020年07月18日 - 13:50</p>
+  <p><span>最后更新:</span>2020年07月18日 - 22:34</p>
   <p><span>原始链接:</span>
      <a href="/posts/ca60f1d2/" title="Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析">Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/ca60f1d2/" aria-label="复制成功！"></i></span>
@@ -1197,9 +1197,9 @@ tryTerminate();
       
         <div class="post-tags">
           
-            <a href="/tags/线程池/" rel="tag">  <i class="fa fa-tag"></i> 线程池</a>
-          
             <a href="/tags/JUC/" rel="tag">  <i class="fa fa-tag"></i> JUC</a>
+          
+            <a href="/tags/线程池/" rel="tag">  <i class="fa fa-tag"></i> 线程池</a>
           
         </div>
       
@@ -1303,7 +1303,7 @@ tryTerminate();
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">178</span>
+                    <span class="site-state-item-count">179</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1611,7 +1611,9 @@ tryTerminate();
                     
                       
                     
-                    <span class="site-state-item-count">92</span>
+                      
+                    
+                    <span class="site-state-item-count">93</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1712,7 +1714,7 @@ tryTerminate();
       总阅读时长
     </span>
     
-    <span title="站点阅读时长">21:06</span>
+    <span title="站点阅读时长">21:10</span>
   
 </div>
 
