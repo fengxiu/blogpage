@@ -395,6 +395,300 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengxiu">
+      <meta itemprop="description" content="java,spring,分布式,数据库">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/posts/0/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-09-04 17:26:15" itemprop="dateCreated datePublished" datetime="2020-09-04T17:26:15+08:00">2020-09-04</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/0/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/posts/0/" class="leancloud_visitors" data-flag-title>
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">2.9k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">3 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="linux-查看文件命令"><a href="#linux-查看文件命令" class="headerlink" title="linux 查看文件命令"></a>linux 查看文件命令</h1><p>当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。</p>
+<ol>
+<li>tail</li>
+<li>cat</li>
+<li>more</li>
+</ol>
+<h2 id="tail命令"><a href="#tail命令" class="headerlink" title="tail命令"></a>tail命令</h2><p>ltail命令用途是依照要求将指定的文件的最后部分输出到标准设备，通常是终端，通俗讲来，就是把某个文件的最后几行显示到终端上，假设该文件有更新，tail会自己主动刷新，确保你看到最新的文件内容。</p>
+<h3 id="tail命令语法"><a href="#tail命令语法" class="headerlink" title="tail命令语法"></a>tail命令语法</h3><p>tail [ -f ] [ -c Number | -n Number | -m Number | -b Number | -k Number ]  [-r]  [ File ]</p>
+<p>参数解释：</p>
+<ol>
+<li>-f 该参数用于监视File文件动态增长。</li>
+<li>-c Number 从 Number 字节位置读取指定文件</li>
+<li>-n Number 从 Number 行位置读取指定文件。</li>
+<li>-m Number 从 Number 多字节字符位置读取指定文件，比方你的文件假设包括中文字，假设指定-c参数，可能导致截断，但使用-m则会避免该问题。</li>
+<li>-b Number 从 Number 表示的512字节块位置读取指定文件。</li>
+<li>-k Number 从 Number 表示的1KB块位置读取指定文件。</li>
+<li>-r 这个会似的按照现实内容相反的顺序现实，具体见下面例子 </li>
+<li>File 指定操作的目标文件名称</li>
+</ol>
+<p>上述命令中，都涉及到number，假设不指定，默认显示10行。Number前面可使用正负号，表示该偏移从顶部还是从尾部开始计算。这个具体看下面例子。</p>
+<h3 id="tail命令使用例子"><a href="#tail命令使用例子" class="headerlink" title="tail命令使用例子"></a>tail命令使用例子</h3><ol>
+<li><p>tail -f filename<br>说明：监视filename文件的尾部内容（默认10行，相当于增加参数 -n 10），刷新显示在屏幕上。退出，按下CTRL+C。</p>
+</li>
+<li><p>tail -n 20 filename<br>说明：显示filename最后20行。</p>
+</li>
+<li><p>tail -n +20 filename<br>说明：显示filename前面20行。</p>
+</li>
+<li><p>tail -r -n 10 filename<br>说明：逆序显示filename最后10行。</p>
+<pre><code class="bash"> $ tail -n 2 filename
+     source ~/.zshrc
+     echo &#39;export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles&#39; &gt;&gt; ~/.zshrc
+
+ $ tail -r -n 2 filename
+     echo &#39;export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles&#39; &gt;&gt; ~/.zshrc
+     source ~/.zshrc
+</code></pre>
+</li>
+</ol>
+<h2 id="cat命令"><a href="#cat命令" class="headerlink" title="cat命令"></a>cat命令</h2><p>cat命令用于连接文件并打印到标准输出设备上。</p>
+<h3 id="cat命令语法"><a href="#cat命令语法" class="headerlink" title="cat命令语法"></a>cat命令语法</h3><p>cat [-benstuv] [file …]</p>
+<p>参数解释：</p>
+<ol>
+<li>-n   由 1 开始对所有输出的行数编号。</li>
+<li>-b  和 -n 相似，只不过对于空白行不编号。</li>
+<li>-s  当遇到有连续两行以上的空白行，就代换为一行的空白行。</li>
+<li>-v  显示非打印字符，使用 ^ 和 M- 符号，除了 LFD 和 TAB 之外。</li>
+<li>-e 显示非打印字符 在每行结束处显示 $。</li>
+<li>-t 显示非打印字符，将 TAB 字符显示为 ^I。</li>
+<li>-u 禁用输出缓冲</li>
+<li>file… 可以同时指定多个文件，会按照文件名输入的顺序显示文件，如果文件名不存在或者是”-“，表示读取标准输入作为内容，如果文件是一个socket文件，cat链接这个文件直到读取EOF标志为止。</li>
+</ol>
+<h3 id="cat使用例子"><a href="#cat使用例子" class="headerlink" title="cat使用例子"></a>cat使用例子</h3><ol>
+<li><p>cat -n textfile1 &gt; textfile2<br>把 textfile1 的文档内容加上行号后输入 textfile2 这个文档里：</p>
+</li>
+<li><p>cat -b textfile1 textfile2 &gt;&gt; textfile3<br>把 textfile1 和 textfile2 的文档内容加上行号（空白行不加）之后将内容附加到 textfile3 文档里：</p>
+</li>
+<li><p>cat /dev/null &gt; /etc/test.txt<br>清空 /etc/test.txt 文档内容：</p>
+</li>
+<li><p>cat /dev/fd0 &gt; OUTFILE<br>cat 也可以用来制作镜像文件。例如要制作软盘的镜像文件，将软盘放好后输入.</p>
+</li>
+<li><p>相反的，如果想把 image file 写到软盘，输入：<br>cat IMG_FILE &gt; /dev/fd0</p>
+</li>
+</ol>
+<h2 id="more命令"><a href="#more命令" class="headerlink" title="more命令"></a>more命令</h2><p>more命令类似 cat ，不过会以一页一页的形式显示，更方便使用者逐页阅读，而最基本的指令就是按空白键（space）就往下一页显示，按b键就会往回（back）一页显示，而且还有搜寻字串的功能（与 vi 相似），使用中的说明文件，请按 h 。</p>
+<h3 id="more命令语法"><a href="#more命令语法" class="headerlink" title="more命令语法"></a>more命令语法</h3><p>more [-dlfpcsu] [-num] [+/pattern] [+lnum] [fileNames..]<br>参数解释：</p>
+<ol>
+<li>-num 一次显示的行数</li>
+<li>-d 提示使用者，在画面下方显示 [Press space to continue, ‘q’ to quit.] ，如果使用者按错键，则会显示 [Press ‘h’ for instructions.] 而不是 ‘哔’ 声</li>
+<li>-l 取消遇见特殊字元 ^L（送纸字元）时会暂停的功能</li>
+<li>-f 计算行数时，以实际上的行数，而非自动换行过后的行数（有些单行字数太长的会被扩展为两行或两行以上）</li>
+<li>-p 不以卷动的方式显示每一页，而是先清除萤幕后再显示内容</li>
+<li>-c 跟 -p 相似，不同的是先显示内容再清除其他旧资料</li>
+<li>-s 当遇到有连续两行以上的空白行，就代换为一行的空白行</li>
+<li>-u 不显示下引号 （根据环境变数 TERM 指定的 terminal 而有所不同）</li>
+<li>+/pattern 在每个文档显示前搜寻该字串（pattern），然后从该字串之后开始显示</li>
+<li>+num 从第 num 行开始显示</li>
+<li>-num 设置每屏显示的行数</li>
+<li>fileNames 欲显示内容的文档，可为复数个数</li>
+</ol>
+<h3 id="more命令实例"><a href="#more命令实例" class="headerlink" title="more命令实例"></a>more命令实例</h3><ol>
+<li><p>more -s testfile<br>逐页显示 testfile 文档内容，如有连续两行以上空白行则以一行空白行显示。</p>
+</li>
+<li><p>more +20 testfile<br>从第 20 行开始显示 testfile 之文档内容。</p>
+</li>
+<li><p>more -5  testfile<br>每屏显示5行</p>
+</li>
+<li><p>more +/day3 testfile<br>从文件中查找第一个出现”day3”字符串的行，并从该处前两行开始显示输出 </p>
+</li>
+</ol>
+<p>配置more常用操作命令</p>
+<ol>
+<li>Enter 向下n行，需要定义。默认为1行</li>
+<li>Ctrl+F 向下滚动一屏</li>
+<li>空格键 向下滚动一屏</li>
+<li>Ctrl+B 返回上一屏</li>
+<li>= 输出当前行的行号</li>
+<li>：f 输出文件名和当前行的行号</li>
+<li>V 调用vi编辑器</li>
+<li>!命令 调用Shell，并执行命令</li>
+<li>q 退出more</li>
+</ol>
+<h2 id="less命令"><a href="#less命令" class="headerlink" title="less命令"></a>less命令</h2><p><img src="https://www.runoob.com/linux/linux-comm-less.html" alt="导航"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+      
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+      
+    
+      
+      
+           
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/250adeef/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1746,224 +2040,6 @@
 
       
     
-      
-      
-           
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/3c2eb649/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="fengxiu">
-      <meta itemprop="description" content="java,spring,分布式,数据库">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/posts/3c2eb649/" class="post-title-link" itemprop="url">LVS、Nginx及HAProxy工作原理简介</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-20 12:22:32" itemprop="dateCreated datePublished" datetime="2019-07-20T12:22:32+08:00">2019-07-20</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/架构/" itemprop="url" rel="index"><span itemprop="name">架构</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/posts/3c2eb649/#comments" itemprop="discussionUrl">
-                
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/3c2eb649/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/posts/3c2eb649/" class="leancloud_visitors" data-flag-title="LVS、Nginx及HAProxy工作原理简介">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数：</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-symbolscount">
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">本文字数：</span>
-                
-                <span title="本文字数">4.9k</span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">4 分钟</span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>当前大多数的互联网系统都使用了服务器集群技术，集群是将相同服务部署在多台服务器上构成一个集群整体对外提供服务，这些集群可以是 Web 应用服务器集群，也可以是数据库服务器集群，还可以是分布式缓存服务器集群等等。<br><img src="/images/640.webp" alt="640"><br>在实际应用中，在 Web服务器集群之前总会有一台负载均衡服务器，负载均衡设备的任务就是作为Web 服务器流量的入口，挑选最合适的一台 Web 服务器，将客户端的请求转发给它处理，实现客户端到真实服务端的透明转发。</p>
-<p>最近几年很火的「云计算」以及分布式架构，本质上也是将后端服务器作为计算资源、存储资源，由某台管理服务器封装成一个服务对外提供，客户端不需要关心真正提供服务的是哪台机器，在它看来，就好像它面对的是一台拥有近乎无限能力的服务器，而本质上，真正提供服务的，是后端的集群。<br>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/posts/3c2eb649/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </p></div>
-
-    
-
-    
-    
-    
-
-      
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-      
-    
   </section>
 
   
@@ -2013,7 +2089,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">179</span>
+                    <span class="site-state-item-count">180</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2407,7 +2483,7 @@
       总阅读时长
     </span>
     
-    <span title="站点阅读时长">21:10</span>
+    <span title="站点阅读时长">21:12</span>
   
 </div>
 
