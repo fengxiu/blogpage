@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+      
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: 'EANI2G9IBU',
+      apiKey: 'a8cc8f9e5688c20770172ad27daeead0',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"请输入搜索内容","hits_empty":"没有发现和 ${query} 有关的内容","hits_stats":"在 ${time} ms 内发现 ${hits} "}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="MapStruct使用教程一 在日常开发中，我们会定义多种不通的Javabean，比如DTO（Data Transfer Object：数据传输对象），DO（Data Object：数据库映射对象，与数据库一一映射），VO（View Object：显示层对象，通常是 Web 向模板渲染引擎层传输的对象）等等这些对象。在这些对象与对象之间转换通常是调对象的set和get方法进行复制，这种转换通常也是">
+<meta name="keywords" content="java,spring,分布式,数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapStruct使用教程一">
+<meta property="og:url" content="http://fengxiu.club/posts/bb156b86/index.html">
+<meta property="og:site_name" content="枫秀">
+<meta property="og:description" content="MapStruct使用教程一 在日常开发中，我们会定义多种不通的Javabean，比如DTO（Data Transfer Object：数据传输对象），DO（Data Object：数据库映射对象，与数据库一一映射），VO（View Object：显示层对象，通常是 Web 向模板渲染引擎层传输的对象）等等这些对象。在这些对象与对象之间转换通常是调对象的set和get方法进行复制，这种转换通常也是">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-09-13T09:22:49.107Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MapStruct使用教程一">
+<meta name="twitter:description" content="MapStruct使用教程一 在日常开发中，我们会定义多种不通的Javabean，比如DTO（Data Transfer Object：数据传输对象），DO（Data Object：数据库映射对象，与数据库一一映射），VO（View Object：显示层对象，通常是 Web 向模板渲染引擎层传输的对象）等等这些对象。在这些对象与对象之间转换通常是调对象的set和get方法进行复制，这种转换通常也是">
+
+
+
+
+
+
+  <link rel="canonical" href="http://fengxiu.club/posts/bb156b86/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>MapStruct使用教程一 | 枫秀</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">枫秀</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-时间轴">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+  <a href="https://github.com/fengxiu" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/bb156b86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengxiu">
+      <meta itemprop="description" content="java,spring,分布式,数据库">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">MapStruct使用教程一
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-09-13 17:22:49" itemprop="dateCreated datePublished" datetime="2020-09-13T17:22:49+08:00">2020-09-13</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/教程/" itemprop="url" rel="index"><span itemprop="name">教程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/bb156b86/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/bb156b86/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/posts/bb156b86/" class="leancloud_visitors" data-flag-title="MapStruct使用教程一">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">11k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">10 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="MapStruct使用教程一"><a href="#MapStruct使用教程一" class="headerlink" title="MapStruct使用教程一"></a>MapStruct使用教程一</h1><!-- 
+    1. 是什么
+    2. 相对于其它框架的优点
+    3. 简单使用
+       1. maven配置
+       2. 简单demo
+       3. 和lombok一起使用
+       4. 定义mapper
+       5. 获取mapper
+ -->
+<p>在日常开发中，我们会定义多种不通的Javabean，比如DTO（Data Transfer Object：数据传输对象），DO（Data Object：数据库映射对象，与数据库一一映射），VO（View Object：显示层对象，通常是 Web 向模板渲染引擎层传输的对象）等等这些对象。在这些对象与对象之间转换通常是调对象的set和get方法进行复制，这种转换通常也是很无聊的操作，因此就需要有一个专门的工具来解决Javabean之间的转换问题，让我们从这种无聊的转换操作中解放出来。</p>
+<p>MapStruct就是这样一个属性映射工具，用于解决上述对象之间转换问题。<a href="https://mapstruct.org" target="_blank" rel="noopener">MapStruct官网</a>。官网给出的MapStruct定义：MapStruct是一个Java注释处理器，用于生成类型安全的bean映射类。</p>
+<p>我们要做的就是定义一个映射器接口，声明任何必需的映射方法。在编译的过程中，MapStruct会生成此接口的实现。该实现使用纯java方法调用的源对象和目标对象之间的映射。对比手写这些映射方法，MapStruct通过自动生成代码完成繁琐和手写容易出错的代码逻辑从而节省编码时间。遵循配置方法上的约定，MapStruct使用合理的默认值，但在配置或实现特殊行为时不加理会。</p>
+<p>与动态映射框架相比，MapStruct具有以下优点：</p>
+<ol>
+<li>速度快：使用普通的方法代替反射</li>
+<li>编译时类型安全性 : 只能映射彼此的对象和属性，不会将商品实体意外映射到用户DTO等</li>
+<li>在build时期有明确的错误报告，主要有下面俩种<ol>
+<li>映射不完整，目标对象中有些属性没有被映射</li>
+<li>映射不正确，找不到一个合适的映射方法或者类型转换方法<a id="more"></a>
+<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2></li>
+</ol>
+</li>
+</ol>
+<h3 id="maven配置"><a href="#maven配置" class="headerlink" title="maven配置"></a>maven配置</h3><p>通常在项目中，mapStruct和lombox会同时使用，具体的maven配置如下，如果只是用Mapstruct，只需将和Lombox有关的内容删除掉即可。</p>
+<pre><code class="xml">    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+        &lt;org.mapstruct.version&gt;1.4.0.Beta3&lt;/org.mapstruct.version&gt;
+        &lt;org.projectlombok.version&gt;1.18.12&lt;/org.projectlombok.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.mapstruct&lt;/groupId&gt;
+            &lt;artifactId&gt;mapstruct&lt;/artifactId&gt;
+            &lt;version&gt;${org.mapstruct.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+            &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;version&gt;${org.projectlombok.version}&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+            &lt;version&gt;4.12&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+&lt;!-- 配置lombok 和mapStruct注解处理器 --&gt;
+    &lt;build&gt;
+        &lt;pluginManagement&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                    &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                    &lt;version&gt;3.8.1&lt;/version&gt;
+                    &lt;configuration&gt;
+                        &lt;source&gt;1.8&lt;/source&gt;
+                        &lt;target&gt;1.8&lt;/target&gt;
+                        &lt;annotationProcessorPaths&gt;
+                            &lt;path&gt;
+                                &lt;groupId&gt;org.mapstruct&lt;/groupId&gt;
+                                &lt;artifactId&gt;mapstruct-processor&lt;/artifactId&gt;
+                                &lt;version&gt;${org.mapstruct.version}&lt;/version&gt;
+                            &lt;/path&gt;
+                            &lt;path&gt;
+                                &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+                                &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+                                &lt;version&gt;${org.projectlombok.version}&lt;/version&gt;
+                            &lt;/path&gt;
+                        &lt;/annotationProcessorPaths&gt;
+                    &lt;/configuration&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/pluginManagement&gt;
+    &lt;/build&gt;
+</code></pre>
+<h3 id="一个简单案例"><a href="#一个简单案例" class="headerlink" title="一个简单案例"></a>一个简单案例</h3><p>定义Person实体</p>
+<pre><code class="java">@Data
+public class Person {
+    private String name;
+    private String lastName;
+}
+</code></pre>
+<p>定义PersonDTO</p>
+<pre><code class="java">@Data
+public class PersonDTO {
+    private String firstName;
+    private String lastName;
+}
+</code></pre>
+<p>定义Person和PersonDTO之间的转换接口</p>
+<pre><code class="java">@Mapper
+public interface PersonMapper {
+
+    PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);
+
+    @Mapping(source = &quot;firstName&quot;,target = &quot;name&quot;)
+     Person personDTOToPerson(PersonDTO personDTO);
+}
+</code></pre>
+<p>测试</p>
+<pre><code class="java">public class PersonMapperTest {
+
+    @Test
+    public void personDTOToPerson() {
+        PersonMapper personMapper = PersonMapper.INSTANCE;
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setFirstName(&quot;zhang&quot;);
+        personDTO.setLastName(&quot;ke&quot;);
+        Person person = personMapper.personDTOToPerson(personDTO);
+        Assert.assertEquals(person.getLastName(),personDTO.getLastName());
+        Assert.assertEquals(person.getName(),personDTO.getFirstName());
+    }
+}
+</code></pre>
+<h2 id="定义Mapper（Bean映射器）"><a href="#定义Mapper（Bean映射器）" class="headerlink" title="定义Mapper（Bean映射器）"></a>定义Mapper（Bean映射器）</h2><p>在这一节，我们将学习如何定义一个Bean Mapper。</p>
+<h3 id="基本的映射"><a href="#基本的映射" class="headerlink" title="基本的映射"></a>基本的映射</h3><p>创建一个bean的转换器，只需要定义一个接口，并将需要的转换方法定义在接口中，然后使用org.mapstruct.Mapper注释对其进行注释。<br>比如上面的PersonMapper</p>
+<pre><code class="java">@Mapper
+public interface PersonMapper {
+
+    PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);
+
+    @Mapping(source = &quot;firstName&quot;,target = &quot;name&quot;)
+     Person personDTOToPerson(PersonDTO personDTO);
+}
+</code></pre>
+<p>@Mapper注解作用是：在build-time时，MapStruct会自动生成一个实现PersonMapper接口的类。<br>接口中定义的方法，在自动生成时，默认会将source对象（比如PersonDTO）中所有可读的属性拷贝到target（比如Person）对象中相关的属性，转换规则主要有以下俩条：</p>
+<ol>
+<li>当target和source对象中属性名相同，则直接转换</li>
+<li>当target和source对象中属性名不同，名字的映射可以通过@Mapping注解来指定。比如上面firstName映射到name属性上。</li>
+</ol>
+<p>其实上面PersonMapper通过MapStruct生成的类和我们自己写一个转换类是没有什么区别，上面PersonMapper自动生成的实现类如下：</p>
+<pre><code class="java">public class PersonMapperImpl implements PersonMapper {
+    public PersonMapperImpl() {
+    }
+
+    public Person personDTOToPerson(PersonDTO personDTO) {
+        if (personDTO == null) {
+            return null;
+        } else {
+            Person person = new Person();
+            person.setName(personDTO.getFirstName());
+            person.setLastName(personDTO.getLastName());
+            return person;
+        }
+    }
+}
+</code></pre>
+<p>从上面可以看出，MapStruct的哲学是尽可能的生成看起来和手写的代码一样。因此，这也说明MapStruct映射对象属性使用的是getter/setter而不是反射。</p>
+<p>正如上面例子这种显示的，在进行映射的时候，也会考虑通过@Mapping中指定的属性。如果指定的属性类型不同，MapStruct可能会通过隐式的类型转换，这个会在后面讲，或者通过调用/创建另外一个映射方法个，这个会在映射对象引用这一节说道。当一个bean的source和target属性是简单类型或者是Bean，才会创建一个新的映射方法，比如属性不能是Collection或者Map类型的属性。至于集合类型的映射将在后面讲。</p>
+<p>MapStruct映射target和source的所有公共属性。这包括在父类型上声明的属性。</p>
+<h3 id="在Mapper中自定义方法"><a href="#在Mapper中自定义方法" class="headerlink" title="在Mapper中自定义方法"></a>在Mapper中自定义方法</h3><p>当俩种类型的映射不能通过MapStruct自动生成，我们需要自定义一些方法。自定义方法的方式主要有以下俩种。</p>
+<ol>
+<li>如果其他Mapper中已经有此方法，可以在@Mapper(uses=XXXMapper.class)来调用自定义的方法，这样可以方法重用。这个后面会说。<!-- TODO：加入超链接---></li>
+<li>java8或者更新的版本，可以直接在Mapper接口中添加default方法。当参数和返回值类型匹配，则生成的代码会自动调用这个方法。</li>
+</ol>
+<p>例子如下</p>
+<pre><code class="java">@Mapper
+public interface CarMapper {
+
+    @Mapping(...)
+    ...
+    CarDto carToCarDto(Car car);
+
+    default PersonDto personToPersonDto(Person person) {
+        //hand-written mapping logic
+    }
+}
+</code></pre>
+<p>在MapStruct自动生成代码，需要将Person转换成PersonDTO对象时，就会直接调用default方法。<br>也可以使用抽象类来定义，比如上面的例子使用抽象类定义如下</p>
+<pre><code class="java">@Mapper
+public abstract class CarMapper {
+
+    @Mapping(...)
+    ...
+    public abstract CarDto carToCarDto(Car car);
+
+    public PersonDto personToPersonDto(Person person) {
+        //hand-written mapping logic
+    }
+}
+</code></pre>
+<h3 id="多个source参数的映射方法"><a href="#多个source参数的映射方法" class="headerlink" title="多个source参数的映射方法"></a>多个source参数的映射方法</h3><p>MapStruct也支持带有多个source参数的映射方法。这个在将多个bean合并成一个bean的时候非常有用。<br>例子如下：</p>
+<pre><code class="java">@Mapper
+public interface AddressMapper {
+
+    @Mapping(source = &quot;person.description&quot;, target = &quot;description&quot;)
+    @Mapping(source = &quot;address.houseNo&quot;, target = &quot;houseNumber&quot;)
+    DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Address address);
+}
+</code></pre>
+<p>上面显示的就是将俩个source参数映射成一个target对象。和单个参数一样，属性映射也是通过名称。</p>
+<p>如果多个source参数中的属性具有相同的名称，必须通过@Mapping指定哪个source里面的属性映射到target属性中。如果存在多个相同的属性，并且没有指定，则会报错。</p>
+<p>MapStruct也支持直接引用一个source参数映射到target对象中。例子如下</p>
+<pre><code class="java">@Mapper
+public interface AddressMapper {
+
+    @Mapping(source = &quot;person.description&quot;, target = &quot;description&quot;)
+    @Mapping(source = &quot;hn&quot;, target = &quot;houseNumber&quot;)
+    DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Integer hn);
+}
+</code></pre>
+<p>上面的例子将hn直接映射到target的houseNumber属性上。</p>
+<h3 id="更新Bean实例"><a href="#更新Bean实例" class="headerlink" title="更新Bean实例"></a>更新Bean实例</h3><p>有时我们并不一定创建一个新的Bean，可能需要更新某一个实例。这种类型的映射我们可以通过在参数上增加一个@MappingTarget注解。例子如下：</p>
+<pre><code class="java">@Mapper
+public interface CarMapper {
+
+    void updateCarFromDto(CarDto carDto, @MappingTarget Car car);
+}
+</code></pre>
+<p>这个例子会把CarDto中的属性值更新的Car对象实例上。上面的例子我们也可以将void改成Car类型返回值。</p>
+<p>对于Collection或者Map类型，默认会将集合中所有的值清空，然后使用相关source集合中的值来填充，即CollectionMappingStrategy.ACCESSOR_ONLY策略。另外也提供了CollectionMappingStrategy.ADDER_PREFERRED 或者 CollectionMappingStrategy.TARGET_IMMUTABLE。这些策略可以在@Mapper(collectionMappingStrategy=CollectionMappingStrategy.TARGET_IMMUTABLE)来指定。</p>
+<h3 id="使用builders"><a href="#使用builders" class="headerlink" title="使用builders"></a>使用builders</h3><p>MapStruct也支持通过builders擦行间immutable类型映射。当MapStruct执行映射检测到这里有一个类型匹配的builder。这时通过BuilderProvider SPI提供。如果这里存在一个特定的类型，该builder将会被用于映射。</p>
+<p>默认实现的BuilderProvider遵循以下规则：</p>
+<ul>
+<li>该类型具有返回生成器的无参数公共静态生成器创建方法。例如Person有一个公共静态方法，它返回PersonBuilder。</li>
+<li>builder类型有一个无参数的公共方法（build method），它返回在我们的示例PersonBuilder有一个返回Person的方法。</li>
+<li>如果有多个build方法，MapStruct将寻找一个名为build的方法，如果存在这样的方法，那么将使用这个方法，否则会产生编译错误。</li>
+<li>可以在@BeanMapping、@Mapper或@mapperfonfig中使用@Builder来定义特定的构建方法</li>
+<li>如果有多个构建器创建方法满足上述条件，那么将从DefaultBuilderProvider SPI抛出一个多个BuilderCreationMethodException。如果超过一个builderCreationMethodException MapStruct将在编译中写入警告，并且不使用任何生成器。</li>
+</ul>
+<p>如果找到这样的类型，那么MapStruct将使用该类型执行到的映射（即，它将在该类型中查找setter）。生成映射的mapbuilder将生成该映射的代码。</p>
+<p>下面是一个例子</p>
+<pre><code class="java">public class Person {
+
+    private final String name;
+
+    protected Person(Person.Builder builder) {
+        this.name = builder.name;
+    }
+
+    public static Person.Builder builder() {
+        return new Person.Builder();
+    }
+
+    public static class Builder {
+
+        private String name;
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Person create() {
+            return new Person( this );
+        }
+    }
+}
+</code></pre>
+<p>Person Mapper 定义如下：</p>
+<pre><code class="java">public interface PersonMapper {
+
+    Person map(PersonDto dto);
+}
+</code></pre>
+<p>下面是自动生成的PersonMapperImpl类</p>
+<pre><code class="java">public class PersonMapperImpl implements PersonMapper {
+
+    public Person map(PersonDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Person.Builder builder = Person.builder();
+
+        builder.name( dto.getName() );
+
+        return builder.create();
+    }
+}
+</code></pre>
+<p>这一块具体的可以看说明文档，<a href="https://mapstruct.org/documentation/stable/reference/html/#mapping-with-builders" target="_blank" rel="noopener">using builder</a></p>
+<h2 id="检索映射器"><a href="#检索映射器" class="headerlink" title="检索映射器"></a>检索映射器</h2><p>当我们不使用DI框架，Mapper实例可以通过org.mapstruct.factory.Mappers。只需要调用getMapper方法，传递接口类型的mapper就可以获得MapStruct自动生成的Mapper</p>
+<p>向前面的例子，我们可以定义INSTANCE属性用于调用方法。例如</p>
+<pre><code class="java">@Mapper(componentModel = &quot;default&quot;)
+public interface CarMapper {
+
+    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+
+    CarDto carToCarDto(Car car);
+}
+</code></pre>
+<p>通过MapStruct自动生成的mapper是无状态的和线程安全的，可以同时被若干个线程访问。</p>
+<p>检索映射器主要有以下几种，支持的值包括：</p>
+<ul>
+<li>default:通过Mapper#getMapper（class）来获取实例</li>
+<li>cdi：生成的映射器是一个应用程序范围的CDI bean，可以通过@Inject进行检索</li>
+<li>spring：生成的映射器是一个单例范围的spring bean，可以通过@Autowired进行检索</li>
+<li>jsr330：生成的映射器用{@code@Named}注释，可以通过@Inject检索，例如使用Spring</li>
+</ul>
+<p>这些值可以通过@Mapper(componentModel=””)来指定，也可以在maven的配置参数里面指定。</p>
+<h3 id="注入策略"><a href="#注入策略" class="headerlink" title="注入策略"></a>注入策略</h3><p>当使用DI注入策略模式时，可以选择field和constructor俩种注入方式。这个可以被@Mapper或者@MapperConfig注解来指定。</p>
+<p>使用constructor注入的例子如下：</p>
+<pre><code class="java">@Mapper(componentModel = &quot;cdi&quot;, uses = EngineMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface CarMapper {
+    CarDto carToCarDto(Car car);
+}
+</code></pre>
+<p>生成的映射器将注入uses属性中定义的所有类。当使用InjectionStrategy#CONSTRUCTOR，构造函数将具有适当的注解，而字段则没有。当使用njectionStrategy#FIELD，注解字段位于field本身。目前，默认的注入策略是field注入。建议使用构造函数注入来简化测试。</p>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+      
+        <div>
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/posts/bb156b86/">MapStruct使用教程一</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
+  <p><span>发布时间:</span>2020年09月13日 - 17:22</p>
+  <p><span>最后更新:</span>2020年09月13日 - 17:22</p>
+  <p><span>原始链接:</span>
+     <a href="/posts/bb156b86/" title="MapStruct使用教程一">MapStruct使用教程一</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/bb156b86/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+        </div>
+      
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/a61a4fcc/" rel="next" title="Spring Validation教程">
+                <i class="fa fa-chevron-left"></i> Spring Validation教程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/fc06a9d1/" rel="prev" title="Hibernate Validator 学习与使用">
+                Hibernate Validator 学习与使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="fengxiu">
+            
+              <p class="site-author-name" itemprop="name">fengxiu</p>
+              <p class="site-description motion-element" itemprop="description">java,spring,分布式,数据库</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">194</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">49</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">94</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/fengxiutianya" title="GitHub &rarr; https://github.com/fengxiutianya" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                  
+                    
+                  
+                  <a href="mailto:398757724@qq.com" title="E-Mail &rarr; mailto:398757724@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i></a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MapStruct使用教程一"><span class="nav-number">1.</span> <span class="nav-text">MapStruct使用教程一</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单使用"><span class="nav-number">1.1.</span> <span class="nav-text">简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#maven配置"><span class="nav-number">1.1.1.</span> <span class="nav-text">maven配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一个简单案例"><span class="nav-number">1.1.2.</span> <span class="nav-text">一个简单案例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义Mapper（Bean映射器）"><span class="nav-number">1.2.</span> <span class="nav-text">定义Mapper（Bean映射器）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本的映射"><span class="nav-number">1.2.1.</span> <span class="nav-text">基本的映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在Mapper中自定义方法"><span class="nav-number">1.2.2.</span> <span class="nav-text">在Mapper中自定义方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多个source参数的映射方法"><span class="nav-number">1.2.3.</span> <span class="nav-text">多个source参数的映射方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新Bean实例"><span class="nav-number">1.2.4.</span> <span class="nav-text">更新Bean实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用builders"><span class="nav-number">1.2.5.</span> <span class="nav-text">使用builders</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检索映射器"><span class="nav-number">1.3.</span> <span class="nav-text">检索映射器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注入策略"><span class="nav-number">1.3.1.</span> <span class="nav-text">注入策略</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengxiu</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      
+      网站总字数
+    </span>
+    
+    <span title="站点总字数">1.5m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      
+      总阅读时长
+    </span>
+    
+    <span title="站点阅读时长">23:09</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
+
+  
+  <script src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://fengxiu.disqus.com/count.js" async></script>
+  
+
+  
+    <script>
+      var disqus_config = function () {
+        this.page.url = "http://fengxiu.club/posts/bb156b86/";
+        this.page.identifier = "posts/bb156b86/";
+        this.page.title = 'MapStruct使用教程一';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://fengxiu.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        $(function () {
+          var offsetTop = $('#comments').offset().top - $(window).height();
+          if (offsetTop <= 0) {
+            // load directly when there's no a scrollbar
+            loadComments();
+          } else {
+            $(window).on('scroll.disqus_scroll', function () {
+              // offsetTop may changes because of manually resizing browser window or lazy loading images.
+              var offsetTop = $('#comments').offset().top - $(window).height();
+              var scrollTop = $(window).scrollTop();
+
+              // pre-load comments a bit? (margin or anything else)
+              if (offsetTop - scrollTop < 60) {
+                $(window).off('.disqus_scroll');
+                loadComments();
+              }
+            });
+          }
+        });
+      
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.7.0"></script>
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "8rM8gj5HTRTSqBQdFyePed86-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "8rM8gj5HTRTSqBQdFyePed86-gzGzoHsz",
+                'X-LC-Key': "f92qb0ijeNp2joqk3ld6IlRW",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+          if (result) $(this).text('复制成功');
+          else $(this).text('复制失败');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+  
+  
+  
+
+  <link rel="stylesheet" href="/lib/prettify/themes/atelier-estuary-light.min.css" type="text/css">
+
+
+<script src="/lib/prettify/prettify.js"></script>
+<script type="text/javascript">
+
+$(window).load(function(){
+
+  // 设置prettify
+  $('pre').addClass('prettyprint linenums');
+   prettyPrint();
+ })
+</script>
+<style>
+pre {
+  white-space:pre;
+  white-space:pre-wrap;
+  word-break:break-all;
+  word-wrap:break-word;
+}
+</style>
+
+
+
+
+  
+  
+</body>
+</html>

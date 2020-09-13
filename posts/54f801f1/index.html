@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+      
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: 'EANI2G9IBU',
+      apiKey: 'a8cc8f9e5688c20770172ad27daeead0',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"请输入搜索内容","hits_empty":"没有发现和 ${query} 有关的内容","hits_stats":"在 ${time} ms 内发现 ${hits} "}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="SpringBoot源码分析之spring-boot-loader可执行文件解析 spring-boot-loader模块使得springboot应用具备打包为可执行jar或war文件的能力。只需要引入Maven插件或者Gradle插件就可以自动生成。 ​Java中并没有标准的方法加载嵌入式的jar文件，通常都是在一个jar文件中。这种情况下，如果你要通过命令行的形式发布一个没有打包的独立程序的话">
+<meta name="keywords" content="java,spring,分布式,数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot源码分析之spring-boot-loader可执行文件解析">
+<meta property="og:url" content="http://fengxiu.club/posts/54f801f1/index.html">
+<meta property="og:site_name" content="枫秀">
+<meta property="og:description" content="SpringBoot源码分析之spring-boot-loader可执行文件解析 spring-boot-loader模块使得springboot应用具备打包为可执行jar或war文件的能力。只需要引入Maven插件或者Gradle插件就可以自动生成。 ​Java中并没有标准的方法加载嵌入式的jar文件，通常都是在一个jar文件中。这种情况下，如果你要通过命令行的形式发布一个没有打包的独立程序的话">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-09-13T09:22:49.107Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot源码分析之spring-boot-loader可执行文件解析">
+<meta name="twitter:description" content="SpringBoot源码分析之spring-boot-loader可执行文件解析 spring-boot-loader模块使得springboot应用具备打包为可执行jar或war文件的能力。只需要引入Maven插件或者Gradle插件就可以自动生成。 ​Java中并没有标准的方法加载嵌入式的jar文件，通常都是在一个jar文件中。这种情况下，如果你要通过命令行的形式发布一个没有打包的独立程序的话">
+
+
+
+
+
+
+  <link rel="canonical" href="http://fengxiu.club/posts/54f801f1/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>SpringBoot源码分析之spring-boot-loader可执行文件解析 | 枫秀</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">枫秀</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-时间轴">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+  <a href="https://github.com/fengxiu" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/54f801f1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengxiu">
+      <meta itemprop="description" content="java,spring,分布式,数据库">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">SpringBoot源码分析之spring-boot-loader可执行文件解析
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-09-13 17:22:49" itemprop="dateCreated datePublished" datetime="2020-09-13T17:22:49+08:00">2020-09-13</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/54f801f1/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/54f801f1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/posts/54f801f1/" class="leancloud_visitors" data-flag-title="SpringBoot源码分析之spring-boot-loader可执行文件解析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">8.2k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">7 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="SpringBoot源码分析之spring-boot-loader可执行文件解析"><a href="#SpringBoot源码分析之spring-boot-loader可执行文件解析" class="headerlink" title="SpringBoot源码分析之spring-boot-loader可执行文件解析"></a>SpringBoot源码分析之spring-boot-loader可执行文件解析</h1><!-- 
+   1.  为什么会有这个
+   2.  简单介绍怎么使用springboot maven plugin
+   3.  格式
+   4.  启动原理
+ -->
+<p>spring-boot-loader模块使得springboot应用具备打包为可执行jar或war文件的能力。只需要引入Maven插件或者Gradle插件就可以自动生成。</p>
+<p>​Java中并没有标准的方法加载嵌入式的jar文件，通常都是在一个jar文件中。这种情况下，如果你要通过命令行的形式发布一个没有打包的独立程序的话，可能会出现问题。</p>
+<p>​为了解决这种问题，很多人员使用”shaded jars”方式，即将所有的class文件都打包在一个jar包里面，也就是通常所有的”uber jar”。这种方式下，开发人员很难去判断哪个依赖的文件库是被程序真正使用到的。更普遍的问题是，在不同的jar文件中，如果有相同名称的文件则会冲突。spring boot采用了一种不同的方式，让我们可以直接从命令行启动jar。这也就是spring-boot-loader模块提供的功能。</p>
+<p>这里补充一点，如果你对jar文件或者Manifest不是很清楚的话，可以看这篇文章.<br><a href="/posts/2f7bd7dc/">java 打包技术之jar文件</a><br><a id="more"></a><br><!-- （这里说明一下，在传统的可执行jar文件中会有/META-INF/MANIFEST.MF文件，这里主要介绍两个属性：Main-Class和classpath，Main-Class是可执行jar的启动类，classpath则可以指定依赖的类库。） --></p>
+<h2 id="SpringBoot-loader插件提供的可执行文件结构"><a href="#SpringBoot-loader插件提供的可执行文件结构" class="headerlink" title="SpringBoot loader插件提供的可执行文件结构"></a>SpringBoot loader插件提供的可执行文件结构</h2><pre><code class="java">example.jar
+ |
+ +-META-INF (1)
+ |  +-MANIFEST.MF
+ +-org (2)
+ |  +-springframework
+ |     +-boot
+ |        +-loader
+ |           +-&lt;spring boot loader classes&gt;
+ +-BOOT-INF 
+    +-classes (3)
+    |  +-mycompany
+    |     +-project
+    |        +-YourClasses.class
+    +-lib (4)
+    |   +-dependency1.jar
+    |   +-dependency2.jar
+    |   ...........
+</code></pre>
+<ol>
+<li>META-INF ：Jar文件MANIFEST.MF文件存放处</li>
+<li>org.springframework.boot.loader : springboot-loader启动应用class存放处</li>
+<li>BOOT-INF/classes : 应用本身文件存放处</li>
+<li>BOOT-INF/lib :应用需要的依赖存放处</li>
+</ol>
+<h2 id="MANIFEST-MF-文件内容"><a href="#MANIFEST-MF-文件内容" class="headerlink" title="MANIFEST.MF 文件内容"></a>MANIFEST.MF 文件内容</h2><pre><code class="java">Manifest-Version: 1.0
+Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx
+Built-By: zhangke
+Start-Class: club.fengxiu.App
+Spring-Boot-Classes: BOOT-INF/classes/
+Spring-Boot-Lib: BOOT-INF/lib/
+Spring-Boot-Version: 2.3.0.RELEASE
+Created-By: Apache Maven 3.6.3
+Build-Jdk: 1.8.0_251
+Main-Class: org.springframework.boot.loader.JarLauncher
+</code></pre>
+<p>从中可以看得到，它的Main-Class是org.springframework.boot.loader.JarLauncher，即当使用java -jar执行jar包的时候会调用JarLunch的main方法，而不是调用应用本身定义的SpringApplication注解的类。</p>
+<p>从这里应该可以猜测出，Springboot-Loader模块打包出的jar具备可执行能力跟这个类有很大的关系。它是SpringBoot定义的一个工具类，用于执行应用定义的SpringApplication类。相当于SpringBoot Loader提供了一套标准用于执行SpringBoot打包出来的jar。</p>
+<h2 id="JarLuncher的执行流程"><a href="#JarLuncher的执行流程" class="headerlink" title="JarLuncher的执行流程"></a>JarLuncher的执行流程</h2><h3 id="SpringBoot-loader模块类简介"><a href="#SpringBoot-loader模块类简介" class="headerlink" title="SpringBoot loader模块类简介"></a>SpringBoot loader模块类简介</h3><p>由于下面会多次涉及到一些类，</p>
+<h3 id="JarLauncher-main"><a href="#JarLauncher-main" class="headerlink" title="JarLauncher#main"></a>JarLauncher#main</h3><pre><code class="java">public static void main(String[] args) throws Exception {
+   new JarLauncher().launch(args);
+}
+</code></pre>
+<p>这个方法比较简单，构造JarLuncher，然后调用launch方法，并将控制台的参数传进去。这个是默认的构造函数，因此这个类在创建的时候，同时会调用父类的构造函数，也就是ExecutableArchiveLauncher的默认构造函数，ExecutableArchiveLauncher#ExecutableArchiveLauncher()代码如下</p>
+<pre><code class="java">public ExecutableArchiveLauncher() {
+   try {
+      this.archive = createArchive();
+   }
+   catch (Exception ex) {
+      throw new IllegalStateException(ex);
+   }
+}
+</code></pre>
+<p>可以看出，这里会调用createArchive()方法，这个方法主要是用来创建Archive，这个类是SpringBoot-loader定义的归档文件基础抽象类。具体的实现有俩个，JarFileArchive和ExplodedArchive。JarFileArchive是用来对Jar包文件的抽象，主要用来获取Jar包中的各种文件或者信息，主要实现是通过JarFile类，其实也就是JarFile的一个装饰器。ExplodedArchive是文件目录的抽象。</p>
+<p>JarFile：对jar包的封装，每个JarFileArchive都会对应一个JarFile。JarFile被构造的时候会解析内部结构，去获取jar包里的各个文件或文件夹，这些文件或文件夹会被封装到Entry中，也存储在JarFileArchive中。如果Entry是个jar，会解析成JarFileArchive。注意这里的JarFile是对java默认类java.util.jar.JarFile的重新定义。</p>
+<p>有了以上知识，下面就就可以来看createArchive方法</p>
+<pre><code class="java">protected final Archive createArchive() throws Exception {
+
+   // 获取当前类所对应的绝对路径
+   ProtectionDomain protectionDomain = getClass().getProtectionDomain();
+   CodeSource codeSource = protectionDomain.getCodeSource();
+   URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;
+   String path = (location != null) ? location.getSchemeSpecificPart() : null;
+   if (path == null) {
+      throw new IllegalStateException(&quot;Unable to determine code source archive&quot;);
+   }
+   // 创建File对象
+   File root = new File(path);
+   if (!root.exists()) {
+      throw new IllegalStateException(&quot;Unable to determine code source archive from &quot; + root);
+   }
+   // 创建文件对应的Archive抽象
+   return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
+}
+</code></pre>
+<h3 id="Launcher-launch-java-lang-String"><a href="#Launcher-launch-java-lang-String" class="headerlink" title="Launcher#launch(java.lang.String[])"></a>Launcher#launch(java.lang.String[])</h3><pre><code class="java">protected void launch(String[] args) throws Exception {
+   // 注册UrlProtocolHandler
+   JarFile.registerUrlProtocolHandler();
+   // 根据当前可执行Jar的ClassPath创建ClassLoader
+   ClassLoader classLoader = createClassLoader(getClassPathArchives());
+   // 启动应用
+   launch(args, getMainClass(), classLoader);
+}
+</code></pre>
+<p>这个方法主要分为三步，下面分别介绍每一步</p>
+<h4 id="JarFile-registerUrlProtocolHandler"><a href="#JarFile-registerUrlProtocolHandler" class="headerlink" title="JarFile.registerUrlProtocolHandler()"></a>JarFile.registerUrlProtocolHandler()</h4><pre><code class="java">public static void registerUrlProtocolHandler() {
+   // 注册系统指定的UrlProtocolHandler，如果没有指定使用springboot-loader默认的，
+   String handlers = System.getProperty(PROTOCOL_HANDLER, &quot;&quot;);
+   System.setProperty(PROTOCOL_HANDLER,
+         (&quot;&quot;.equals(handlers) ? HANDLERS_PACKAGE : handlers + &quot;|&quot; + HANDLERS_PACKAGE));
+   resetCachedUrlHandlers();
+}
+
+
+private static void resetCachedUrlHandlers() {
+   try {
+      URL.setURLStreamHandlerFactory(null);
+   }
+   catch (Error ex) {
+      // Ignore
+   }
+}
+</code></pre>
+<p>查看系统是否注册了指定的URL处理器，如果没有则使用org.springframework.boot.loader.jar.Handler自定义的。这里具体的操作可以看<br><!-- TODO:加一篇URL 处理 --></p>
+<h4 id="createClassLoader-getClassPathArchives"><a href="#createClassLoader-getClassPathArchives" class="headerlink" title="createClassLoader(getClassPathArchives())"></a>createClassLoader(getClassPathArchives())</h4><pre><code class="java">
+// 判断当前文件是否是spring-boot-loader打包的标准文件，
+// 主要检测依据有俩条，如果是文件夹，文件路径BOOT-INF/classes/
+// 如果是文件，则要以BOOT-INF/lib/开头
+protected boolean isNestedArchive(Archive.Entry entry) {
+   if (entry.isDirectory()) {
+      return entry.getName().equals(BOOT_INF_CLASSES);
+   }
+   return entry.getName().startsWith(BOOT_INF_LIB);
+}
+// 这个方法主要用来处理获取Class path，需要满足上面定义的isNestedArchive
+protected List&lt;Archive&gt; getClassPathArchives() throws Exception {
+   List&lt;Archive&gt; archives = 
+      new ArrayList&lt;&gt;(this.archive.getNestedArchives(this::isNestedArchive));
+   postProcessClassPathArchives(archives);
+   return archives;
+}
+
+// 根据Archive的路径创建对应的ClassLoader
+protected ClassLoader createClassLoader(List&lt;Archive&gt; archives) throws Exception {
+   List&lt;URL&gt; urls = new ArrayList&lt;&gt;(archives.size());
+   for (Archive archive : archives) {
+      urls.add(archive.getUrl());
+   }
+   return createClassLoader(urls.toArray(new URL[0]));
+}
+// 根据指定的路径创建ClassLoader
+protected ClassLoader createClassLoader(URL[] urls) throws Exception {
+   return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
+}
+</code></pre>
+<h4 id="Launcher-launch-args-getMainClass-classLoader"><a href="#Launcher-launch-args-getMainClass-classLoader" class="headerlink" title="Launcher#launch(args, getMainClass(), classLoader)"></a>Launcher#launch(args, getMainClass(), classLoader)</h4><p>这一步主要是获取MainClass，然后启动应用</p>
+<p>JarArchive的getMainClass方法，主要是通过MANIFEST.MF文件获取对应Start-Class对应的值</p>
+<pre><code class="java">@Override
+protected String getMainClass() throws Exception {
+   Manifest manifest = this.archive.getManifest();
+   String mainClass = null;
+   if (manifest != null) {
+      mainClass = manifest.getMainAttributes().getValue(&quot;Start-Class&quot;);
+   }
+   if (mainClass == null) {
+      throw new IllegalStateException(&quot;No &#39;Start-Class&#39; manifest entry specified in &quot; + this);
+   }
+   return mainClass;
+}
+</code></pre>
+<pre><code class="java">protected void launch(String[] args, String mainClass, ClassLoader classLoader) throws Exception {
+   // 设置当前线程的ClassLoader
+   Thread.currentThread().setContextClassLoader(classLoader);
+   // 创建MainMethodRunner并调用main方法启动应用
+   createMainMethodRunner(mainClass, args, classLoader).run();
+}
+protected MainMethodRunner createMainMethodRunner(String mainClass, String[] args, ClassLoader classLoader) {
+   return new MainMethodRunner(mainClass, args);
+}
+</code></pre>
+<p>MainMethodRunner的run方法</p>
+<pre><code class="java">public void run() throws Exception {
+   // 加载start-class对应的类，即SpringbootApplication注解的类，应用启动类
+   Class&lt;?&gt; mainClass = Thread.currentThread().getContextClassLoader().loadClass(this.mainClassName);
+   // 获取main方法
+   Method mainMethod = mainClass.getDeclaredMethod(&quot;main&quot;, String[].class);
+   // 使用反射调用此类，
+   mainMethod.invoke(null, new Object[] { this.args });
+}
+</code></pre>
+<p>到这一步，真正执行的应用对应的类。</p>
+<h2 id="LaunchedURLClassLoader"><a href="#LaunchedURLClassLoader" class="headerlink" title="LaunchedURLClassLoader"></a>LaunchedURLClassLoader</h2><p>这个是在Springboot-loader中使用的ClassLoader，这个类重写了LoadClass这个方法，</p>
+<pre><code class="java">protected Class&lt;?&gt; loadClass(String name, boolean resolve) throws ClassNotFoundException {
+   Handler.setUseFastConnectionExceptions(true);
+   try {
+      try {
+         definePackageIfNecessary(name);
+      }
+      catch (IllegalArgumentException ex) {
+         // Tolerate race condition due to being parallel capable
+         if (getPackage(name) == null) {
+            // This should never happen as the IllegalArgumentException indicates
+            // that the package has already been defined and, therefore,
+            // getPackage(name) should not return null.
+            throw new AssertionError(&quot;Package &quot; + name + &quot; has already been defined but it could not be found&quot;);
+         }
+      }
+      // 调用父类加载class
+      return super.loadClass(name, resolve);
+   }
+   finally {
+      Handler.setUseFastConnectionExceptions(false);
+   }
+}
+</code></pre>
+<p>从上面可以看出，LaunchedURLClassLoader加载class，用的是UrlClassLoader中的loadClass，但是这里的definePackageIfNecessary目前我还没有搞懂。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Spring-boot Laoder定义了一套可执行Jar的标准规则，然后使用JarLunch或者WarLunch来启动，这俩个是最常用的，流程基本上类似。Jar包的URL路径使用自定义的规则并且这个规则需要使用org.springframework.boot.loader.jar.Handler处理器处理。</p>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+      
+        <div>
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/posts/54f801f1/">SpringBoot源码分析之spring-boot-loader可执行文件解析</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
+  <p><span>发布时间:</span>2020年09月13日 - 17:22</p>
+  <p><span>最后更新:</span>2020年09月13日 - 17:22</p>
+  <p><span>原始链接:</span>
+     <a href="/posts/54f801f1/" title="SpringBoot源码分析之spring-boot-loader可执行文件解析">SpringBoot源码分析之spring-boot-loader可执行文件解析</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/54f801f1/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+        </div>
+      
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/d1a2b8ab/" rel="next" title="Spring注解@Autoired和@Resource区别对比">
+                <i class="fa fa-chevron-left"></i> Spring注解@Autoired和@Resource区别对比
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/afb2f833/" rel="prev" title="maven冲突解决流程">
+                maven冲突解决流程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="fengxiu">
+            
+              <p class="site-author-name" itemprop="name">fengxiu</p>
+              <p class="site-description motion-element" itemprop="description">java,spring,分布式,数据库</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">194</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">49</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">94</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/fengxiutianya" title="GitHub &rarr; https://github.com/fengxiutianya" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                  
+                    
+                  
+                  <a href="mailto:398757724@qq.com" title="E-Mail &rarr; mailto:398757724@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i></a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SpringBoot源码分析之spring-boot-loader可执行文件解析"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot源码分析之spring-boot-loader可执行文件解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-loader插件提供的可执行文件结构"><span class="nav-number">1.1.</span> <span class="nav-text">SpringBoot loader插件提供的可执行文件结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MANIFEST-MF-文件内容"><span class="nav-number">1.2.</span> <span class="nav-text">MANIFEST.MF 文件内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JarLuncher的执行流程"><span class="nav-number">1.3.</span> <span class="nav-text">JarLuncher的执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot-loader模块类简介"><span class="nav-number">1.3.1.</span> <span class="nav-text">SpringBoot loader模块类简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JarLauncher-main"><span class="nav-number">1.3.2.</span> <span class="nav-text">JarLauncher#main</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Launcher-launch-java-lang-String"><span class="nav-number">1.3.3.</span> <span class="nav-text">Launcher#launch(java.lang.String[])</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JarFile-registerUrlProtocolHandler"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">JarFile.registerUrlProtocolHandler()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#createClassLoader-getClassPathArchives"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">createClassLoader(getClassPathArchives())</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Launcher-launch-args-getMainClass-classLoader"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">Launcher#launch(args, getMainClass(), classLoader)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LaunchedURLClassLoader"><span class="nav-number">1.4.</span> <span class="nav-text">LaunchedURLClassLoader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengxiu</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      
+      网站总字数
+    </span>
+    
+    <span title="站点总字数">1.5m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      
+      总阅读时长
+    </span>
+    
+    <span title="站点阅读时长">23:09</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
+
+  
+  <script src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://fengxiu.disqus.com/count.js" async></script>
+  
+
+  
+    <script>
+      var disqus_config = function () {
+        this.page.url = "http://fengxiu.club/posts/54f801f1/";
+        this.page.identifier = "posts/54f801f1/";
+        this.page.title = 'SpringBoot源码分析之spring-boot-loader可执行文件解析';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://fengxiu.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        $(function () {
+          var offsetTop = $('#comments').offset().top - $(window).height();
+          if (offsetTop <= 0) {
+            // load directly when there's no a scrollbar
+            loadComments();
+          } else {
+            $(window).on('scroll.disqus_scroll', function () {
+              // offsetTop may changes because of manually resizing browser window or lazy loading images.
+              var offsetTop = $('#comments').offset().top - $(window).height();
+              var scrollTop = $(window).scrollTop();
+
+              // pre-load comments a bit? (margin or anything else)
+              if (offsetTop - scrollTop < 60) {
+                $(window).off('.disqus_scroll');
+                loadComments();
+              }
+            });
+          }
+        });
+      
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.7.0"></script>
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "8rM8gj5HTRTSqBQdFyePed86-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "8rM8gj5HTRTSqBQdFyePed86-gzGzoHsz",
+                'X-LC-Key': "f92qb0ijeNp2joqk3ld6IlRW",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+          if (result) $(this).text('复制成功');
+          else $(this).text('复制失败');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+  
+  
+  
+
+  <link rel="stylesheet" href="/lib/prettify/themes/atelier-estuary-light.min.css" type="text/css">
+
+
+<script src="/lib/prettify/prettify.js"></script>
+<script type="text/javascript">
+
+$(window).load(function(){
+
+  // 设置prettify
+  $('pre').addClass('prettyprint linenums');
+   prettyPrint();
+ })
+</script>
+<style>
+pre {
+  white-space:pre;
+  white-space:pre-wrap;
+  word-break:break-all;
+  word-wrap:break-word;
+}
+</style>
+
+
+
+
+  
+  
+</body>
+</html>
