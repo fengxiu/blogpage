@@ -109,7 +109,7 @@
 <meta name="keywords" content="java,spring,分布式,数据库">
 <meta property="og:type" content="website">
 <meta property="og:title" content="枫秀">
-<meta property="og:url" content="http://fengxiu.club/page/2/index.html">
+<meta property="og:url" content="fengxiu.github.io/page/2/index.html">
 <meta property="og:site_name" content="枫秀">
 <meta property="og:description" content="javaspring分布式数据库">
 <meta property="og:locale" content="zh-CN">
@@ -122,7 +122,7 @@
 
 
 
-  <link rel="canonical" href="http://fengxiu.club/page/2/">
+  <link rel="canonical" href="fengxiu.github.io/page/2/">
 
 
 
@@ -395,7 +395,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/afb2f833/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/236c7534/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -415,7 +415,7 @@
           <h2 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/posts/afb2f833/" class="post-title-link" itemprop="url">maven冲突解决流程</a>
+                <a href="/posts/236c7534/" class="post-title-link" itemprop="url">URL详解</a>
               
             
           </h2>
@@ -440,7 +440,7 @@
                 
               
 
-              <time title="创建时间：2020-09-13 17:22:49" itemprop="dateCreated datePublished" datetime="2020-09-13T17:22:49+08:00">2020-09-13</time>
+              <time title="创建时间：2021-09-07 16:42:11" itemprop="dateCreated datePublished" datetime="2021-09-07T16:42:11+08:00">2021-09-07</time>
             
 
             
@@ -465,7 +465,7 @@
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/构建工具/" itemprop="url" rel="index"><span itemprop="name">构建工具</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/基础/" itemprop="url" rel="index"><span itemprop="name">基础</span></a></span>
 
                 
                 
@@ -480,9 +480,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/posts/afb2f833/#comments" itemprop="discussionUrl">
+                <a href="/posts/236c7534/#comments" itemprop="discussionUrl">
                 
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/afb2f833/" itemprop="commentCount"></span>
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/236c7534/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -490,7 +490,7 @@
 
           
           
-             <span id="/posts/afb2f833/" class="leancloud_visitors" data-flag-title="maven冲突解决流程">
+             <span id="/posts/236c7534/" class="leancloud_visitors" data-flag-title="URL详解">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -515,7 +515,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">2.6k</span>
+                <span title="本文字数">8.9k</span>
               
 
               
@@ -529,7 +529,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">2 分钟</span>
+                <span title="阅读时长">8 分钟</span>
               
             </div>
           
@@ -550,16 +550,22 @@
 
       
         
-          <h1 id="maven冲突解决流程"><a href="#maven冲突解决流程" class="headerlink" title="maven冲突解决流程"></a>maven冲突解决流程</h1><!-- 
-    mvn dependency 简介
-    常见命令介绍
-    错误处理
+          <h1 id="URL详解"><a href="#URL详解" class="headerlink" title="URL详解"></a>URL详解</h1><!-- 
+    1. 简单介绍
+    2. 简单使用
+    3. URLConnection简单介绍与使用
+    4. URLStreamHandler 简单介绍
+    5. 
  -->
-<p> 当项目比较大且开发维护的时间比较长时，项目的Maven依赖管理也会变得越来越复杂，手动的去排除冲突或者错误已经变得很困难，同时由于开发人员的不规范行为，更一步加深maven的依赖冲突比较多。我也是最近在接手一个已经做了八年项目时才有很大的感悟，之前也没碰过这么久的项目，在自己对maven依赖冲突解决的过程中形成了以下的一些思考或者说技巧。<br>
+<p> 平时看源码中，发现很多开源库都会使用URL这个类，因此有必要对这个类的使用以及原理做一个总结。</p>
+<p>这里先简单介绍一个概念，URL（Uniform Resource Locator）中文名为统一资源定位符，有时也被俗称为网页地址。表示为互联网上的资源，如网页或者FTP地址。</p>
+<p>URL可以分为如下几个部分</p>
+<pre><code class="url">protocol://host:port/path?query#fragment
+</code></pre>
           <!--noindex-->
           
             <div class="post-button text-center">
-              <a class="btn" href="/posts/afb2f833/#more" rel="contents">
+              <a class="btn" href="/posts/236c7534/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -567,7 +573,7 @@
           <!--/noindex-->
         
       
-    </p></div>
+    </div>
 
     
 
@@ -624,247 +630,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/54f801f1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="fengxiu">
-      <meta itemprop="description" content="java,spring,分布式,数据库">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/posts/54f801f1/" class="post-title-link" itemprop="url">SpringBoot源码分析之spring-boot-loader可执行文件解析</a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-09-13 17:22:49" itemprop="dateCreated datePublished" datetime="2020-09-13T17:22:49+08:00">2020-09-13</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/posts/54f801f1/#comments" itemprop="discussionUrl">
-                
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/54f801f1/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/posts/54f801f1/" class="leancloud_visitors" data-flag-title="SpringBoot源码分析之spring-boot-loader可执行文件解析">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数：</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-symbolscount">
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">本文字数：</span>
-                
-                <span title="本文字数">8.2k</span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">7 分钟</span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="SpringBoot源码分析之spring-boot-loader可执行文件解析"><a href="#SpringBoot源码分析之spring-boot-loader可执行文件解析" class="headerlink" title="SpringBoot源码分析之spring-boot-loader可执行文件解析"></a>SpringBoot源码分析之spring-boot-loader可执行文件解析</h1><!-- 
-   1.  为什么会有这个
-   2.  简单介绍怎么使用springboot maven plugin
-   3.  格式
-   4.  启动原理
- -->
-<p>spring-boot-loader模块使得springboot应用具备打包为可执行jar或war文件的能力。只需要引入Maven插件或者Gradle插件就可以自动生成。</p>
-<p>​Java中并没有标准的方法加载嵌入式的jar文件，通常都是在一个jar文件中。这种情况下，如果你要通过命令行的形式发布一个没有打包的独立程序的话，可能会出现问题。</p>
-<p>​为了解决这种问题，很多人员使用”shaded jars”方式，即将所有的class文件都打包在一个jar包里面，也就是通常所有的”uber jar”。这种方式下，开发人员很难去判断哪个依赖的文件库是被程序真正使用到的。更普遍的问题是，在不同的jar文件中，如果有相同名称的文件则会冲突。spring boot采用了一种不同的方式，让我们可以直接从命令行启动jar。这也就是spring-boot-loader模块提供的功能。</p>
-<p>这里补充一点，如果你对jar文件或者Manifest不是很清楚的话，可以看这篇文章.<br><a href="/posts/2f7bd7dc/">java 打包技术之jar文件</a><br>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/posts/54f801f1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </p></div>
-
-    
-
-    
-    
-    
-
-      
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-      
-    
-      
-      
-           
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/d1a2b8ab/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/d1a2b8ab/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -909,7 +675,7 @@
                 
               
 
-              <time title="创建时间：2020-09-13 17:22:49" itemprop="dateCreated datePublished" datetime="2020-09-13T17:22:49+08:00">2020-09-13</time>
+              <time title="创建时间：2021-09-07 16:42:11" itemprop="dateCreated datePublished" datetime="2021-09-07T16:42:11+08:00">2021-09-07</time>
             
 
             
@@ -1103,7 +869,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/0/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -1148,7 +914,7 @@
                 
               
 
-              <time title="创建时间：2020-09-13 17:22:49" itemprop="dateCreated datePublished" datetime="2020-09-13T17:22:49+08:00">2020-09-13</time>
+              <time title="创建时间：2021-09-07 16:42:11" itemprop="dateCreated datePublished" datetime="2021-09-07T16:42:11+08:00">2021-09-07</time>
             
 
             
@@ -1358,7 +1124,247 @@ https://juejin.im/post/6844903940484513806
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/8095452f/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/54f801f1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengxiu">
+      <meta itemprop="description" content="java,spring,分布式,数据库">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/posts/54f801f1/" class="post-title-link" itemprop="url">SpringBoot源码分析之spring-boot-loader可执行文件解析</a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-09-07 16:42:11" itemprop="dateCreated datePublished" datetime="2021-09-07T16:42:11+08:00">2021-09-07</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/54f801f1/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/54f801f1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/posts/54f801f1/" class="leancloud_visitors" data-flag-title="SpringBoot源码分析之spring-boot-loader可执行文件解析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">8.2k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">7 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="SpringBoot源码分析之spring-boot-loader可执行文件解析"><a href="#SpringBoot源码分析之spring-boot-loader可执行文件解析" class="headerlink" title="SpringBoot源码分析之spring-boot-loader可执行文件解析"></a>SpringBoot源码分析之spring-boot-loader可执行文件解析</h1><!-- 
+   1.  为什么会有这个
+   2.  简单介绍怎么使用springboot maven plugin
+   3.  格式
+   4.  启动原理
+ -->
+<p>spring-boot-loader模块使得springboot应用具备打包为可执行jar或war文件的能力。只需要引入Maven插件或者Gradle插件就可以自动生成。</p>
+<p>​Java中并没有标准的方法加载嵌入式的jar文件，通常都是在一个jar文件中。这种情况下，如果你要通过命令行的形式发布一个没有打包的独立程序的话，可能会出现问题。</p>
+<p>​为了解决这种问题，很多人员使用”shaded jars”方式，即将所有的class文件都打包在一个jar包里面，也就是通常所有的”uber jar”。这种方式下，开发人员很难去判断哪个依赖的文件库是被程序真正使用到的。更普遍的问题是，在不同的jar文件中，如果有相同名称的文件则会冲突。spring boot采用了一种不同的方式，让我们可以直接从命令行启动jar。这也就是spring-boot-loader模块提供的功能。</p>
+<p>这里补充一点，如果你对jar文件或者Manifest不是很清楚的话，可以看这篇文章.<br><a href="/posts/2f7bd7dc/">java 打包技术之jar文件</a><br>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/posts/54f801f1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </p></div>
+
+    
+
+    
+    
+    
+
+      
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+      
+    
+      
+      
+           
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/8095452f/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -1588,7 +1594,7 @@ https://juejin.im/post/6844903940484513806
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/250adeef/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/250adeef/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -1825,7 +1831,7 @@ https://juejin.im/post/6844903940484513806
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/dd2855a/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/dd2855a/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -2458,7 +2464,7 @@ https://juejin.im/post/6844903940484513806
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

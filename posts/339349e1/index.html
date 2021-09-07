@@ -106,30 +106,30 @@
 
 
   <meta name="description" content="Synchronize 底层优化概述Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实">
-<meta name="keywords" content="并发,Synchronize,jvm">
+<meta name="keywords" content="jvm,Synchronize,并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Synchronize 底层优化">
-<meta property="og:url" content="http://fengxiu.club/posts/339349e1/index.html">
+<meta property="og:url" content="fengxiu.github.io/posts/339349e1/index.html">
 <meta property="og:site_name" content="枫秀">
 <meta property="og:description" content="Synchronize 底层优化概述Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-148.png">
+<meta property="og:image" content="/images/pasted-148.png">
 <meta property="og:image" content="http://cmsblogs.qiniudn.com/wp-content/uploads/2017/02/44444_thumb-1.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-149.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-150.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-151.png">
-<meta property="og:updated_time" content="2020-09-13T09:22:49.095Z">
+<meta property="og:image" content="/images/pasted-149.png">
+<meta property="og:image" content="/images/pasted-150.png">
+<meta property="og:image" content="/images/pasted-151.png">
+<meta property="og:updated_time" content="2021-09-07T08:42:11.761Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Synchronize 底层优化">
 <meta name="twitter:description" content="Synchronize 底层优化概述Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实">
-<meta name="twitter:image" content="http://fengxiu.club/images/pasted-148.png">
+<meta name="twitter:image" content="/images/pasted-148.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://fengxiu.club/posts/339349e1/">
+  <link rel="canonical" href="fengxiu.github.io/posts/339349e1/">
 
 
 
@@ -401,7 +401,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/339349e1/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/339349e1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -735,10 +735,10 @@ public class SynchronizedTest02 {
   <p><span>本文标题:</span><a href="/posts/339349e1/">Synchronize 底层优化</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2019年02月28日 - 09:55</p>
-  <p><span>最后更新:</span>2020年09月13日 - 17:22</p>
+  <p><span>最后更新:</span>2021年09月07日 - 16:42</p>
   <p><span>原始链接:</span>
      <a href="/posts/339349e1/" title="Synchronize 底层优化">Synchronize 底层优化</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/339349e1/" aria-label="复制成功！"></i></span>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.github.io/posts/339349e1/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -772,11 +772,11 @@ public class SynchronizedTest02 {
       
         <div class="post-tags">
           
-            <a href="/tags/并发/" rel="tag">  <i class="fa fa-tag"></i> 并发</a>
+            <a href="/tags/jvm/" rel="tag">  <i class="fa fa-tag"></i> jvm</a>
           
             <a href="/tags/Synchronize/" rel="tag">  <i class="fa fa-tag"></i> Synchronize</a>
           
-            <a href="/tags/jvm/" rel="tag">  <i class="fa fa-tag"></i> jvm</a>
+            <a href="/tags/并发/" rel="tag">  <i class="fa fa-tag"></i> 并发</a>
           
         </div>
       
@@ -1278,7 +1278,7 @@ public class SynchronizedTest02 {
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1441,7 +1441,7 @@ public class SynchronizedTest02 {
   
     <script>
       var disqus_config = function () {
-        this.page.url = "http://fengxiu.club/posts/339349e1/";
+        this.page.url = "fengxiu.github.io/posts/339349e1/";
         this.page.identifier = "posts/339349e1/";
         this.page.title = 'Synchronize 底层优化';
         };

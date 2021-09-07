@@ -109,29 +109,29 @@
 <meta name="keywords" content="MetaSpace,元空间,java 8">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java 8元空间">
-<meta property="og:url" content="http://fengxiu.club/posts/bda9e2c7/index.html">
+<meta property="og:url" content="fengxiu.github.io/posts/bda9e2c7/index.html">
 <meta property="og:site_name" content="枫秀">
 <meta property="og:description" content="本文主要讲解Java8中JVM的一个更新，就是持久代的移除。将会介绍为什么需要移除持久代以及它的替代者：元空间(Metaspace)。 持久代绝大部分Java程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是J">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://fengxiu.club/images/820406-20160327005846979-1124627174.png">
-<meta property="og:image" content="http://fengxiu.club/images/java_memory_permGen.png">
-<meta property="og:image" content="http://fengxiu.club/images/jvm_metapsace.png">
-<meta property="og:image" content="http://fengxiu.club/images/metaspace_allocation_java_latte.png">
-<meta property="og:image" content="http://fengxiu.club/images/java_object_layout_java_latte.png">
-<meta property="og:image" content="http://fengxiu.club/images/compressed_class_pointer_space_java_latte.png">
-<meta property="og:image" content="http://fengxiu.club/images/java_object_layout_compressed_java_latte.png">
-<meta property="og:updated_time" content="2020-09-13T09:22:49.099Z">
+<meta property="og:image" content="/images/820406-20160327005846979-1124627174.png">
+<meta property="og:image" content="/images/java_memory_permGen.png">
+<meta property="og:image" content="/images/jvm_metapsace.png">
+<meta property="og:image" content="/images/metaspace_allocation_java_latte.png">
+<meta property="og:image" content="/images/java_object_layout_java_latte.png">
+<meta property="og:image" content="/images/compressed_class_pointer_space_java_latte.png">
+<meta property="og:image" content="/images/java_object_layout_compressed_java_latte.png">
+<meta property="og:updated_time" content="2021-09-07T08:42:11.765Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 8元空间">
 <meta name="twitter:description" content="本文主要讲解Java8中JVM的一个更新，就是持久代的移除。将会介绍为什么需要移除持久代以及它的替代者：元空间(Metaspace)。 持久代绝大部分Java程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是J">
-<meta name="twitter:image" content="http://fengxiu.club/images/820406-20160327005846979-1124627174.png">
+<meta name="twitter:image" content="/images/820406-20160327005846979-1124627174.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://fengxiu.club/posts/bda9e2c7/">
+  <link rel="canonical" href="fengxiu.github.io/posts/bda9e2c7/">
 
 
 
@@ -403,7 +403,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/posts/bda9e2c7/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/posts/bda9e2c7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
@@ -751,10 +751,10 @@ public class PermGenOomMock{
   <p><span>本文标题:</span><a href="/posts/bda9e2c7/">Java 8元空间</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2019年04月22日 - 16:50</p>
-  <p><span>最后更新:</span>2020年09月13日 - 17:22</p>
+  <p><span>最后更新:</span>2021年09月07日 - 16:42</p>
   <p><span>原始链接:</span>
      <a href="/posts/bda9e2c7/" title="Java 8元空间">Java 8元空间</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://fengxiu.club/posts/bda9e2c7/" aria-label="复制成功！"></i></span>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.github.io/posts/bda9e2c7/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -1294,7 +1294,7 @@ public class PermGenOomMock{
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1457,7 +1457,7 @@ public class PermGenOomMock{
   
     <script>
       var disqus_config = function () {
-        this.page.url = "http://fengxiu.club/posts/bda9e2c7/";
+        this.page.url = "fengxiu.github.io/posts/bda9e2c7/";
         this.page.identifier = "posts/bda9e2c7/";
         this.page.title = 'Java 8元空间';
         };
