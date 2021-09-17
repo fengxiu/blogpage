@@ -1,2 +1,1 @@
-# blogpage
-blog页面显示
+私人搭建博客

@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+      
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: 'EANI2G9IBU',
+      apiKey: 'a8cc8f9e5688c20770172ad27daeead0',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"请输入搜索内容","hits_empty":"没有发现和 ${query} 有关的内容","hits_stats":"在 ${time} ms 内发现 ${hits} "}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="#! https://zhuanlan.zhihu.com/p/213809308 Spring类型转换整理  平常在使用Spring过程中，经常会用到类型转换，但一直没时间对这一块进行系统的整理。因此接下来会用几篇文章对这一块进行系统的整理。 大概的想法是下面俩篇：  Spring类型转换整理 BeanWrapper使用以及原理 DataBinder使用以及原理  这篇文章用于记录自己在学习Sp">
+<meta name="keywords" content="java,spring,分布式,数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="枫秀">
+<meta property="og:url" content="fengxiu.tech/posts/0/index.html">
+<meta property="og:site_name" content="枫秀">
+<meta property="og:description" content="#! https://zhuanlan.zhihu.com/p/213809308 Spring类型转换整理  平常在使用Spring过程中，经常会用到类型转换，但一直没时间对这一块进行系统的整理。因此接下来会用几篇文章对这一块进行系统的整理。 大概的想法是下面俩篇：  Spring类型转换整理 BeanWrapper使用以及原理 DataBinder使用以及原理  这篇文章用于记录自己在学习Sp">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104250.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104722.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104806.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903113527.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200825111842.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200825180414.png">
+<meta property="og:updated_time" content="2021-09-17T11:23:58.691Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="枫秀">
+<meta name="twitter:description" content="#! https://zhuanlan.zhihu.com/p/213809308 Spring类型转换整理  平常在使用Spring过程中，经常会用到类型转换，但一直没时间对这一块进行系统的整理。因此接下来会用几篇文章对这一块进行系统的整理。 大概的想法是下面俩篇：  Spring类型转换整理 BeanWrapper使用以及原理 DataBinder使用以及原理  这篇文章用于记录自己在学习Sp">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104250.png">
+
+
+
+
+
+
+  <link rel="canonical" href="fengxiu.tech/posts/0/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | 枫秀</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">枫秀</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-时间轴">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+  <a href="https://github.com/fengxiu" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="fengxiu.tech/posts/0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengxiu">
+      <meta itemprop="description" content="java,spring,分布式,数据库">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-09-17 19:23:58" itemprop="dateCreated datePublished" datetime="2021-09-17T19:23:58+08:00">2021-09-17</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/spring/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/0/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/posts/0/" class="leancloud_visitors" data-flag-title>
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">20k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">18 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>#! <a href="https://zhuanlan.zhihu.com/p/213809308" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/213809308</a></p>
+<h1 id="Spring类型转换整理"><a href="#Spring类型转换整理" class="headerlink" title="Spring类型转换整理"></a>Spring类型转换整理</h1><!-- 
+
+https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#core-convert-ConversionService-API
+
+https://blog.csdn.net/f641385712/article/details/90702928
+
+https://juejin.im/post/6844903940484513806
+
+1. BeanWrapperImpl 大致原理 https://juejin.im/post/6844904047070167054#heading-4
+2. convert 包的基本使用
+3. fromat的基本使用
+ -->
+<p> 平常在使用Spring过程中，经常会用到类型转换，但一直没时间对这一块进行系统的整理。因此接下来会用几篇文章对这一块进行系统的整理。</p>
+<p>大概的想法是下面俩篇：</p>
+<ol>
+<li>Spring类型转换整理</li>
+<li>BeanWrapper使用以及原理</li>
+<li>DataBinder使用以及原理</li>
+</ol>
+<p>这篇文章用于记录自己在学习Spring类型转换相关的内容，主要有以下三块。</p>
+<ol>
+<li>PropertyEditor：用于String到Object的类型转换</li>
+<li>Conver      ：用于Object到Object之间的转换</li>
+<li>Format      ：主要用于格式化，将对象转换成指定格式的字符串，比如Date和string之间的转换<a id="more"></a>
+<h2 id="PropertyEditor"><a href="#PropertyEditor" class="headerlink" title="PropertyEditor"></a>PropertyEditor</h2></li>
+</ol>
+<p>这个是Spring最早支持的不同类型对象之间的转换，兼容JavaBean规范。这里的不同类型指的是String到不同Object之间的转换。</p>
+<h3 id="PropertyEditor-SPI"><a href="#PropertyEditor-SPI" class="headerlink" title="PropertyEditor SPI"></a>PropertyEditor SPI</h3><p>通过java.beans.PropertyEditor包名可以看出，其本身并非Spring中定义的接口，它其实是Java Bean规范中所定义的一个接口，其设计初衷在于是用于完成GUI中的输入与对象属性之间的转换操作；Spring只是借用了PropertyEditor这个接口的定义与功能，来完成字符串与对象属性之间的转换。在Spring 3.0之前，在Spring整个体系中，所有完成字符串与其他数据类型转换操作都是由ProperyEditor接口来完成的。</p>
+<p>Spring通过PropertyEditor作为其数据类型转换的基础架构，同时自己还定义了许多默认的ProrpertyEditor的实现,这些实现类都位于spring-beans这个模块中的propertyeditors包中。</p>
+<p>这些内置的PropertyEditor会有部分在默认情况下就已经被加了到IOC容器中，而有些PropertyEditor在默认情况下并没有自动加入，需要用户手动进行配置，后面我们通过源码可以看到Spring默认所注册了哪些PropertyEditor。</p>
+<h3 id="PropertyEditorSupport"><a href="#PropertyEditorSupport" class="headerlink" title="PropertyEditorSupport"></a>PropertyEditorSupport</h3><p>由于PropertyEditor是一个类型转换的接口，其里面定义了很多与我们实际使用上无关的方法。如果我们想要使用PropertyEditor的话，我们通常只需要继承java.beans.PropertyEditorSupport这个类，并且重写其setAsText(String source)方法即可，通过它将输入的字符串转换成我们期望的数据类型。</p>
+<p>Spring所提供的内置的PropertyEditor也都是继承PropertyEditorSupport来完成类型转换的。</p>
+<p>下面展示下基本使用,这个例子展示了如何将String转换成Point类型</p>
+<p>定义的辅助类如下</p>
+<pre><code class="java">import lombok.Data;
+@Data
+@Component
+public class Circle {
+    @Value(&quot;1;2&quot;)
+    private Point point;
+}
+
+@Data
+public class Point {
+    int x, y;
+
+}
+</code></pre>
+<p>上面给出两个非常简单的类，我们希望完成的是将输入字符串”1;2“,自动进行分割，然后转换成point的x和y属性。</p>
+<p>下面我们自己定义PropertyEditor来完成数据的转换:</p>
+<pre><code class="java">/**
+ * 自定义PropertyEditor,完成String到Point的转换
+ */
+public class PointEditor extends PropertyEditorSupport {
+    @Override
+    public void setAsText(String text) throws IllegalArgumentException {
+        String[] splits = text.split(&quot;;&quot;);
+        Point point = new Point();
+        point.setX(Integer.parseInt(splits[0]));
+        point.setY(Integer.parseInt(splits[1]));
+        /*
+         *需要将装换后的结果设置到Editor的value属性中，因为外部会通过getValue获取到转换的结果。
+         */
+        setValue(point);
+    }
+}
+</code></pre>
+<p>在完成ProperyEditor编写完成后，我们只需将其注册到IOC容器中就可以自动完成String到Point之间的转换，这里使用编程的方式来注册</p>
+<pre><code class="java">@Configuration
+@ComponentScan(basePackages = {&quot;club.fengxiu.vailidation.editor&quot;})
+public class AppConfig {
+
+//    通过CustomEditorConfigurer这个BeanFactoryProcessor
+//    来完成自定义的ProperyEditor到IOC容器的添加功能
+    @Bean
+    public CustomEditorConfigurer customEditorConfigurer() {
+        CustomEditorConfigurer customEditorConfigurer = new CustomEditorConfigurer();
+        PropertyEditorRegistrar propertyEditorRegistrar = new PropertyEditorRegistrar() {
+            @Override
+            public void registerCustomEditors(PropertyEditorRegistry registry) {
+                registry.registerCustomEditor(String.class, new PointEditor());
+            }
+        };
+        customEditorConfigurer.setPropertyEditorRegistrars(new PropertyEditorRegistrar[]{propertyEditorRegistrar});
+        return customEditorConfigurer;
+    }
+}
+</code></pre>
+<p>当上面的注册完成后，就可以使用这个PropertyEditor，使用demo</p>
+<pre><code class="java">@Test
+public void testAppConfig() {
+    ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    Circle circle = context.getBean(Circle.class);
+    System.out.println(circle);
+}
+</code></pre>
+<p>上面的是用来自定义String到Object的类型转换，但是这么多的PropertyEditor是由谁来管理呢，下面将介绍Spring是如何来管理这么多自定义的PropertyEditor</p>
+<h3 id="PropertyEditorRegistry"><a href="#PropertyEditorRegistry" class="headerlink" title="PropertyEditorRegistry"></a>PropertyEditorRegistry</h3><p>org.springframework.beans.PropertyEditorRegistry接口提供了对PropertyEditor注册以及查找功能，因此其主要提供是提供了对PropertyEditor的管理功能，首先来看看这个接口的描述:</p>
+<pre><code class="java">package org.springframework.beans;
+
+import java.beans.PropertyEditor;
+
+public interface PropertyEditorRegistry {
+
+    void registerCustomEditor(Class&lt;?&gt; requiredType, PropertyEditor propertyEditor);
+
+    void registerCustomEditor(Class&lt;?&gt; requiredType, String propertyPath, PropertyEditor propertyEditor);
+
+    PropertyEditor findCustomEditor(Class&lt;?&gt; requiredType, String propertyPath);
+
+}
+</code></pre>
+<p>从上面可以接口的定义，PropertyEditorRegistry这个接口的作用，下面我们来看看其具体的几个实现类。</p>
+<h3 id="PropertyEditorRegistrySupport"><a href="#PropertyEditorRegistrySupport" class="headerlink" title="PropertyEditorRegistrySupport"></a>PropertyEditorRegistrySupport</h3><p>由于PropertyEditorRegistry只是定义对PropertyEditor注册和查找的方法，其具体的核心实现类是org.springframework.beans.PropertyEditorRegistrySupport，真正对PropertyEditor管理的操作全部在该类中实现，下面来看看PropertyEditorRegistrySupport的源码，由于PropertyEditorRegistrySupport源码篇幅比较多，这里就采用截图来说明其实现：</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903104250.png" alt="20200903104250"></p>
+<p>通过上面的标注我们看到PropertyEditorSupport底层对于不同种类的PropertyEditor使用不同的Map来进行存储，下面我们看下它是如何进行注册的。</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903104722.png" alt="20200903104722"></p>
+<p>其注册的实现机制也并没有出人意料的地方，就是判断存储Classs与PropertyEditor之间映射关系的Map是否已经存在，如果不存在则先创建一个LinkedHashMap，如果有就直接进行存储映射关系。<br>前面我们提到过在IOC容器中默认就会内置一些PropertyEditor,通过createDefaultEditors()我们可以清楚地看到其默认所添加的PropertyEditor。</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903104806.png" alt="20200903104806"></p>
+<h3 id="PropertyEditorRegistrar"><a href="#PropertyEditorRegistrar" class="headerlink" title="PropertyEditorRegistrar"></a>PropertyEditorRegistrar</h3><p>PropertyEditorRegistrar接口的定义如下：</p>
+<pre><code class="java">public interface PropertyEditorRegistrar {
+
+    void registerCustomEditors(PropertyEditorRegistry registry);
+}
+</code></pre>
+<p>从接口的描述上我们可以看到，PropertyEditorRegistrar的作用是将用户自定义的PropertyEditor注册到PropertyEditorRegistry中。通过其registerCustomEditors方法中的参数我们可以看到，其所接受的正是一个PropertyEditorRegistry，通过方法的参数将用户自定义的ProepertyEditor加入到PropertyEditorRegistry被其进行管理。<br>PropertyEditorRegistrar对于如果我们希望将一组相同的PropertyEditor应用在多个地方时是非常有用的 ( 比如希望将相同的一组PropertyEditor既应用在IOC容器中，同时又应用在Spring MVC的DataBinder中)，此时就可以先定义一个PropertyEditorRegistrar的实现类，来完成通用的ProepertyEditor注册操作，然后将PropertyEditorRegistrar作为一个ProeprtyEditor的集合设置到不同的地方，此时就可以做到代码复用。</p>
+<p>相同的PropertyEditor需要在多处进行注册的原因是因为我们在IOC容器中通过CustomEditorConfigurer添加了自定义的PropertyEditor后，其并不会对SpringMVC中所使用的DataBinder而生效，因此需要再次进行注册，我们通过分析CustomEditorConfigurer可以在其注释说明中清楚地看到这点说明。</p>
+<p>上面那个注册自定义的PointEditor，就是用自定义的PropertyEditorRegistrar来注册的。这里就不在做具体的补充。</p>
+<h3 id="PropertyEditor的缺点分析"><a href="#PropertyEditor的缺点分析" class="headerlink" title="PropertyEditor的缺点分析"></a>PropertyEditor的缺点分析</h3><p>1.只能完成字符串到Java类型的转换，并不能完成任意类型之间的转换。<br>2.由于PropertyEditor是非线程安全，因此对于每一次的类型转换，都需要创建一个新的PropertyEdtitor，如果希望达到共享，那么底层会使用synchronized来对其进行并发地控制。</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903113527.png" alt="20200903113527"></p>
+<h2 id="convert"><a href="#convert" class="headerlink" title="convert"></a>convert</h2><p>core.convert是在Spring3之后，引进的一个新的通用类型转换系统，主要用来替代前面说到的PropertyEditor。PropertyEditor主要用在String到Object类型的准换，但是在实际开发中还有需要Object到Obejct的类型转换。下面主要介绍Convert的基本使用。</p>
+<h3 id="Converter-SPI"><a href="#Converter-SPI" class="headerlink" title="Converter SPI"></a>Converter SPI</h3><p>这个接口的定义比较简单，在Spring中如果需要自定义类型转换，推介使用这个。</p>
+<p>接口定义如下</p>
+<pre><code class="java">package org.springframework.core.convert.converter;
+
+public interface Converter&lt;S, T&gt; {
+
+    T convert(S source);
+}
+</code></pre>
+<p>下面是一个简单的String转换成Integer的例子</p>
+<pre><code class="java">package org.springframework.core.convert.support;
+
+final class StringToInteger implements Converter&lt;String, Integer&gt; {
+
+    public Integer convert(String source) {
+        return Integer.valueOf(source);
+    }
+}
+</code></pre>
+<p>从上面可以看出，如果使用这个自定一类型转换实现起来比较简单。在Spring中已经提供了一些基本类型之间的转换，主要在org.springframework.core.convert.support包下。</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200825111842.png" alt="convert"></p>
+<h3 id="ConverterFactory"><a href="#ConverterFactory" class="headerlink" title="ConverterFactory"></a>ConverterFactory</h3><p>这个相对于上面来说比较复杂，主要用来转换一个类型到另一个继承体系类型。举个例子，如果需要String转成Enum以及他的子类，这时可以使用ConverFactory这个接口来定义类型转换。</p>
+<p>接口定义如下</p>
+<pre><code class="java">package org.springframework.core.convert.converter;
+
+public interface ConverterFactory&lt;S, R&gt; {
+
+    &lt;T extends R&gt; Converter&lt;S, T&gt; getConverter(Class&lt;T&gt; targetType);
+}
+</code></pre>
+<p>String转换成Enum的例子如下</p>
+<pre><code class="java">
+public class StringToEnumConverterFactory implements ConverterFactory&lt;String, Enum&gt; {
+
+    public &lt;T extends Enum&gt; Converter&lt;String, T&gt; getConverter(Class&lt;T&gt; targetType) {
+        return new StringToEnumConverter(targetType);
+    }
+
+    private final class StringToEnumConverter&lt;T extends Enum&gt; implements Converter&lt;String, T&gt; {
+
+        private Class&lt;T&gt; enumType;
+
+        public StringToEnumConverter(Class&lt;T&gt; enumType) {
+            this.enumType = enumType;
+        }
+
+        public T convert(String source) {
+            return (T) Enum.valueOf(this.enumType, source.trim());
+        }
+    }
+}
+</code></pre>
+<h3 id="GenericConverter"><a href="#GenericConverter" class="headerlink" title="GenericConverter"></a>GenericConverter</h3><p>这个比之前的类型转换接口更加强大，可以在多种类型到多种类型之间转换。通常情况下会做一个标记，比如注解，或者在属性值上设置一个标记，用来判断转换成哪种类型。</p>
+<p>接口定义如下</p>
+<pre><code class="java">package org.springframework.core.convert.converter;
+public interface GenericConverter {
+
+    public Set&lt;ConvertiblePair&gt; getConvertibleTypes();
+
+    Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+}
+</code></pre>
+<p>其中getConvertibleTypes用来表示当前类支持的source到target的转换类型组，convert(Object, TypeDescriptor, TypeDescriptor)，用来执行转换逻辑，其中TypeDescriptor用来帮助访问target和source对象的属性，并设置属性值。</p>
+<p>下面是一个实现GenericConverter的例子，数组转成列表，ArrayToCollectionConverter</p>
+<pre><code class="java">public class ArrayToCollectionConverter implements GenericConverter {
+
+
+    @Override
+    public Set&lt;ConvertiblePair&gt; getConvertibleTypes() {
+        // 表示当前转换器支持数组到列表的转换
+        return Collections.singleton(new ConvertiblePair(Object[].class, Collection.class));
+    }
+
+
+    @Override
+    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+        if (source == null) {
+            return null;
+        }
+
+        int length = Array.getLength(source);
+        TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
+        // 创建一个Collection对象
+        Collection&lt;Object&gt; target = CollectionFactory.createCollection(targetType.getType(),
+                (elementDesc != null ? elementDesc.getType() : null), length);
+
+        if (elementDesc == null) {
+            for (int i = 0; i &lt; length; i++) {
+                Object sourceElement = Array.get(source, i);
+                target.add(sourceElement);
+            }
+        }
+        return target;
+    }
+}
+
+</code></pre>
+<h3 id="ConditionalGenericConverter"><a href="#ConditionalGenericConverter" class="headerlink" title="ConditionalGenericConverter"></a>ConditionalGenericConverter</h3><p>这个接口用来提供当满足某些条件时，才能够使用Convert。比如，当指定的注解出现，才能执行converter逻辑。此时就需要增加转换前的验证逻辑，即ConditionalConverter接口表示的意义。为了方便使用ConditionalGenericConverter，实现了GenericConverter 和ConditionalConverter俩个接口。</p>
+<pre><code class="java">public interface ConditionalConverter {
+
+    boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType);
+}
+
+public interface ConditionalGenericConverter extends GenericConverter, ConditionalConverter {
+}
+</code></pre>
+<p>这里看一个Spring中的实现例子，用来在一个实体的唯一标识符和实体引用之间转换，代码如下,下面的整体思路是，首先判断是否有对应的finder方法以及是否有对应的Conver，如果都有则执行转换。</p>
+<pre><code class="java">final class IdToEntityConverter implements ConditionalGenericConverter {
+
+    private final ConversionService conversionService;
+
+
+    public IdToEntityConverter(ConversionService conversionService) {
+        this.conversionService = conversionService;
+    }
+
+
+    @Override
+    public Set&lt;ConvertiblePair&gt; getConvertibleTypes() {
+        return Collections.singleton(new ConvertiblePair(Object.class, Object.class));
+    }
+
+    @Override
+    public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+        Method finder = getFinder(targetType.getType());
+        return (finder != null &amp;&amp;
+                this.conversionService.canConvert(sourceType, TypeDescriptor.valueOf(finder.getParameterTypes()[0])));
+    }
+
+    @Override
+    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+        if (source == null) {
+            return null;
+        }
+        Method finder = getFinder(targetType.getType());
+        Object id = this.conversionService.convert(
+                source, sourceType, TypeDescriptor.valueOf(finder.getParameterTypes()[0]));
+        return ReflectionUtils.invokeMethod(finder, source, id);
+    }
+
+
+    private Method getFinder(Class&lt;?&gt; entityClass) {
+        String finderMethod = &quot;find&quot; + getEntityName(entityClass);
+        Method[] methods;
+        boolean localOnlyFiltered;
+        try {
+            methods = entityClass.getDeclaredMethods();
+            localOnlyFiltered = true;
+        }
+        catch (SecurityException ex) {
+            // Not allowed to access non-public methods...
+            // Fallback: check locally declared public methods only.
+            methods = entityClass.getMethods();
+            localOnlyFiltered = false;
+        }
+        for (Method method : methods) {
+            if (Modifier.isStatic(method.getModifiers()) &amp;&amp; method.getName().equals(finderMethod) &amp;&amp;
+                    method.getParameterTypes().length == 1 &amp;&amp; method.getReturnType().equals(entityClass) &amp;&amp;
+                    (localOnlyFiltered || method.getDeclaringClass().equals(entityClass))) {
+                return method;
+            }
+        }
+        return null;
+    }
+
+    private String getEntityName(Class&lt;?&gt; entityClass) {
+        String shortName = ClassUtils.getShortName(entityClass);
+        int lastDot = shortName.lastIndexOf(&#39;.&#39;);
+        if (lastDot != -1) {
+            return shortName.substring(lastDot + 1);
+        }
+        else {
+            return shortName;
+        }
+    }
+
+}
+</code></pre>
+<h3 id="ConversionService"><a href="#ConversionService" class="headerlink" title="ConversionService"></a>ConversionService</h3><p>ConversionService定义了一个统一的API，用于在运行时执行类型转换逻辑。转换器通常运行在以下外观接口。</p>
+<pre><code class="java">package org.springframework.core.convert;
+
+public interface ConversionService {
+
+    boolean canConvert(Class&lt;?&gt; sourceType, Class&lt;?&gt; targetType);
+
+    &lt;T&gt; T convert(Object source, Class&lt;T&gt; targetType);
+
+    boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType);
+
+    Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+
+}
+</code></pre>
+<p>通常，ConversionService也会实现ConverterRegistry，用来提供注册自定义converters，然后ConversionServic在执行转换的时候，会委托对应的converters来执行转换。</p>
+<h3 id="配置ConversionService"><a href="#配置ConversionService" class="headerlink" title="配置ConversionService"></a>配置ConversionService</h3><p>ConversionService是无状态的，可以在多线程中使用，通常在应用启动的时候，会配置一个ConversionService。当应用中没有ConversionService，则会使用默认的PropertyEditor。</p>
+<p>通过编程的方式可以按照下面这种方式来配置ConversionService，代码如下</p>
+<pre><code class="java">@Configuration
+public class AppConfig {
+    @Bean
+    public ConversionServiceFactoryBean  ConversionService(){
+        return new ConversionServiceFactoryBean();
+    }
+}
+</code></pre>
+<p>如果需要注入一些自定义的Convert，则可以使用setConverters方法来注入。</p>
+<p>在代码中使用ConversionService，可以通过自动注入的方式。代码如下</p>
+<pre><code class="java">@Service
+public class MyService {
+
+  @Autowired
+    ConversionService conversionService
+
+
+    public void doIt() {
+        this.conversionService.convert(...)
+    }
+}
+</code></pre>
+<p>在系统中，默认创建DefaultConversionService，这里面包含了需要spring自定义的Convert，方便使用。如果需要添加一些自定义的Convert来代替默认的，则可以通过addDefaultConverters方法来添加。</p>
+<p>下面展示一个复杂的Collection之间的转换，List&lt; Integer&gt; 转成List&lt; String&gt;</p>
+<pre><code class="java">DefaultConversionService cs = new DefaultConversionService();
+
+List&lt;Integer&gt; input = ...
+cs.convert(input,
+    TypeDescriptor.forObject(input), // List&lt;Integer&gt; type descriptor
+    TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class)));
+</code></pre>
+<h2 id="Feild-Formatting"><a href="#Feild-Formatting" class="headerlink" title="Feild Formatting"></a>Feild Formatting</h2><p>前面介绍的Convert，是用于通用类型的转换，在一些应用中，可能需要对返回给客户端的值进行格式化。这时就需要Formatter，这个是一种特殊的类型转换，主要是用来进行格式化使用。</p>
+<p>比如java.util.Date 格式化成  Long，在SpringMVC中就是通过Formatter来做的。</p>
+<h3 id="Formatter"><a href="#Formatter" class="headerlink" title="Formatter"></a>Formatter</h3><p>接口定义如下</p>
+<pre><code class="java">package org.springframework.format;
+
+public interface Formatter&lt;T&gt; extends Printer&lt;T&gt;, Parser&lt;T&gt; {
+}
+</code></pre>
+<p>Formatter继承了Printer和Parser接口，它们分别用来将String转换成Object和Object转换成String。</p>
+<p>Printer用于Object格式化为String</p>
+<pre><code class="java">public interface Printer&lt;T&gt; {
+
+    String print(T fieldValue, Locale locale);
+}
+</code></pre>
+<p>Parser 用于将String转换为Object</p>
+<pre><code class="java">public interface Parser&lt;T&gt; {
+
+    T parse(String clientValue, Locale locale) throws ParseException;
+}
+</code></pre>
+<p>org.springframework.format下面提供了很多默认的Fromat，具体的类如下</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200825180414.png" alt="20200825180414"></p>
+<p>下面是一个时间格式化的例子:</p>
+<pre><code class="java">public final class DateFormatter implements Formatter&lt;Date&gt; {
+
+    private String pattern;
+
+    public DateFormatter(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public String print(Date date, Locale locale) {
+        if (date == null) {
+            return &quot;&quot;;
+        }
+        return getDateFormat(locale).format(date);
+    }
+
+    public Date parse(String formatted, Locale locale) throws ParseException {
+        if (formatted.length() == 0) {
+            return null;
+        }
+        return getDateFormat(locale).parse(formatted);
+    }
+
+    protected DateFormat getDateFormat(Locale locale) {
+        DateFormat dateFormat = new SimpleDateFormat(this.pattern, locale);
+        dateFormat.setLenient(false);
+        return dateFormat;
+    }
+}
+
+</code></pre>
+<h3 id="注解方式的Format"><a href="#注解方式的Format" class="headerlink" title="注解方式的Format"></a>注解方式的Format</h3><p>属性的格式化，可以通过配置属性类型或者注解，如果需要使用注解来标记Formatter，需要实现AnnotationFormatterFactory接口，定义如下</p>
+<pre><code class="java">public interface AnnotationFormatterFactory&lt;A extends Annotation&gt; {
+
+    Set&lt;Class&lt;?&gt;&gt; getFieldTypes();
+
+    Printer&lt;?&gt; getPrinter(A annotation, Class&lt;?&gt; fieldType);
+
+    Parser&lt;?&gt; getParser(A annotation, Class&lt;?&gt; fieldType);
+}
+</code></pre>
+<p>其中泛型A是指这个Fromatter处理逻辑对应的注解，方法getFieldTypes用于返回这个注解可以在哪些类型上使用。getPrinter和getParser用来返回格式化和范格式化的对象。</p>
+<p>下面是NumberFormatAnnotationFormatterFactory的例子</p>
+<p>NumberFormat注解定义</p>
+<pre><code class="java">@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+public @interface NumberFormat {
+
+    Style style() default Style.DEFAULT;
+
+
+    String pattern() default &quot;&quot;;
+
+    /**
+     * Common number format styles.
+     */
+    enum Style {
+
+        DEFAULT,
+
+        NUMBER,
+
+        PERCENT,
+
+        CURRENCY
+    }
+
+}
+</code></pre>
+<p>注解对应的处理器如下</p>
+<pre><code class="java">public final class NumberFormatAnnotationFormatterFactory
+        implements AnnotationFormatterFactory&lt;NumberFormat&gt; {
+
+    public Set&lt;Class&lt;?&gt;&gt; getFieldTypes() {
+        return new HashSet&lt;Class&lt;?&gt;&gt;(asList(new Class&lt;?&gt;[] {
+            Short.class, Integer.class, Long.class, Float.class,
+            Double.class, BigDecimal.class, BigInteger.class }));
+    }
+
+    public Printer&lt;Number&gt; getPrinter(NumberFormat annotation, Class&lt;?&gt; fieldType) {
+        return configureFormatterFrom(annotation, fieldType);
+    }
+
+    public Parser&lt;Number&gt; getParser(NumberFormat annotation, Class&lt;?&gt; fieldType) {
+        return configureFormatterFrom(annotation, fieldType);
+    }
+
+    private Formatter&lt;Number&gt; configureFormatterFrom(NumberFormat annotation, Class&lt;?&gt; fieldType) {
+        if (!annotation.pattern().isEmpty()) {
+            return new NumberStyleFormatter(annotation.pattern());
+        } else {
+            Style style = annotation.style();
+            if (style == Style.PERCENT) {
+                return new PercentStyleFormatter();
+            } else if (style == Style.CURRENCY) {
+                return new CurrencyStyleFormatter();
+            } else {
+                return new NumberStyleFormatter();
+            }
+        }
+    }
+}
+</code></pre>
+<p>使用方式</p>
+<pre><code class="java">public class MyModel {
+
+    @NumberFormat(style=Style.CURRENCY)
+    private BigDecimal decimal;
+}
+</code></pre>
+<h3 id="FormatterRegistry"><a href="#FormatterRegistry" class="headerlink" title="FormatterRegistry"></a>FormatterRegistry</h3><p>FormatterRegistry是用来注册formatters和converters。这个用来中心化管控所有使用的formatting。FormattingConversionService是一个实现了FormatterRegistry在大多数场景下使用。可以通过FormattingConversionServiceFactoryBean来注册FormattingConversionService，从而注册了FormatterRegistry。</p>
+<p>FormatterRegistry 接口定义如下</p>
+<pre><code class="java">public interface FormatterRegistry extends ConverterRegistry {
+
+    void addFormatterForFieldType(Class&lt;?&gt; fieldType, Printer&lt;?&gt; printer, Parser&lt;?&gt; parser);
+
+    void addFormatterForFieldType(Class&lt;?&gt; fieldType, Formatter&lt;?&gt; formatter);
+
+    void addFormatterForFieldType(Formatter&lt;?&gt; formatter);
+
+    void addFormatterForAnnotation(AnnotationFormatterFactory&lt;?&gt; factory);
+}
+</code></pre>
+<h3 id="FormatterRegistrar"><a href="#FormatterRegistrar" class="headerlink" title="FormatterRegistrar"></a>FormatterRegistrar</h3><p>用来注册FormatterRegistry的接口，我们可以将属于某一个类别里面的多个converters 和formatters注册到FormatterRegistry,然后在将这个FormatterRegistry注册到FormatterRegistrar中。比如date类别的格式化，就可以组装成一个来使用。</p>
+<p>接口逻辑如下</p>
+<pre><code class="java">public interface FormatterRegistrar {
+    void registerFormatters(FormatterRegistry registry);
+}
+</code></pre>
+<h3 id="配置一个全局Date和Time-格式"><a href="#配置一个全局Date和Time-格式" class="headerlink" title="配置一个全局Date和Time 格式"></a>配置一个全局Date和Time 格式</h3><p>下面是使用编程的方式配置默认的时间格式，具体配置就是在ApplicationContex中修改默认的时间格式，代码如下：</p>
+<pre><code class="java">@Configuration
+public class AppConfig {
+
+    @Bean
+    public FormattingConversionService conversionService() {
+        DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
+        // Ensure @NumberFormat is still supported
+        conversionService.addFormatterForFieldAnnotation(new NumberFormatAnnotationFormatterFactory());
+
+        // Register JSR-310 date conversion with a specific global format
+        DateTimeFormatterRegistrar dateTimeFormatterRegistrar = new DateTimeFormatterRegistrar();
+        dateTimeFormatterRegistrar.setDateFormatter(DateTimeFormatter.ofPattern(&quot;yyyyMMdd&quot;));
+        dateTimeFormatterRegistrar.registerFormatters(conversionService);
+
+        // Register date conversion with a specific global format
+        DateFormatterRegistrar registrar = new DateFormatterRegistrar();
+        registrar.setFormatter(new DateFormatter(&quot;yyyyMMdd&quot;));
+        registrar.registerFormatters(conversionService);
+
+
+        return conversionService;
+
+    }
+}
+</code></pre>
+<p>具体使用方式</p>
+<pre><code class="java">@Component
+public class DateFormat {
+
+    @Autowired
+    FormattingConversionService formattingConversionService;
+
+    public void getDate(Date date) {
+        String date1 = formattingConversionService.convert(date, String.class);
+        System.out.println(date1);
+    }
+}
+</code></pre>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://www.jianshu.com/p/e2baa8d87029" target="_blank" rel="noopener">深入分析Spring中的类型转换与校验(1)</a></li>
+</ol>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+      
+        <div>
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/posts/0/"></a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
+  <p><span>发布时间:</span>2021年09月17日 - 19:23</p>
+  <p><span>最后更新:</span>2021年09月17日 - 19:23</p>
+  <p><span>原始链接:</span>
+     <a href="/posts/0/" title></a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.tech/posts/0/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+        </div>
+      
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/54f801f1/" rel="next" title="SpringBoot源码分析之spring-boot-loader可执行文件解析">
+                <i class="fa fa-chevron-left"></i> SpringBoot源码分析之spring-boot-loader可执行文件解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/d1a2b8ab/" rel="prev" title="Spring注解@Autoired和@Resource区别对比">
+                Spring注解@Autoired和@Resource区别对比 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="fengxiu">
+            
+              <p class="site-author-name" itemprop="name">fengxiu</p>
+              <p class="site-description motion-element" itemprop="description">java,spring,分布式,数据库</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">194</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">49</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">94</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/fengxiutianya" title="GitHub &rarr; https://github.com/fengxiutianya" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                  
+                    
+                  
+                  <a href="mailto:398757724@qq.com" title="E-Mail &rarr; mailto:398757724@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i></a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring类型转换整理"><span class="nav-number">1.</span> <span class="nav-text">Spring类型转换整理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PropertyEditor"><span class="nav-number">1.1.</span> <span class="nav-text">PropertyEditor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertyEditor-SPI"><span class="nav-number">1.1.1.</span> <span class="nav-text">PropertyEditor SPI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertyEditorSupport"><span class="nav-number">1.1.2.</span> <span class="nav-text">PropertyEditorSupport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertyEditorRegistry"><span class="nav-number">1.1.3.</span> <span class="nav-text">PropertyEditorRegistry</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertyEditorRegistrySupport"><span class="nav-number">1.1.4.</span> <span class="nav-text">PropertyEditorRegistrySupport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertyEditorRegistrar"><span class="nav-number">1.1.5.</span> <span class="nav-text">PropertyEditorRegistrar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertyEditor的缺点分析"><span class="nav-number">1.1.6.</span> <span class="nav-text">PropertyEditor的缺点分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#convert"><span class="nav-number">1.2.</span> <span class="nav-text">convert</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Converter-SPI"><span class="nav-number">1.2.1.</span> <span class="nav-text">Converter SPI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConverterFactory"><span class="nav-number">1.2.2.</span> <span class="nav-text">ConverterFactory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GenericConverter"><span class="nav-number">1.2.3.</span> <span class="nav-text">GenericConverter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConditionalGenericConverter"><span class="nav-number">1.2.4.</span> <span class="nav-text">ConditionalGenericConverter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConversionService"><span class="nav-number">1.2.5.</span> <span class="nav-text">ConversionService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置ConversionService"><span class="nav-number">1.2.6.</span> <span class="nav-text">配置ConversionService</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feild-Formatting"><span class="nav-number">1.3.</span> <span class="nav-text">Feild Formatting</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Formatter"><span class="nav-number">1.3.1.</span> <span class="nav-text">Formatter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注解方式的Format"><span class="nav-number">1.3.2.</span> <span class="nav-text">注解方式的Format</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FormatterRegistry"><span class="nav-number">1.3.3.</span> <span class="nav-text">FormatterRegistry</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FormatterRegistrar"><span class="nav-number">1.3.4.</span> <span class="nav-text">FormatterRegistrar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置一个全局Date和Time-格式"><span class="nav-number">1.3.5.</span> <span class="nav-text">配置一个全局Date和Time 格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.4.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengxiu</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      
+      网站总字数
+    </span>
+    
+    <span title="站点总字数">1.5m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      
+      总阅读时长
+    </span>
+    
+    <span title="站点阅读时长">23:09</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
+
+  
+  <script src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://fengxiu.disqus.com/count.js" async></script>
+  
+
+  
+    <script>
+      var disqus_config = function () {
+        this.page.url = "fengxiu.tech/posts/0/";
+        this.page.identifier = "posts/0/";
+        this.page.title = '';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://fengxiu.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        $(function () {
+          var offsetTop = $('#comments').offset().top - $(window).height();
+          if (offsetTop <= 0) {
+            // load directly when there's no a scrollbar
+            loadComments();
+          } else {
+            $(window).on('scroll.disqus_scroll', function () {
+              // offsetTop may changes because of manually resizing browser window or lazy loading images.
+              var offsetTop = $('#comments').offset().top - $(window).height();
+              var scrollTop = $(window).scrollTop();
+
+              // pre-load comments a bit? (margin or anything else)
+              if (offsetTop - scrollTop < 60) {
+                $(window).off('.disqus_scroll');
+                loadComments();
+              }
+            });
+          }
+        });
+      
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.7.0"></script>
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "8rM8gj5HTRTSqBQdFyePed86-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "8rM8gj5HTRTSqBQdFyePed86-gzGzoHsz",
+                'X-LC-Key': "f92qb0ijeNp2joqk3ld6IlRW",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+          if (result) $(this).text('复制成功');
+          else $(this).text('复制失败');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+  
+  
+  
+
+  <link rel="stylesheet" href="/lib/prettify/themes/atelier-estuary-light.min.css" type="text/css">
+
+
+<script src="/lib/prettify/prettify.js"></script>
+<script type="text/javascript">
+
+$(window).load(function(){
+
+  // 设置prettify
+  $('pre').addClass('prettyprint linenums');
+   prettyPrint();
+ })
+</script>
+<style>
+pre {
+  white-space:pre;
+  white-space:pre-wrap;
+  word-break:break-all;
+  word-wrap:break-word;
+}
+</style>
+
+
+
+
+  
+  
+</body>
+</html>
