@@ -30,7 +30,7 @@
     
       
     
-  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <script src="/blogpage/lib/pace/pace.min.js?v=1.0.2"></script>
   <link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css">
 
 
@@ -55,21 +55,21 @@
 
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+<link rel="stylesheet" href="/blogpage/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
 
-<link rel="stylesheet" href="/css/main.css?v=6.7.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+<link rel="stylesheet" href="/blogpage/css/main.css?v=6.7.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blogpage/images/apple-touch-icon-next.png?v=6.7.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blogpage/images/favicon-32x32-next.png?v=6.7.0">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blogpage/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/blogpage/images/logo.svg?v=6.7.0" color="#222">
 
 
 
@@ -80,7 +80,7 @@
 <script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/',
+    root: '/blogpage/',
     scheme: 'Pisces',
     version: '6.7.0',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
@@ -106,7 +106,7 @@
 
 
   <meta name="description" content="本篇文章将要介绍的是ParNew和CMS搭配使用的垃圾回收器组合。CMS和其他老年代收集器不同的地点是，它使用的是标记-清除算法。 CMS收集器设计的目的是避免在老年代收集时长时间停顿。它通过两种方式实现这一目标。首先，它不是采用标记-拷贝来回收老年代，而是使用可被回收链表来管理回收空间。其次，整个垃圾回收器的执行期间，绝大部分是可以和应用程序并发执行。这意味着垃圾收器不会显式停止应用程序线程执行">
-<meta name="keywords" content="GC,GC日志,JVM,CMS">
+<meta name="keywords" content="GC,JVM,GC日志,CMS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GC日志详解3之CMS">
 <meta property="og:url" content="fengxiu.github.io/blogpage/posts/f38ed32c/index.html">
@@ -118,7 +118,7 @@
 <meta property="og:image" content="/images/cms-3.png">
 <meta property="og:image" content="/images/cms-4.png">
 <meta property="og:image" content="/images/g1-10-591x187.png">
-<meta property="og:updated_time" content="2021-09-17T11:33:30.782Z">
+<meta property="og:updated_time" content="2021-09-23T02:01:08.146Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GC日志详解3之CMS">
 <meta name="twitter:description" content="本篇文章将要介绍的是ParNew和CMS搭配使用的垃圾回收器组合。CMS和其他老年代收集器不同的地点是，它使用的是标记-清除算法。 CMS收集器设计的目的是避免在老年代收集时长时间停顿。它通过两种方式实现这一目标。首先，它不是采用标记-拷贝来回收老年代，而是使用可被回收链表来管理回收空间。其次，整个垃圾回收器的执行期间，绝大部分是可以和应用程序并发执行。这意味着垃圾收器不会显式停止应用程序线程执行">
@@ -196,7 +196,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/blogpage/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">枫秀</span>
         <span class="logo-line-after"><i></i></span>
@@ -235,7 +235,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/blogpage/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
 
   </li>
         
@@ -252,7 +252,7 @@
 
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/blogpage/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
 
   </li>
         
@@ -269,7 +269,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+    <a href="/blogpage/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
         
@@ -286,7 +286,7 @@
 
     
 
-    <a href="/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
+    <a href="/blogpage/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
 
   </li>
         
@@ -303,7 +303,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+    <a href="/blogpage/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
 
   </li>
 
@@ -401,12 +401,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/blogpage/posts/f38ed32c/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/blogpage/blogpage/posts/f38ed32c/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
       <meta itemprop="description" content="java,spring,分布式,数据库">
-      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="image" content="/blogpage/images/avatar.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -462,21 +462,21 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/jvm/GC/" itemprop="url" rel="index"><span itemprop="name">GC</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/jvm/GC/" itemprop="url" rel="index"><span itemprop="name">GC</span></a></span>
 
                 
                 
@@ -491,7 +491,7 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/posts/f38ed32c/#comments" itemprop="discussionUrl">
+                <a href="/blogpage/posts/f38ed32c/#comments" itemprop="discussionUrl">
                 
                   <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/f38ed32c/" itemprop="commentCount"></span>
                 </a>
@@ -501,7 +501,7 @@
 
           
           
-             <span id="/posts/f38ed32c/" class="leancloud_visitors" data-flag-title="GC日志详解3之CMS">
+             <span id="/blogpage/posts/f38ed32c/" class="leancloud_visitors" data-flag-title="GC日志详解3之CMS">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -731,28 +731,28 @@ public class CMS {
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/f857a2aa/" rel="bookmark">GC日志详解1之serial</a></div>
+      <div class="popular-posts-title"><a href="/blogpage/posts/f857a2aa/" rel="bookmark">GC日志详解1之serial</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/af3fcb07/" rel="bookmark">G1</a></div>
+      <div class="popular-posts-title"><a href="/blogpage/posts/af3fcb07/" rel="bookmark">G1</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/f1158e94/" rel="bookmark">什么是GC</a></div>
+      <div class="popular-posts-title"><a href="/blogpage/posts/f1158e94/" rel="bookmark">什么是GC</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/posts/5319940a/" rel="bookmark">GC日志详解2之Parallel GC</a></div>
+      <div class="popular-posts-title"><a href="/blogpage/posts/5319940a/" rel="bookmark">GC日志详解2之Parallel GC</a></div>
       
     </li>
   
@@ -774,12 +774,12 @@ public class CMS {
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/posts/f38ed32c/">GC日志详解3之CMS</a></p>
+  <p><span>本文标题:</span><a href="/blogpage/posts/f38ed32c/">GC日志详解3之CMS</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2019年04月18日 - 15:14</p>
-  <p><span>最后更新:</span>2021年09月17日 - 19:33</p>
+  <p><span>最后更新:</span>2021年09月23日 - 10:01</p>
   <p><span>原始链接:</span>
-     <a href="/posts/f38ed32c/" title="GC日志详解3之CMS">GC日志详解3之CMS</a>
+     <a href="/blogpage/posts/f38ed32c/" title="GC日志详解3之CMS">GC日志详解3之CMS</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.github.io/blogpage/posts/f38ed32c/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
@@ -814,13 +814,13 @@ public class CMS {
       
         <div class="post-tags">
           
-            <a href="/tags/GC/" rel="tag">  <i class="fa fa-tag"></i> GC</a>
+            <a href="/blogpage/tags/GC/" rel="tag">  <i class="fa fa-tag"></i> GC</a>
           
-            <a href="/tags/GC日志/" rel="tag">  <i class="fa fa-tag"></i> GC日志</a>
+            <a href="/blogpage/tags/JVM/" rel="tag">  <i class="fa fa-tag"></i> JVM</a>
           
-            <a href="/tags/JVM/" rel="tag">  <i class="fa fa-tag"></i> JVM</a>
+            <a href="/blogpage/tags/GC日志/" rel="tag">  <i class="fa fa-tag"></i> GC日志</a>
           
-            <a href="/tags/CMS/" rel="tag">  <i class="fa fa-tag"></i> CMS</a>
+            <a href="/blogpage/tags/CMS/" rel="tag">  <i class="fa fa-tag"></i> CMS</a>
           
         </div>
       
@@ -833,7 +833,7 @@ public class CMS {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/posts/5319940a/" rel="next" title="GC日志详解2之Parallel GC">
+              <a href="/blogpage/posts/5319940a/" rel="next" title="GC日志详解2之Parallel GC">
                 <i class="fa fa-chevron-left"></i> GC日志详解2之Parallel GC
               </a>
             
@@ -843,7 +843,7 @@ public class CMS {
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/posts/e20a716d/" rel="prev" title="Http协议中的Content-Encoding">
+              <a href="/blogpage/posts/e20a716d/" rel="prev" title="Http协议中的Content-Encoding">
                 Http协议中的Content-Encoding <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -911,7 +911,7 @@ public class CMS {
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="fengxiu">
+              <img class="site-author-image" itemprop="image" src="/blogpage/images/avatar.jpg" alt="fengxiu">
             
               <p class="site-author-name" itemprop="name">fengxiu</p>
               <p class="site-description motion-element" itemprop="description">java,spring,分布式,数据库</p>
@@ -922,7 +922,7 @@ public class CMS {
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/blogpage/archives/">
                 
                     <span class="site-state-item-count">194</span>
                     <span class="site-state-item-name">日志</span>
@@ -934,7 +934,7 @@ public class CMS {
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  <a href="/blogpage/categories/index.html">
                     
                     
                       
@@ -1045,7 +1045,7 @@ public class CMS {
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  <a href="/blogpage/tags/index.html">
                     
                     
                       
@@ -1412,7 +1412,7 @@ public class CMS {
     
     
   
-  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/blogpage/lib/canvas-nest/canvas-nest.min.js"></script>
 
 
 
@@ -1432,47 +1432,47 @@ public class CMS {
   <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
 
   
-  <script src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  <script src="/blogpage/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
   
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/blogpage/lib/velocity/velocity.min.js?v=1.2.1"></script>
 
   
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script src="/blogpage/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  <script src="/lib/reading_progress/reading_progress.js"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=6.7.0"></script>
-
-  <script src="/js/src/motion.js?v=6.7.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=6.7.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
-
-
-
-  
-  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
-<script src="/js/src/post-details.js?v=6.7.0"></script>
-
+  <script src="/blogpage/lib/reading_progress/reading_progress.js"></script>
 
 
   
 
 
-  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+  <script src="/blogpage/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/blogpage/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blogpage/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/blogpage/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/blogpage/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/blogpage/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/blogpage/js/src/bootstrap.js?v=6.7.0"></script>
 
 
 
@@ -1539,14 +1539,14 @@ public class CMS {
   
   
   
-  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+  <link rel="stylesheet" href="/blogpage/lib/algolia-instant-search/instantsearch.min.css">
 
   
   
-  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  <script src="/blogpage/lib/algolia-instant-search/instantsearch.min.js"></script>
   
 
-  <script src="/js/src/algolia-search.js?v=6.7.0"></script>
+  <script src="/blogpage/js/src/algolia-search.js?v=6.7.0"></script>
 
 
 
