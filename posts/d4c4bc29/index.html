@@ -30,7 +30,7 @@
     
       
     
-  <script src="/blogpage/lib/pace/pace.min.js?v=1.0.2"></script>
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
   <link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css">
 
 
@@ -55,21 +55,21 @@
 
 
 
-<link rel="stylesheet" href="/blogpage/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
 
-<link rel="stylesheet" href="/blogpage/css/main.css?v=6.7.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/blogpage/images/apple-touch-icon-next.png?v=6.7.0">
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/blogpage/images/favicon-32x32-next.png?v=6.7.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/blogpage/images/favicon-16x16-next.png?v=6.7.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
 
 
-  <link rel="mask-icon" href="/blogpage/images/logo.svg?v=6.7.0" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
 
 
 
@@ -80,7 +80,7 @@
 <script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/blogpage/',
+    root: '/',
     scheme: 'Pisces',
     version: '6.7.0',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
@@ -109,12 +109,12 @@
 <meta name="keywords" content="JUC,线程池">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java多线程系列-JUC线程池之04 Future 和Callable">
-<meta property="og:url" content="fengxiu.github.io/blogpage/posts/d4c4bc29/index.html">
+<meta property="og:url" content="fengxiu.tech/posts/d4c4bc29/index.html">
 <meta property="og:site_name" content="枫秀">
 <meta property="og:description" content="概要 Callable和Future简介 ThreadPoolExecutor中submit分析 FutureTask源码分析  1. Callable 和 Future 简介Executor框架使用Runnable作为其基本的任务表示形式。Runnable是一种有很大局限的抽象，虽然run能写入到日志文件或者将结果放入某个共享的数据结构，但它不能返回一个值或抛出一个受检查的异常。 许多任务实际上">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="/images/pasted-170.png">
-<meta property="og:updated_time" content="2021-09-23T02:01:08.138Z">
+<meta property="og:updated_time" content="2022-03-02T10:00:45.557Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java多线程系列-JUC线程池之04 Future 和Callable">
 <meta name="twitter:description" content="概要 Callable和Future简介 ThreadPoolExecutor中submit分析 FutureTask源码分析  1. Callable 和 Future 简介Executor框架使用Runnable作为其基本的任务表示形式。Runnable是一种有很大局限的抽象，虽然run能写入到日志文件或者将结果放入某个共享的数据结构，但它不能返回一个值或抛出一个受检查的异常。 许多任务实际上">
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="fengxiu.github.io/blogpage/posts/d4c4bc29/">
+  <link rel="canonical" href="fengxiu.tech/posts/d4c4bc29/">
 
 
 
@@ -192,7 +192,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/blogpage/" class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">枫秀</span>
         <span class="logo-line-after"><i></i></span>
@@ -231,7 +231,7 @@
 
     
 
-    <a href="/blogpage/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
 
   </li>
         
@@ -248,7 +248,7 @@
 
     
 
-    <a href="/blogpage/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
 
   </li>
         
@@ -265,7 +265,7 @@
 
     
 
-    <a href="/blogpage/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
         
@@ -282,7 +282,7 @@
 
     
 
-    <a href="/blogpage/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
+    <a href="/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
 
   </li>
         
@@ -299,7 +299,7 @@
 
     
 
-    <a href="/blogpage/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
 
   </li>
 
@@ -397,12 +397,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/blogpage/blogpage/posts/d4c4bc29/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.tech/posts/d4c4bc29/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
       <meta itemprop="description" content="java,spring,分布式,数据库">
-      <meta itemprop="image" content="/blogpage/images/avatar.jpg">
+      <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -458,21 +458,21 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/juc/Executors/" itemprop="url" rel="index"><span itemprop="name">Executors</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/juc/Executors/" itemprop="url" rel="index"><span itemprop="name">Executors</span></a></span>
 
                 
                 
@@ -487,7 +487,7 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/blogpage/posts/d4c4bc29/#comments" itemprop="discussionUrl">
+                <a href="/posts/d4c4bc29/#comments" itemprop="discussionUrl">
                 
                   <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/d4c4bc29/" itemprop="commentCount"></span>
                 </a>
@@ -497,7 +497,7 @@
 
           
           
-             <span id="/blogpage/posts/d4c4bc29/" class="leancloud_visitors" data-flag-title="java多线程系列-JUC线程池之04 Future 和Callable">
+             <span id="/posts/d4c4bc29/" class="leancloud_visitors" data-flag-title="java多线程系列-JUC线程池之04 Future 和Callable">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -907,35 +907,35 @@ public class ExecutorStudy {
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/984191f2/" rel="bookmark">java多线程系列-JUC线程池之 01 线程池架构</a></div>
+      <div class="popular-posts-title"><a href="/posts/984191f2/" rel="bookmark">java多线程系列-JUC线程池之 01 线程池架构</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/a1d13062/" rel="bookmark">java多线程系列-JUC线程池之03 ThreadPoolExecutor 线程池的创建</a></div>
+      <div class="popular-posts-title"><a href="/posts/ca60f1d2/" rel="bookmark">Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/fac740ad/" rel="bookmark">java多线程系列-JUC线程池之06 CompletionService</a></div>
+      <div class="popular-posts-title"><a href="/posts/a1d13062/" rel="bookmark">java多线程系列-JUC线程池之03 ThreadPoolExecutor 线程池的创建</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/ca60f1d2/" rel="bookmark">Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析</a></div>
+      <div class="popular-posts-title"><a href="/posts/fac740ad/" rel="bookmark">java多线程系列-JUC线程池之06 CompletionService</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/931a340/" rel="bookmark">Java多线程系列-JUC线程池之07 CompletionFuture</a></div>
+      <div class="popular-posts-title"><a href="/posts/931a340/" rel="bookmark">Java多线程系列-JUC线程池之07 CompletionFuture</a></div>
       
     </li>
   
@@ -957,13 +957,13 @@ public class ExecutorStudy {
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/blogpage/posts/d4c4bc29/">java多线程系列-JUC线程池之04 Future 和Callable</a></p>
+  <p><span>本文标题:</span><a href="/posts/d4c4bc29/">java多线程系列-JUC线程池之04 Future 和Callable</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2018年07月24日 - 15:12</p>
-  <p><span>最后更新:</span>2021年09月23日 - 10:01</p>
+  <p><span>最后更新:</span>2022年03月02日 - 18:00</p>
   <p><span>原始链接:</span>
-     <a href="/blogpage/posts/d4c4bc29/" title="java多线程系列-JUC线程池之04 Future 和Callable">java多线程系列-JUC线程池之04 Future 和Callable</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.github.io/blogpage/posts/d4c4bc29/" aria-label="复制成功！"></i></span>
+     <a href="/posts/d4c4bc29/" title="java多线程系列-JUC线程池之04 Future 和Callable">java多线程系列-JUC线程池之04 Future 和Callable</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.tech/posts/d4c4bc29/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -997,9 +997,9 @@ public class ExecutorStudy {
       
         <div class="post-tags">
           
-            <a href="/blogpage/tags/JUC/" rel="tag">  <i class="fa fa-tag"></i> JUC</a>
+            <a href="/tags/JUC/" rel="tag">  <i class="fa fa-tag"></i> JUC</a>
           
-            <a href="/blogpage/tags/线程池/" rel="tag">  <i class="fa fa-tag"></i> 线程池</a>
+            <a href="/tags/线程池/" rel="tag">  <i class="fa fa-tag"></i> 线程池</a>
           
         </div>
       
@@ -1012,7 +1012,7 @@ public class ExecutorStudy {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blogpage/posts/a1d13062/" rel="next" title="java多线程系列-JUC线程池之03 ThreadPoolExecutor 线程池的创建">
+              <a href="/posts/a1d13062/" rel="next" title="java多线程系列-JUC线程池之03 ThreadPoolExecutor 线程池的创建">
                 <i class="fa fa-chevron-left"></i> java多线程系列-JUC线程池之03 ThreadPoolExecutor 线程池的创建
               </a>
             
@@ -1022,7 +1022,7 @@ public class ExecutorStudy {
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blogpage/posts/400f00a6/" rel="prev" title="深入分析ThreadLocal">
+              <a href="/posts/400f00a6/" rel="prev" title="深入分析ThreadLocal">
                 深入分析ThreadLocal <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -1090,7 +1090,7 @@ public class ExecutorStudy {
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="/blogpage/images/avatar.jpg" alt="fengxiu">
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="fengxiu">
             
               <p class="site-author-name" itemprop="name">fengxiu</p>
               <p class="site-description motion-element" itemprop="description">java,spring,分布式,数据库</p>
@@ -1101,7 +1101,7 @@ public class ExecutorStudy {
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/blogpage/archives/">
+                  <a href="/archives/">
                 
                     <span class="site-state-item-count">194</span>
                     <span class="site-state-item-name">日志</span>
@@ -1113,7 +1113,7 @@ public class ExecutorStudy {
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/blogpage/categories/index.html">
+                  <a href="/categories/index.html">
                     
                     
                       
@@ -1224,7 +1224,7 @@ public class ExecutorStudy {
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/blogpage/tags/index.html">
+                  <a href="/tags/index.html">
                     
                     
                       
@@ -1501,7 +1501,7 @@ public class ExecutorStudy {
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1591,7 +1591,7 @@ public class ExecutorStudy {
     
     
   
-  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/blogpage/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
 
 
 
@@ -1611,47 +1611,47 @@ public class ExecutorStudy {
   <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
 
   
-  <script src="/blogpage/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  <script src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
   
-  <script src="/blogpage/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
 
   
-  <script src="/blogpage/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  <script src="/blogpage/lib/reading_progress/reading_progress.js"></script>
-
-
-  
-
-
-  <script src="/blogpage/js/src/utils.js?v=6.7.0"></script>
-
-  <script src="/blogpage/js/src/motion.js?v=6.7.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/blogpage/js/src/affix.js?v=6.7.0"></script>
-
-  <script src="/blogpage/js/src/schemes/pisces.js?v=6.7.0"></script>
-
-
-
-  
-  <script src="/blogpage/js/src/scrollspy.js?v=6.7.0"></script>
-<script src="/blogpage/js/src/post-details.js?v=6.7.0"></script>
-
+  <script src="/lib/reading_progress/reading_progress.js"></script>
 
 
   
 
 
-  <script src="/blogpage/js/src/bootstrap.js?v=6.7.0"></script>
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
 
 
 
@@ -1664,7 +1664,7 @@ public class ExecutorStudy {
   
     <script>
       var disqus_config = function () {
-        this.page.url = "fengxiu.github.io/blogpage/posts/d4c4bc29/";
+        this.page.url = "fengxiu.tech/posts/d4c4bc29/";
         this.page.identifier = "posts/d4c4bc29/";
         this.page.title = 'java多线程系列-JUC线程池之04 Future 和Callable';
         };
@@ -1718,14 +1718,14 @@ public class ExecutorStudy {
   
   
   
-  <link rel="stylesheet" href="/blogpage/lib/algolia-instant-search/instantsearch.min.css">
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
 
   
   
-  <script src="/blogpage/lib/algolia-instant-search/instantsearch.min.js"></script>
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
   
 
-  <script src="/blogpage/js/src/algolia-search.js?v=6.7.0"></script>
+  <script src="/js/src/algolia-search.js?v=6.7.0"></script>
 
 
 

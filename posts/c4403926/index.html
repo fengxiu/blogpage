@@ -30,7 +30,7 @@
     
       
     
-  <script src="/blogpage/lib/pace/pace.min.js?v=1.0.2"></script>
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
   <link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css">
 
 
@@ -55,21 +55,21 @@
 
 
 
-<link rel="stylesheet" href="/blogpage/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
 
-<link rel="stylesheet" href="/blogpage/css/main.css?v=6.7.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/blogpage/images/apple-touch-icon-next.png?v=6.7.0">
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/blogpage/images/favicon-32x32-next.png?v=6.7.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/blogpage/images/favicon-16x16-next.png?v=6.7.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
 
 
-  <link rel="mask-icon" href="/blogpage/images/logo.svg?v=6.7.0" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
 
 
 
@@ -80,7 +80,7 @@
 <script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/blogpage/',
+    root: '/',
     scheme: 'Pisces',
     version: '6.7.0',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
@@ -109,12 +109,12 @@
 <meta name="keywords" content="集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java 集合系列10 之HashMap详细介绍和使用示例">
-<meta property="og:url" content="fengxiu.github.io/blogpage/posts/c4403926/index.html">
+<meta property="og:url" content="fengxiu.tech/posts/c4403926/index.html">
 <meta property="og:site_name" content="枫秀">
 <meta property="og:description" content="概要 HashMap介绍 HashMap源码解析 HashMap遍历方式 HashMap使用示例">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="/images/pasted-162.png">
-<meta property="og:updated_time" content="2021-09-23T02:01:08.138Z">
+<meta property="og:updated_time" content="2022-03-02T10:00:45.557Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 集合系列10 之HashMap详细介绍和使用示例">
 <meta name="twitter:description" content="概要 HashMap介绍 HashMap源码解析 HashMap遍历方式 HashMap使用示例">
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="fengxiu.github.io/blogpage/posts/c4403926/">
+  <link rel="canonical" href="fengxiu.tech/posts/c4403926/">
 
 
 
@@ -192,7 +192,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/blogpage/" class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">枫秀</span>
         <span class="logo-line-after"><i></i></span>
@@ -231,7 +231,7 @@
 
     
 
-    <a href="/blogpage/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
 
   </li>
         
@@ -248,7 +248,7 @@
 
     
 
-    <a href="/blogpage/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
 
   </li>
         
@@ -265,7 +265,7 @@
 
     
 
-    <a href="/blogpage/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
         
@@ -282,7 +282,7 @@
 
     
 
-    <a href="/blogpage/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
+    <a href="/timeAxis/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>时间轴</a>
 
   </li>
         
@@ -299,7 +299,7 @@
 
     
 
-    <a href="/blogpage/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
 
   </li>
 
@@ -397,12 +397,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="fengxiu.github.io/blogpage/blogpage/posts/c4403926/">
+    <link itemprop="mainEntityOfPage" href="fengxiu.tech/posts/c4403926/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="fengxiu">
       <meta itemprop="description" content="java,spring,分布式,数据库">
-      <meta itemprop="image" content="/blogpage/images/avatar.jpg">
+      <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -458,14 +458,14 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blogpage/categories/java/collections/" itemprop="url" rel="index"><span itemprop="name">collections</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/collections/" itemprop="url" rel="index"><span itemprop="name">collections</span></a></span>
 
                 
                 
@@ -480,7 +480,7 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/blogpage/posts/c4403926/#comments" itemprop="discussionUrl">
+                <a href="/posts/c4403926/#comments" itemprop="discussionUrl">
                 
                   <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/c4403926/" itemprop="commentCount"></span>
                 </a>
@@ -490,7 +490,7 @@
 
           
           
-             <span id="/blogpage/posts/c4403926/" class="leancloud_visitors" data-flag-title="Java 集合系列10 之HashMap详细介绍和使用示例">
+             <span id="/posts/c4403926/" class="leancloud_visitors" data-flag-title="Java 集合系列10 之HashMap详细介绍和使用示例">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -787,35 +787,35 @@ public class HashMapTest {
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/2d62f277/" rel="bookmark">Java 集合系列01之 总体框架</a></div>
+      <div class="popular-posts-title"><a href="/posts/4dcbcf5f/" rel="bookmark">Java 集合系列03之ArrayList</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/4dcbcf5f/" rel="bookmark">Java 集合系列03之ArrayList</a></div>
+      <div class="popular-posts-title"><a href="/posts/2d62f277/" rel="bookmark">Java 集合系列01之 总体框架</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/3ac019a5/" rel="bookmark">Java 集合系列06之 Vector源码解析和使用示例</a></div>
+      <div class="popular-posts-title"><a href="/posts/dd7bc7f8/" rel="bookmark">Java 集合系列05之 LinkedList源码解析和使用示例</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/ab3cc2a5/" rel="bookmark">Java 集合系列07之 Stack源码解析和使用示例</a></div>
+      <div class="popular-posts-title"><a href="/posts/6ad3883/" rel="bookmark">Java 集合系列04之 fail-fast总结</a></div>
       
     </li>
   
     <li class="popular-posts-item">
       
       
-      <div class="popular-posts-title"><a href="/blogpage/posts/e23e1ac6/" rel="bookmark">Java 集合系列08之 List总结(LinkedList,ArrayList等使用场景和性能分析)</a></div>
+      <div class="popular-posts-title"><a href="/posts/ab3cc2a5/" rel="bookmark">Java 集合系列07之 Stack源码解析和使用示例</a></div>
       
     </li>
   
@@ -837,13 +837,13 @@ public class HashMapTest {
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/blogpage/posts/c4403926/">Java 集合系列10 之HashMap详细介绍和使用示例</a></p>
+  <p><span>本文标题:</span><a href="/posts/c4403926/">Java 集合系列10 之HashMap详细介绍和使用示例</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 fengxiu 的个人博客">fengxiu</a></p>
   <p><span>发布时间:</span>2019年03月04日 - 19:50</p>
-  <p><span>最后更新:</span>2021年09月23日 - 10:01</p>
+  <p><span>最后更新:</span>2022年03月02日 - 18:00</p>
   <p><span>原始链接:</span>
-     <a href="/blogpage/posts/c4403926/" title="Java 集合系列10 之HashMap详细介绍和使用示例">Java 集合系列10 之HashMap详细介绍和使用示例</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.github.io/blogpage/posts/c4403926/" aria-label="复制成功！"></i></span>
+     <a href="/posts/c4403926/" title="Java 集合系列10 之HashMap详细介绍和使用示例">Java 集合系列10 之HashMap详细介绍和使用示例</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="fengxiu.tech/posts/c4403926/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -877,7 +877,7 @@ public class HashMapTest {
       
         <div class="post-tags">
           
-            <a href="/blogpage/tags/集合/" rel="tag">  <i class="fa fa-tag"></i> 集合</a>
+            <a href="/tags/集合/" rel="tag">  <i class="fa fa-tag"></i> 集合</a>
           
         </div>
       
@@ -890,7 +890,7 @@ public class HashMapTest {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blogpage/posts/719892b8/" rel="next" title="Java 集合系列09之 Map架构">
+              <a href="/posts/719892b8/" rel="next" title="Java 集合系列09之 Map架构">
                 <i class="fa fa-chevron-left"></i> Java 集合系列09之 Map架构
               </a>
             
@@ -900,7 +900,7 @@ public class HashMapTest {
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/blogpage/posts/272a8849/" rel="prev" title="Java 集合系列11之 LinkedHashMap源码解析和使用示例">
+              <a href="/posts/272a8849/" rel="prev" title="Java 集合系列11之 LinkedHashMap源码解析和使用示例">
                 Java 集合系列11之 LinkedHashMap源码解析和使用示例 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -968,7 +968,7 @@ public class HashMapTest {
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="/blogpage/images/avatar.jpg" alt="fengxiu">
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="fengxiu">
             
               <p class="site-author-name" itemprop="name">fengxiu</p>
               <p class="site-description motion-element" itemprop="description">java,spring,分布式,数据库</p>
@@ -979,7 +979,7 @@ public class HashMapTest {
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/blogpage/archives/">
+                  <a href="/archives/">
                 
                     <span class="site-state-item-count">194</span>
                     <span class="site-state-item-name">日志</span>
@@ -991,7 +991,7 @@ public class HashMapTest {
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/blogpage/categories/index.html">
+                  <a href="/categories/index.html">
                     
                     
                       
@@ -1102,7 +1102,7 @@ public class HashMapTest {
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/blogpage/tags/index.html">
+                  <a href="/tags/index.html">
                     
                     
                       
@@ -1379,7 +1379,7 @@ public class HashMapTest {
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1469,7 +1469,7 @@ public class HashMapTest {
     
     
   
-  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/blogpage/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
 
 
 
@@ -1489,47 +1489,47 @@ public class HashMapTest {
   <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
 
   
-  <script src="/blogpage/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  <script src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
   
-  <script src="/blogpage/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
 
   
-  <script src="/blogpage/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  <script src="/blogpage/lib/reading_progress/reading_progress.js"></script>
-
-
-  
-
-
-  <script src="/blogpage/js/src/utils.js?v=6.7.0"></script>
-
-  <script src="/blogpage/js/src/motion.js?v=6.7.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/blogpage/js/src/affix.js?v=6.7.0"></script>
-
-  <script src="/blogpage/js/src/schemes/pisces.js?v=6.7.0"></script>
-
-
-
-  
-  <script src="/blogpage/js/src/scrollspy.js?v=6.7.0"></script>
-<script src="/blogpage/js/src/post-details.js?v=6.7.0"></script>
-
+  <script src="/lib/reading_progress/reading_progress.js"></script>
 
 
   
 
 
-  <script src="/blogpage/js/src/bootstrap.js?v=6.7.0"></script>
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
 
 
 
@@ -1542,7 +1542,7 @@ public class HashMapTest {
   
     <script>
       var disqus_config = function () {
-        this.page.url = "fengxiu.github.io/blogpage/posts/c4403926/";
+        this.page.url = "fengxiu.tech/posts/c4403926/";
         this.page.identifier = "posts/c4403926/";
         this.page.title = 'Java 集合系列10 之HashMap详细介绍和使用示例';
         };
@@ -1596,14 +1596,14 @@ public class HashMapTest {
   
   
   
-  <link rel="stylesheet" href="/blogpage/lib/algolia-instant-search/instantsearch.min.css">
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
 
   
   
-  <script src="/blogpage/lib/algolia-instant-search/instantsearch.min.js"></script>
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
   
 
-  <script src="/blogpage/js/src/algolia-search.js?v=6.7.0"></script>
+  <script src="/js/src/algolia-search.js?v=6.7.0"></script>
 
 
 
