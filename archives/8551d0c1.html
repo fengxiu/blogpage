@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="翻译自About Pool Sizing 开发人员在配置数据库连接池的时候，经常会犯一些错误。在配置数据库连接池时，需要理解一些可能违反直觉的原则。因此本篇文章主要介绍这些原则。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库连接池大小设置">
+<meta property="og:url" content="http://fengxiu.club/archives/8551d0c1.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="翻译自About Pool Sizing 开发人员在配置数据库连接池的时候，经常会犯一些错误。在配置数据库连接池时，需要理解一些可能违反直觉的原则。因此本篇文章主要介绍这些原则。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://fengxiu.club/images/Postgres_Chart.png">
+<meta property="article:published_time" content="2019-08-28T10:09:53.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.400Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="连接池">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fengxiu.club/images/Postgres_Chart.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/8551d0c1.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据库连接池大小设置 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/8551d0c1.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据库连接池大小设置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-28 10:09:53" itemprop="dateCreated datePublished" datetime="2019-08-28T10:09:53+00:00">2019-08-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/8551d0c1.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/8551d0c1.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/8551d0c1.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/8551d0c1.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>翻译自<a target="_blank" rel="noopener" href="https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing">About Pool Sizing</a></p>
+<p>开发人员在配置数据库连接池的时候，经常会犯一些错误。在配置数据库连接池时，需要理解一些可能违反直觉的原则。<br>因此本篇文章主要介绍这些原则。</p>
+<span id="more"></span>
+<h2 id="10000前端用户同时访问"><a href="#10000前端用户同时访问" class="headerlink" title="10000前端用户同时访问"></a>10000前端用户同时访问</h2><p>假设你有一个网站，虽然不像Facebook这样大的用户规模，但仍然有10000个用户同时发出数据库请求—每秒处理大约20000个事务。您的连接池应该有多大？你可能会惊讶于这个问题不是多大而是多小！</p>
+<p>观看Oracle Real World Performance Group的这段简短视频，进行一次令人大开眼界的演示：<br><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=xNDnVOCdvQ0&list=PLDacGuMCXBJoXiEBkULq2mn-VwwxEPK_M&index=2&t=0s">councurrent mid-tier connections</a></p>
+<p>从视频中可以看出，在没有任何其他更改的情况下，仅减少连接池的大小就可以将应用程序的响应时间从平均100s缩短到2s，这是50倍以上的改进。</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>最近，我们似乎已经在计算机领域的其他部分了解到，越少越好。为什么一个nginx web服务器只有4个线程，就可以在性能上超过一个包含100个进程的apache web服务器？如果你学过<a target="_blank" rel="noopener" href="https://lagunita.stanford.edu/courses/Engineering/CS101/Summer2014/about">Computer Science 101</a>,就会发现很明显是这样？</p>
+<p>即使只有一个CPU核心的计算机也可以“同时”支持几十或数百个线程。但我们都应该知道，这仅仅是操作系统的一个小把戏，是通过time-slicing来实现的。实际上，单核一次只能执行一个线程；然后操作系统切换上下文，该核为另一个线程执行代码，依此类推。在给定单个CPU资源的情况下，通过time-slicing，顺序执行A和B总是比“同时”执行A和B更快，这是计算的基本规律。一旦线程的数量超过了CPU核心的数量，那么通过添加更多的线程（而不是更快的线程）会使速度变慢。</p>
+<p>这几乎是对的……</p>
+<h2 id="有限的资源"><a href="#有限的资源" class="headerlink" title="有限的资源"></a>有限的资源</h2><p>这并不像上面所说的那么简单，但很接近。还有其他一些因素在起作用。当我们看到数据库的主要瓶颈是什么时，它们可以概括为三个基本类别：CPU、磁盘、网络。我们可以在其中添加内存，但是对比磁盘和网络，内存和磁盘、网络的带宽是有几个数量级的差异。</p>
+<p>如果我们忽略了磁盘和网络，就很简单了。在具有8个计算核心的服务器上，将连接数设置为8将提供最佳性能，超出此范围的任何操作都将由于上下文切换的开销而开始减慢。但我们不能忽视磁盘和网络。数据库通常将数据存储在磁盘上，磁盘通常由金属旋转板和安装在步进电机驱动臂上的读&#x2F;写头组成。读&#x2F;写头一次只能在一个位置（单个查询的读&#x2F;写数据），并且必须“查找”到新位置才能读&#x2F;写其他查询的数据。因此有一个寻道时间成本，也有一个旋转成本，磁盘必须等待数据在盘中“再次出现”，以便读取&#x2F;写入。缓存在这里当然有帮助，但这一原则仍然适用。</p>
+<p>在此期间（“I&#x2F;O等待”），连接&#x2F;查询&#x2F;线程只是“阻塞”等待磁盘。在此期间，操作系统可以通过为另一个线程执行更多的代码来更好地利用CPU资源。因此，由于线程在I&#x2F;O上被阻塞，我们实际上可以通过拥有比物理计算颜色更多的连接&#x2F;线程来完成更多的工作。</p>
+<p>大小设置多少？我们下面会给出解释。设置连接数的多少还取决于磁盘子系统，因为较新的SSD驱动器没有“寻道时间”成本或旋转因素来处理。不要被欺骗向下面这样去想“固态硬盘更快，因此我可以有更多的线程”。真实的情况和这是180度的大反转。更快、无寻道、无旋转延迟意味着更少的阻塞，因此更少的线程[接近核心计数]比更多的线程性能更好。更多线程只有在阻塞创建执行机会时才能更好地执行。（也就是有更多的阻塞发生时）。</p>
+<p>Network is similar to disk. Writing data out over the wire, through the ethernet interface, can also introduce blocking when the send&#x2F;receive buffers fill up and stall. A 10-Gig interface is going to stall less than Gigabit ethernet, which will stall less than a 100-megabit. But network is a 3rd place runner in terms of resource blocking and some people often omit it from their calculations.</p>
+<p>网络类似于磁盘。通过以太网接口在线路上写数据，当发送&#x2F;接收缓冲区填满和停止时也可以在导致阻塞产生。一个10Gig的接口将比1Gig以太网慢，而千兆位以太网将比100兆位慢。但在资源阻塞方面，网络排名第三，有些人经常在计算中忽略它。</p>
+<p>下面有张图来总结上面的文字。</p>
+<p><img src="/images/Postgres_Chart.png" alt="Postgres_Chart"></p>
+<p>您可以在上面的PostgreSQL基准中看到，TPS速率在大约50个连接处开始变平。在上面的甲骨文视频中，他们展示了将连接从2048降到96.我们可以看到，即使96个可能也太高了，除非你看一个16或32核的cpu。</p>
+<h2 id="公式"><a href="#公式" class="headerlink" title="公式"></a>公式</h2><p>下面的公式是由PostgreSQL项目提供的，作为一个起点，但是我们相信它在很大程度上可以跨数据库应用。您应该测试您的应用程序，即模拟预期的负载，并在此起点周围尝试不同的池设置：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connections = ((core_count * 2) + effective_spindle_count)</span><br></pre></td></tr></table></figure>
+
+<p>这个公式多年来在很多基准上都表现得很好。因此为了获得最佳吞吐量，活动连接数的设置应该参考上面的公式。Core count不应包括HT线程，即使启用了超线程。如果活动数据集被完全缓存，effective_spindle_count应该是0。接近实际effective_spindle_count数当缓存命中率下降时…到目前为止还没有关于这个公式在固态硬盘上的使用效果如何。</p>
+<p>猜猜上面公式是什么意思？带有一个硬盘的4核i7服务器应该运行一个连接池：9&#x3D;（4*2）+1）。把它称为10是一个很好的整数。看起来很低？试一试，我们敢打赌，在这样的设置下，您可以轻松地处理3000个运行6000 tps简单查询的前端用户。如果您运行负载测试，您可能会看到TPS速率开始下降，前端响应时间开始上升，因为您将连接池推得远远超过10（在给定的硬件上）。</p>
+<h2 id="公理：您需要一个小池，其中充满了等待连接的线程。"><a href="#公理：您需要一个小池，其中充满了等待连接的线程。" class="headerlink" title="公理：您需要一个小池，其中充满了等待连接的线程。"></a>公理：您需要一个小池，其中充满了等待连接的线程。</h2><p>如果您有10000个前端用户，那么拥有10000个连接池就太疯狂了。1000个仍然很可怕。即使是100个连接，也会造成过度破坏。您最多需要一个包含几十个连接的小池，并且您希望池中的其余应用程序线程被阻塞，等待连接。如果对池进行了正确的调优，则将其设置在数据库能够同时处理的查询数的限制范围内——这很少超过（CPU核心*2），如上所述。</p>
+<p>我们从未停止过对所遇到的内部web应用程序的惊叹，其中只有几十个前端用户执行定期活动，连接池中有100个连接。不要过度配置数据库。</p>
+<h2 id="池锁定"><a href="#池锁定" class="headerlink" title="池锁定"></a>池锁定</h2><p>对于获得许多连接的单个参与者，“池锁定”的前景已经被提出。这在很大程度上是一个应用程序级的问题。是的，增加池大小可以减轻这些场景中的锁定，但是我们建议您首先检查在应用程序级别可以做什么，然后再扩大池。</p>
+<p>为了避免死锁，计算池大小是一个相当简单的资源分配公式：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pool size = Tn x (Cm - 1) + 1</span><br></pre></td></tr></table></figure>
+
+<p>其中tn是最大线程数，cm是单个线程同时保持的最大连接数。</p>
+<p>例如，假设有三个线程（tn&#x3D;3），每个线程需要四个连接来执行某些任务（cm&#x3D;4）。确保永远不可能发生死锁所需的池大小是：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pool size = 3 x (4 - 1) + 1 = 10</span><br></pre></td></tr></table></figure>
+
+<p>另一个例子是，最多有八个线程（tn&#x3D;8），每个线程需要三个连接来执行某些任务（cm&#x3D;3）。确保永远不可能发生死锁所需的池大小是：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pool size = 8 x (3 - 1) + 1 = 17</span><br></pre></td></tr></table></figure>
+
+<p>这不一定是最佳池大小，而是避免死锁所需的最小值。</p>
+<p>在某些环境中，使用JTA（Java事务管理器）可以极大地减少将从getConnection()返回相同的连接所需的连接数量到已经在当前事务中保持连接的线程。</p>
+<h2 id="提醒"><a href="#提醒" class="headerlink" title="提醒"></a>提醒</h2><p>池大小最终是非常特定于部署的。</p>
+<p>例如，混合了长时间运行事务和非常短事务的系统通常最难与任何连接池进行调优。在这些情况下，创建两个池实例可以很好地工作（例如，一个用于长时间运行的作业，另一个用于“实时”查询）。</p>
+<p>在主要具有长时间运行事务的系统中，通常对所需的连接数有一个“外部”约束——例如一个只允许同时运行一定数量的作业的作业执行队列。在这些情况下，作业队列大小应该是“正确的大小”，以匹配池（而不是相反）。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/8551d0c1.html" title="数据库连接池大小设置">http://fengxiu.club/archives/8551d0c1.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%BF%9E%E6%8E%A5%E6%B1%A0/" rel="tag"># 连接池</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/837ff6d6.html" rel="prev" title="译|Java Thread Primitive Deprecation">
+      <i class="fa fa-chevron-left"></i> 译|Java Thread Primitive Deprecation
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/af3fcb07.html" rel="next" title="G1">
+      G1 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#10000%E5%89%8D%E7%AB%AF%E7%94%A8%E6%88%B7%E5%90%8C%E6%97%B6%E8%AE%BF%E9%97%AE"><span class="nav-number">1.</span> <span class="nav-text">10000前端用户同时访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0"><span class="nav-number">2.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E9%99%90%E7%9A%84%E8%B5%84%E6%BA%90"><span class="nav-number">3.</span> <span class="nav-text">有限的资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E7%90%86%EF%BC%9A%E6%82%A8%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E5%B0%8F%E6%B1%A0%EF%BC%8C%E5%85%B6%E4%B8%AD%E5%85%85%E6%BB%A1%E4%BA%86%E7%AD%89%E5%BE%85%E8%BF%9E%E6%8E%A5%E7%9A%84%E7%BA%BF%E7%A8%8B%E3%80%82"><span class="nav-number">5.</span> <span class="nav-text">公理：您需要一个小池，其中充满了等待连接的线程。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%A0%E9%94%81%E5%AE%9A"><span class="nav-number">6.</span> <span class="nav-text">池锁定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E9%86%92"><span class="nav-number">7.</span> <span class="nav-text">提醒</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/8551d0c1.html";
+    this.page.identifier = "archives/8551d0c1.html";
+    this.page.title = "数据库连接池大小设置";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

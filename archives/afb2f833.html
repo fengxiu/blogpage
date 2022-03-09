@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="maven冲突解决流程   当项目比较大且开发维护的时间比较长时，项目的Maven依赖管理也会变得越来越复杂，手动的去排除冲突或者错误已经变得很困难，同时由于开发人员的不规范行为，更一步加深maven的依赖冲突比较多。我也是最近在接手一个已经做了八年项目时才有很大的感悟，之前也没碰过这么久的项目，在自己对maven依赖冲突解决的过程中形成了以下的一些思考或者说技巧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="maven冲突解决流程">
+<meta property="og:url" content="http://fengxiu.club/archives/afb2f833.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="maven冲突解决流程   当项目比较大且开发维护的时间比较长时，项目的Maven依赖管理也会变得越来越复杂，手动的去排除冲突或者错误已经变得很困难，同时由于开发人员的不规范行为，更一步加深maven的依赖冲突比较多。我也是最近在接手一个已经做了八年项目时才有很大的感悟，之前也没碰过这么久的项目，在自己对maven依赖冲突解决的过程中形成了以下的一些思考或者说技巧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/tree.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/list.png">
+<meta property="article:published_time" content="2021-07-28T10:09:53.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.396Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="spring">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/tree.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/afb2f833.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>maven冲突解决流程 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/afb2f833.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          maven冲突解决流程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-28 10:09:53" itemprop="dateCreated datePublished" datetime="2021-07-28T10:09:53+00:00">2021-07-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">构建工具</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/afb2f833.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/afb2f833.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/afb2f833.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/afb2f833.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="maven冲突解决流程"><a href="#maven冲突解决流程" class="headerlink" title="maven冲突解决流程"></a>maven冲突解决流程</h1><!-- 
+    mvn dependency 简介
+    常见命令介绍
+    错误处理
+ -->
+
+<p> 当项目比较大且开发维护的时间比较长时，项目的Maven依赖管理也会变得越来越复杂，手动的去排除冲突或者错误已经变得很困难，同时由于开发人员的不规范行为，更一步加深maven的依赖冲突比较多。我也是最近在接手一个已经做了八年项目时才有很大的感悟，之前也没碰过这么久的项目，在自己对maven依赖冲突解决的过程中形成了以下的一些思考或者说技巧。</p>
+<span id="more"></span>
+<h2 id="mvn-dependency简介"><a href="#mvn-dependency简介" class="headerlink" title="mvn dependency简介"></a>mvn dependency简介</h2><p>解决冲突肯定是要找一个好的工具，这里推介使用<a target="_blank" rel="noopener" href="https://maven.apache.org/plugins/maven-dependency-plugin/index.html">Apache Maven Dependency Plugin</a>，目前我也只发现了这个工具，如果你有好的工具可以@下我。</p>
+<p>在解决冲突过程中，主要使用以下几个命令</p>
+<ul>
+<li>mvn dependency:analyze ：分析此项目的依赖项并确定哪些依赖项：used and declared; used and undeclared; unused and declared.</li>
+<li>mvn dependency:analyze-duplicate ：分析&lt; dependencies&#x2F;&gt; 和&lt; dependencyManagement&#x2F;&gt;中重复定义的部分</li>
+<li>mvn dependency:tree :显示项目依赖树</li>
+<li>mvn dependency:list 显示项目依赖列表</li>
+</ul>
+<h3 id="查看依赖树"><a href="#查看依赖树" class="headerlink" title="查看依赖树"></a>查看依赖树</h3><p>通过上方的命令解析之后会构成依赖树，利用依赖树可以清楚看到依赖引入的传递路径</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/tree.png" alt="tree"></p>
+<h3 id="查看已解析的依赖"><a href="#查看已解析的依赖" class="headerlink" title="查看已解析的依赖"></a>查看已解析的依赖</h3><p>一层为顶层依赖，顶层依赖的依赖为二级依赖，以此类推</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/list.png" alt="list"></p>
+<h3 id="分析项目当前依赖"><a href="#分析项目当前依赖" class="headerlink" title="分析项目当前依赖"></a>分析项目当前依赖</h3><p>Used undeclared dependencies found</p>
+<p>这个是指某些依赖的包在代码中有用到它的代码，但是它并不是直接的依赖（就是说没有在pom中直接声明），是通过引入传递下来的包</p>
+<p>Unused declared dependencies found</p>
+<p>这个是指我们在pom中声明了依赖，但是在实际代码中并没有用到这个包！也就是多余的包。 这个时候我们就可以把这个依赖从pom中剔除</p>
+<h2 id="冲突解决实战"><a href="#冲突解决实战" class="headerlink" title="冲突解决实战"></a>冲突解决实战</h2><p>首先使用 mvn dependency:analyze 命令，输出当前maven项目的分析日志，接下来就是排查问题。其实输出的分析日志中已将对问题有很清楚的概述，这里显示我遇到的一些问题。</p>
+<h3 id="依赖重复声明"><a href="#依赖重复声明" class="headerlink" title="依赖重复声明"></a>依赖重复声明</h3><p>这个主要是产生警告，不会对项目的构建，编译等产生影响。出现的警告日志如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[WARNING] &#x27;dependencies.dependency.(groupId:artifactId:type:classifier)&#x27; must be unique: one.util:streamex:jar -&gt; version 0.7.0 vs (?) @ $&#123;module_name&#125; $&#123;file_path&#125;, line 819, column 21</span><br></pre></td></tr></table></figure>
+
+<p>上面日志已经说得很明白，其中module_name表示警告来源的module，file_path，pom文件对应的地址，可以去对应的文件搜索这个jar包，删除其中一个即可。</p>
+<h3 id="依赖配置项声明不完整"><a href="#依赖配置项声明不完整" class="headerlink" title="依赖配置项声明不完整"></a>依赖配置项声明不完整</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[WARNING] &#x27;build.plugins.plugin.version&#x27; for org.apache.maven.plugins:maven-compiler-plugin is missing. @ line 1566, column 21</span><br></pre></td></tr></table></figure>
+
+<p>这个错误只要去对应的位置，查看定义的依赖项的声明是否完整，比如上面显示的错误是org.apache.maven.plugins:maven-compiler-plugin没有声明version版本号导致的警告。</p>
+<p>上面的错误还有可能是因为，子module继承父module，但是父module定义的一些依赖管理项没有被dependencyManagement包裹住。</p>
+<p>这里还有一点需要注意的是，在dependencyManagement中声明依赖，如果在dependencies中导入，默认type是jar，如果要导入其它type的j依赖，需要进行配置。</p>
+<h3 id="transitive-dependencies-if-any-will-not-be-available"><a href="#transitive-dependencies-if-any-will-not-be-available" class="headerlink" title="transitive dependencies (if any) will not be available"></a>transitive dependencies (if any) will not be available</h3><p>这中错误出现的原因可能有很多，解决思路如下</p>
+<p>首先重新执行产生这个错误的命令，但是需要加上 “-X”参数，也可以直接执行mvn -X dependency:analyze ，一般会详细的输出产生错误的原因，我遇到过这种情况，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[FATAL] Non-parseable POM $&#123;user.home&#125;/.m2/repository/org/jboss/arquillian/arquillian-bom/1.1.11.Final/arquillian-bom-1.1.11.Final.pom:”</span><br></pre></td></tr></table></figure>
+
+<p>这种情况直接删除对应的目录，重现下载这个包，一般能够解决。</p>
+<h3 id="Used-undeclared-dependencies-found-或者Unused-declared-dependencies-found"><a href="#Used-undeclared-dependencies-found-或者Unused-declared-dependencies-found" class="headerlink" title="Used undeclared dependencies found 或者Unused declared dependencies found"></a>Used undeclared dependencies found 或者Unused declared dependencies found</h3><p>这类主要是警告，一般是有的jar包声明了依赖但没有使用，有的是直接依赖了对应的jar包，但是没有声明。解决这个问题只需要去对应的pom文件中加上或者删除对应的jar包</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[WARNING] Used undeclared dependencies found:</span><br><span class="line">[WARNING]    commons-lang:commons-lang:jar:2.6:compile</span><br><span class="line">[WARNING] Unused declared dependencies found:</span><br><span class="line">[WARNING]    commons-logging:commons-logging:jar:99.0-does-not-exist:provided</span><br><span class="line">[WARNING]    ch.qos.logback:logback-classic:jar:1.2.3:compile</span><br><span class="line">[WARNING]    javax.servlet:javax.servlet-api:jar:3.1.0:provided</span><br><span class="line">[WARNING]    log4j:log4j:jar:1.2.15:runtime</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/afb2f833.html" title="maven冲突解决流程">http://fengxiu.club/archives/afb2f833.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/d2073860.html" rel="prev" title="maven依赖机制简介">
+      <i class="fa fa-chevron-left"></i> maven依赖机制简介
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/76d29d45.html" rel="next" title="Hiberate Validator使用教程之自定义约束">
+      Hiberate Validator使用教程之自定义约束 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#maven%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">maven冲突解决流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mvn-dependency%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">mvn dependency简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E4%BE%9D%E8%B5%96%E6%A0%91"><span class="nav-number">1.1.1.</span> <span class="nav-text">查看依赖树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%B7%B2%E8%A7%A3%E6%9E%90%E7%9A%84%E4%BE%9D%E8%B5%96"><span class="nav-number">1.1.2.</span> <span class="nav-text">查看已解析的依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E9%A1%B9%E7%9B%AE%E5%BD%93%E5%89%8D%E4%BE%9D%E8%B5%96"><span class="nav-number">1.1.3.</span> <span class="nav-text">分析项目当前依赖</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3%E5%AE%9E%E6%88%98"><span class="nav-number">1.2.</span> <span class="nav-text">冲突解决实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E9%87%8D%E5%A4%8D%E5%A3%B0%E6%98%8E"><span class="nav-number">1.2.1.</span> <span class="nav-text">依赖重复声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E9%85%8D%E7%BD%AE%E9%A1%B9%E5%A3%B0%E6%98%8E%E4%B8%8D%E5%AE%8C%E6%95%B4"><span class="nav-number">1.2.2.</span> <span class="nav-text">依赖配置项声明不完整</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transitive-dependencies-if-any-will-not-be-available"><span class="nav-number">1.2.3.</span> <span class="nav-text">transitive dependencies (if any) will not be available</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Used-undeclared-dependencies-found-%E6%88%96%E8%80%85Unused-declared-dependencies-found"><span class="nav-number">1.2.4.</span> <span class="nav-text">Used undeclared dependencies found 或者Unused declared dependencies found</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/afb2f833.html";
+    this.page.identifier = "archives/afb2f833.html";
+    this.page.title = "maven冲突解决流程";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

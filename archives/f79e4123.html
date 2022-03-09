@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="虚拟内存概述 虚拟内存是什么、可以用来做什么 基本概念介绍 虚拟内存作为缓存的工具 虚拟内存作为内存管理的工具 虚拟内存作为内存保护的工具  1. 虚拟内存是什么、功能是什么虚拟内存是什么 虚拟内存是计算机系统内存管理的一种技术。它使得应用程序认为它拥有连续可用的内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟内存">
+<meta property="og:url" content="http://fengxiu.club/archives/f79e4123.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="虚拟内存概述 虚拟内存是什么、可以用来做什么 基本概念介绍 虚拟内存作为缓存的工具 虚拟内存作为内存管理的工具 虚拟内存作为内存保护的工具  1. 虚拟内存是什么、功能是什么虚拟内存是什么 虚拟内存是计算机系统内存管理的一种技术。它使得应用程序认为它拥有连续可用的内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/918357/201711/918357-20171108185317825-1204338566.jpg">
+<meta property="og:image" content="http://fengxiu.club/upload-images.jianshu.io/upload_images/3010486-936b0ad750173e18.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/583/format/webp">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/918357/201711/918357-20171108184518059-1211588113.png">
+<meta property="article:published_time" content="2018-09-21T14:42:00.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.400Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images2017.cnblogs.com/blog/918357/201711/918357-20171108185317825-1204338566.jpg">
+
+<link rel="canonical" href="http://fengxiu.club/archives/f79e4123.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>虚拟内存 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/f79e4123.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          虚拟内存
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-09-21 14:42:00" itemprop="dateCreated datePublished" datetime="2018-09-21T14:42:00+00:00">2018-09-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/f79e4123.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/f79e4123.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/f79e4123.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/f79e4123.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h1><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ol>
+<li>虚拟内存是什么、可以用来做什么</li>
+<li>基本概念介绍</li>
+<li>虚拟内存作为缓存的工具</li>
+<li>虚拟内存作为内存管理的工具</li>
+<li>虚拟内存作为内存保护的工具</li>
+</ol>
+<h3 id="1-虚拟内存是什么、功能是什么"><a href="#1-虚拟内存是什么、功能是什么" class="headerlink" title="1. 虚拟内存是什么、功能是什么"></a>1. 虚拟内存是什么、功能是什么</h3><p><strong>虚拟内存是什么</strong></p>
+<p><strong>虚拟内存</strong>是计算机系统内存管理的一种技术。它使得应用程序认为它拥有连续可用的内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。</p>
+<p>下面是《深入立即操作系统》给出的定义：</p>
+<blockquote>
+<p>为了更加有效的管理内存并且少出错，现代操作系统提供了一种对主存的抽象概念，叫做虚拟内存（VM）。虚拟内存是硬件异常、硬件地址翻译、主存、磁盘文件和内核软件的完美交互。</p>
+</blockquote>
+<p>并且它成功的主要原因就是它一直在沉默的，自动的工作，换句话说，我们这些做应用的程序员根本不需要干涉它的工作过程，他对应用程序是透明的。</p>
+<p>虚拟内存功能是什么</p>
+<ol>
+<li>它将主存看成是一个存储在磁盘上的地址空间的高速缓存，在主存中只保存活动区域，并根据需要在磁盘和主存之间来回传送数据，通过这种方式，它高效地使用了内存。</li>
+<li>它为每个进程提供了一致的地址空间，从而简化了内存管理。</li>
+<li>它保护了每个进程的地址空间不被其他进程破坏。</li>
+</ol>
+<span id="more"></span>
+
+<h3 id="2-基本概念介绍"><a href="#2-基本概念介绍" class="headerlink" title="2.基本概念介绍"></a>2.基本概念介绍</h3><h4 id="物理地址、虚拟地址"><a href="#物理地址、虚拟地址" class="headerlink" title="物理地址、虚拟地址"></a>物理地址、虚拟地址</h4><p>虚拟内存主要是一种地址扩展技术，主要是建立和管理两套地址系统：物理地址和虚拟地址。由虚拟地址空间（硬盘上）装入进程，其实际执行是在物理地址空间（内存上）承载进程的执行。虚拟地址空间比物理地址空间要大的多，操作系统同时承担着管理者两套地址空间的转换。我们来看看什么是物理寻址：</p>
+<p><img src="https://images2017.cnblogs.com/blog/918357/201711/918357-20171108185317825-1204338566.jpg" alt="物理寻址"></p>
+<p>主存的每个地址都是唯一的，第一个字节地址为0，接下来为1，以此类推。CPU使用这种访问方式就是<strong>物理寻址</strong>。上图所示就是CPU通过<strong>地址总线</strong>传递读取主存中4号地址开始处的内容并通过数据总线传送到CPU的寄存器中。</p>
+<p>当然地址总线也不是无限大的，我们通常所说的32位系统，其寻址能力是2^32 &#x3D; 4 294 967 296B（4GB）也就是说内存条插的再多也没有用，地址总线只能最多访问到4GB的地址内容。我们前面说过4GB的物理内存空间其实并不大（如果是独占的话）。这时候科学家们想到了一个很好的方法，建立虚拟寻址方式，使用一个成为MMU的地址翻译工具将虚拟地址翻译成物理地址在提供访问，如下图：</p>
+<p><img src="/upload-images.jianshu.io/upload_images/3010486-936b0ad750173e18.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/583/format/webp" alt="img"></p>
+<p>使用虚拟寻址的时候，cpu先是生成一个虚拟地址：4100再经过地址翻译器，将4100翻译成物理地址。</p>
+<p>我们说过虚拟地址要比物理地址大的多，为啥还要麻烦的将物理地址转成虚拟地址呢？虚拟地址的发明究竟是为了什么，我们知道对内存的访问要比硬盘的访问快10000倍，如果我们在内存中没有找到相应的内容（不命中），而需要到硬盘上找的话，我们必须要提供相对来说高效率的访问方式。这时候就创建了一个虚拟存储器，管理着磁盘，以每页的方式进行整合，每个页面的大小4kb-2mb不等，加上偏移量就成为了一个虚拟地址。比如4100，说明的就是页4编号，偏移100处的位置。这就比挨个挨个单独寻址要快的多。</p>
+<h4 id="地址空间"><a href="#地址空间" class="headerlink" title="地址空间"></a>地址空间</h4><p>地址空间是一个非负整数的集合{0，1，2，……}，一个32位的系统中有：2^32 &#x3D; 4 294 967 296B（4GB）个有效地址。地址空间的概念很重要，我们必须要清楚数据对象（字节）和它的属性（地址）的区别， 举个例子：我和我老婆住在苍溪县xx小区7栋1单元，这个就是我的属性：地址。另外，住在家的我和我老婆就是数据对象（字节）。虚拟存储器的基本思想是：主存中的每个字节都有一个选自虚拟地址空间的虚拟地址和一个选自物理地址空间的物理地址。</p>
+<h3 id="3-虚拟内存作为缓存的工具"><a href="#3-虚拟内存作为缓存的工具" class="headerlink" title="3. 虚拟内存作为缓存的工具"></a>3. 虚拟内存作为缓存的工具</h3><p><strong>虚拟内存将主存看成是一个磁盘的高速缓存，主存中只保存活动区域，并根据需要在磁盘和主存之间来回传送数据。</strong></p>
+<p>从概念上来说，虚拟内存被组织成为一个由存放在磁盘上的 N 个连续的字节大小的单元组成的数组，也就是字节数组。每个字节都有一个唯一的虚拟地址作为数组的索引。虚拟内存的地址和磁盘的地址之间建立影射关系。磁盘上活动的数组内容被缓存在主存中。在存储器层次结构中，磁盘的数据被分割成块(block)，这些块作为和主存(较高层)之间的传输单元。主存作为虚拟内存(或者说磁盘)的缓存。虚拟内存（VM）系统将虚拟内存分割成称为大小固定的虚拟页（Virtual Page,VP），每个虚拟页的大小为固定字节。同样的，物理内存被分割为物理页（Physical Page,PP）,大小也为固定字节（物理页也称作页帧，page frame）。</p>
+<p>在任意时刻，虚拟页面都分为三个不相交的部分：</p>
+<ul>
+<li>**未分配的(Unallocated)**：VM 系统还未分配（或者创建）的页，未分配的页没有任何数据和它们关联，因此不占用任何内存&#x2F;磁盘空间。</li>
+<li>**缓存的(Cached)**：当前已缓存在物理内存中的已分配页。</li>
+<li>**未缓存的(UnCached)**：该页已经映射到磁盘上了，但是还没缓存在物理内存中。</li>
+</ul>
+<blockquote>
+<p>其中<strong>未分配的VP</strong>不占用任何的实际物理空间，这点要理解。32位程序地址空间就有4G，至于64G的程序它的地址空间是一个非常大的天文数字(貌似是16777216T)，而目前我们的电脑高配的也就2T磁盘，16G内存。如果64位程序每个VP都映射着实际的PP。无论如何也对应不上的。并且也完全没必要一一映射，毕竟程序不可能实际使用那么大的地址空间。</p>
+</blockquote>
+<p><img src="https://images2017.cnblogs.com/blog/918357/201711/918357-20171108184518059-1211588113.png"></p>
+<p>图13：VM使用主存来作为缓存</p>
+<p>上图展示了在一个有 8 个页面的虚拟内存中，虚拟页 0 和 3 还没有被分配，所以在磁盘上不存在。虚拟页 1，4，6 被缓存在物理内存中。虚拟页 2，5，7 已经被映射分配了，但是还没有缓存在主存中。</p>
+<blockquote>
+<p>当然，那个图上标注的不对,VP 部分， <code>n-p</code>和<code>N-1</code>应该分别标注为<code>3</code>和<code>7</code>,不过我们找不到更合适的图了，(这种图自己画压力太大了)。所以大家知道我们假设共有8个VP就好了。</p>
+</blockquote>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://chyyuu.gitbooks.io/simple_os_book/content/zh/chapter-3/virtual_mem_managment.html">什么是虚拟内存</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e1b82b230917">《深入理解计算机系统》| 虚拟存储器</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yaoxiaowen/p/7805964.html">什么是内存(二)：虚拟内存</a></p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/aeafbee0.html" rel="bookmark">IO模型：阻塞、非阻塞、同步和异步之间的区别</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/50d898f6.html" rel="bookmark">伪共享（false sharing）并发编程无声的性能杀手</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/6d00129c.html" rel="bookmark">自旋锁</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/f79e4123.html" title="虚拟内存">http://fengxiu.club/archives/f79e4123.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/400f00a6.html" rel="prev" title="深入分析ThreadLocal">
+      <i class="fa fa-chevron-left"></i> 深入分析ThreadLocal
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/54488428.html" rel="next" title="Random 与 ThreadLocalRandom 对比">
+      Random 与 ThreadLocalRandom 对比 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="nav-number">1.</span> <span class="nav-text">虚拟内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.0.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E6%98%AF%E4%BB%80%E4%B9%88%E3%80%81%E5%8A%9F%E8%83%BD%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.0.2.</span> <span class="nav-text">1. 虚拟内存是什么、功能是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.0.3.</span> <span class="nav-text">2.基本概念介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E3%80%81%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">物理地址、虚拟地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4"><span class="nav-number">1.0.3.2.</span> <span class="nav-text">地址空间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E4%BD%9C%E4%B8%BA%E7%BC%93%E5%AD%98%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="nav-number">1.0.4.</span> <span class="nav-text">3. 虚拟内存作为缓存的工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.0.5.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/f79e4123.html";
+    this.page.identifier = "archives/f79e4123.html";
+    this.page.title = "虚拟内存";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述首先要明白范式（NF）是什么意思。按照教材中的定义，范式是符合某一种级别的关系模式的集合，表示一个关系内部各属性之间的联系的合理化程度。实际上你可以把它粗略地理解为一张数据表的表结构所符合的某种设计标准的级别。就像家里装修买建材，最环保的是E0级，其次是E1级，还有E2级等等。数据库范式也分为1NF，2NF，3NF，BCNF，4NF，5NF。一般在我们设计关系型数据库的时候，最多考虑到BCNF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库三范式">
+<meta property="og:url" content="http://fengxiu.club/archives/f413b470.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="概述首先要明白范式（NF）是什么意思。按照教材中的定义，范式是符合某一种级别的关系模式的集合，表示一个关系内部各属性之间的联系的合理化程度。实际上你可以把它粗略地理解为一张数据表的表结构所符合的某种设计标准的级别。就像家里装修买建材，最环保的是E0级，其次是E1级，还有E2级等等。数据库范式也分为1NF，2NF，3NF，BCNF，4NF，5NF。一般在我们设计关系型数据库的时候，最多考虑到BCNF">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://fengxiu.club/images/24afd11455ac34a280fa83e4e8d75ccc_hd.jpg">
+<meta property="og:image" content="http://fengxiu.club/images/6b735fb9503b0930e741faa474fed28e_hd.jpg">
+<meta property="og:image" content="http://fengxiu.club/images/5b16f655b57a957bfa340d0a996a0eea_hd.jpg">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-324.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-325.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-326.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-327.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-328.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-329.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-330.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-331.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-332.png">
+<meta property="article:published_time" content="2019-03-21T23:49:56.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.400Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fengxiu.club/images/24afd11455ac34a280fa83e4e8d75ccc_hd.jpg">
+
+<link rel="canonical" href="http://fengxiu.club/archives/f413b470.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据库三范式 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/f413b470.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据库三范式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-21 23:49:56" itemprop="dateCreated datePublished" datetime="2019-03-21T23:49:56+00:00">2019-03-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/f413b470.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/f413b470.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/f413b470.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/f413b470.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>首先要明白范式（NF）是什么意思。按照教材中的定义，范式是符合某一种级别的关系模式的集合，表示一个关系内部各属性之间的联系的合理化程度。实际上你可以把它粗略地理解为<strong>一张数据表的表结构所符合的某种设计标准的级别</strong>。就像家里装修买建材，最环保的是E0级，其次是E1级，还有E2级等等。数据库范式也分为1NF，2NF，3NF，BCNF，4NF，5NF。一般在我们设计关系型数据库的时候，最多考虑到BCNF就够。符合高一级范式的设计，必定符合低一级范式，例如符合2NF的关系模式，必定符合1NF。</p>
+<p>同时应用数据库范式可以带来许多好处，但是最重要的好处归结为三点：</p>
+<ol>
+<li>减少数据冗余（这是最主要的好处，其他好处都是由此而附带的）</li>
+<li>消除异常（插入异常，更新异常，删除异常）</li>
+<li>让数据组织的更加准确。</li>
+<li>但剑是双刃的，应用数据库范式同样也会带来弊端，这会在文章后面说到。<!-- more  --></li>
+</ol>
+<h2 id="第一范式"><a href="#第一范式" class="headerlink" title="第一范式"></a>第一范式</h2><p><strong>1NF的定义为：符合1NF的关系中的每个属性都不可再分</strong></p>
+<p>数据库表的每一列都是不可分割的基本数据项，同一列中不能有多个值，即实体中的某个属性不能有多个值或者不能有重复的属性。（保持数据的原子性）</p>
+<p>表1所示的情况，就不符合1NF的要求。<br><img src="/images/24afd11455ac34a280fa83e4e8d75ccc_hd.jpg" alt="表1"></p>
+<p>实际上，1NF是所有关系型数据库的最基本要求，你在关系型数据库管理系统（RDBMS），例如SQL Server，Oracle，MySQL中创建数据表的时候，如果数据表的设计不符合这个最基本的要求，那么操作一定是不能成功的。也就是说，只要在RDBMS中已经存在的数据表，一定是符合1NF的。如果我们要在RDBMS存储表中的数据，就得设计为表2的形式：<br><img src="/images/6b735fb9503b0930e741faa474fed28e_hd.jpg" alt="表2"><br>但是仅仅符合1NF的设计，仍然会存在数据冗余过大，插入异常，删除异常，修改异常的问题，例如对于表3中的设计：<br><img src="/images/5b16f655b57a957bfa340d0a996a0eea_hd.jpg" alt="表三"></p>
+<ol>
+<li><strong>数据冗余过大</strong>：每一名学生的学号、姓名、系名、系主任这些数据重复多次。每个系与对应的系主任的数据也重复多次</li>
+<li><strong>插入异常</strong>：假如学校新建了一个系，但是暂时还没有招收任何学生（比如3月份就新建了，但要等到8月份才招生），那么是无法将系名与系主任的数据单独地添加到数据表中去的 （注2）<ul>
+<li><strong>注1</strong>：码：关系中的某个属性或者某几个属性的组合，用于区分每个元组（可以把元组理解为一张表中的每条记录，也就是每一行）。</li>
+<li><strong>注2：</strong>根据三种关系完整性约束中实体完整性的要求，关系中的码所包含的任意一个属性都不能为空，所有属性的组合也不能重复。为了满足此要求，图中的表，只能将学号与课名的组合作为码，否则就无法唯一地区分每一条记录。</li>
+</ul>
+</li>
+<li><strong>删除异常</strong>：假如将某个系中所有学生相关的记录都删除，那么所有系与系主任的数据也就随之消失了（一个系所有学生都没有了，并不表示这个系就没有了）。</li>
+<li><strong>修改异常</strong>：假如李小明转系到法律系，那么为了保证数据库中数据的一致性，需要修改三条记录中系与系主任的数据。</li>
+</ol>
+<p>正因为仅符合1NF的数据库设计存在着这样那样的问题，我们需要提高设计标准，去掉导致上述四种问题的因素，使其符合更高一级的范式（2NF），这就是所谓的规范化。</p>
+<h2 id="第二范式"><a href="#第二范式" class="headerlink" title="第二范式"></a>第二范式</h2><p><strong>在满足第一范式的基础上，实体的每个非主键属性完全函数依赖于主键属性（消除部分依赖）</strong></p>
+<p>接下来对这句话中涉及到的概念——<strong>函数依赖</strong>、<strong>码</strong>、<strong>非主属性</strong> 进行解释。</p>
+<h3 id="函数依赖"><a href="#函数依赖" class="headerlink" title="函数依赖"></a>函数依赖</h3><p>若在一张表中，在属性（或属性组）X的值确定的情况下，必定能确定属性Y的值，那么就可以说Y函数依赖于X，写作 X → Y。也就是说，在数据表中，不存在任意两条记录，它们在X属性（或属性组）上的值相同，而在Y属性上的值不同。这也就是函数依赖名字的由来，类似于函数关系 y &#x3D; f(x)，在x的值确定的情况下，y的值一定是确定的。</p>
+<p>例如，对于表3中的数据，找不到任何一条记录，它们的学号相同而对应的姓名不同。所以我们可以说姓名函数依赖于学号，写作学号 → 姓名。但是反过来，因为可能出现同名的学生，所以有可能不同的两条学生记录，它们在姓名上的值相同，但对应的学号不同，所以我们不能说学号函数依赖于姓名。表中其他的函数依赖关系还有如：</p>
+<ul>
+<li>系名 → 系主任</li>
+<li>学号 → 系主任</li>
+<li>（学号，课名） → 分数</li>
+</ul>
+<p>但是以下函数依赖关系则不成立</p>
+<ul>
+<li>学号-&gt;课名</li>
+<li>学号-&gt;分数</li>
+<li>课名-&gt;系主任</li>
+</ul>
+<p>从函数依赖这个概念展开，还会有三个概念：</p>
+<h4 id="完全函数依赖"><a href="#完全函数依赖" class="headerlink" title="完全函数依赖"></a>完全函数依赖</h4><p>在一张表中，如果X-&gt;Y,且对于X的任何一个真子集(假如属性组X包含超过一个属性的话，如果是一个那么真子集就是自己)，任意真子集用X1表示，X1-&gt;Y都不成立，那么我们称Y对于X完全函数依赖，记做：<br>    <img src="/images/pasted-324.png" alt="upload successful"></p>
+<p>继续用上面表三来做例子：</p>
+<ul>
+<li>姓名完全依赖于学号</li>
+<li>分数完全依赖于(学号，课名)，(一个学生可能有多门课，因此有多个分数，一个课程有多个学生，就有多个分数)</li>
+</ul>
+<h4 id="部分函数依赖："><a href="#部分函数依赖：" class="headerlink" title="部分函数依赖："></a><strong>部分函数依赖：</strong></h4><p>假如Y函数依赖于X，但同时Y并不完全函数依赖于X。那么我们就称Y部分依赖于X，记作：</p>
+<p><img src="/images/pasted-325.png" alt="upload successful"></p>
+<p>上面定义比较绕，我们可以这样理解，当主键由两个或两个以上字段构成，而表中的某些信息通过主键的一个字段就能唯一确定，我们称这样的依赖关系为部分依赖</p>
+<p>比如：</p>
+<ul>
+<li>姓名完全依赖于(学号，课名)，但是学号本身就可以决定姓名。</li>
+</ul>
+<h4 id="传递函数依赖"><a href="#传递函数依赖" class="headerlink" title="传递函数依赖"></a>传递函数依赖</h4><p>假如Z函数依赖于Y，且Y函数依赖于X ，同时Y不包含于X，且X不函数依赖于Y这个前提，那么我们就称Z传递函数依赖于X ，简单的理解就是A依赖于B，B依赖于C，就可以说A依赖C，记作</p>
+<p><img src="/images/pasted-326.png" alt="upload successful"></p>
+<h3 id="码、候选码和主码"><a href="#码、候选码和主码" class="headerlink" title="码、候选码和主码"></a>码、候选码和主码</h3><p><strong>码</strong>：简单的说就是能唯一标识实体的属性。如果用前面函数依赖关系来解释，假设K是某表中的一个属性或属性组，若除K之外的所有属性都完全函数依赖于K，那么我们称K为候选码，简称为码。在实际中我们通常可以理解为：假如当 K 确定的情况下，该表除 K 之外的所有属性的值也就随之确定，那么K就是码。</p>
+<p>一张表中可以有超过一个码。（实际应用中为了方便，通常选择其中的一个码作为<strong>主码</strong>）主码我们在建立数据库的时候，需要为每张表指定一个主码，主码也叫主键。所谓主码就是在实体集中区分不同实体的候选码。</p>
+<p> 例如：在学生实体中，“学号”是能唯一的区分学生实体的，同时又假设“姓名”、“年龄”的属性组合足以区分学生实体，那么{学号}和{姓名，年龄}都是候选码。而我们选择学号极少变化，比较稳定，因此我们选他做主码。</p>
+<h3 id="主属性与非主属性"><a href="#主属性与非主属性" class="headerlink" title="主属性与非主属性"></a>主属性与非主属性</h3><p><strong>主属性</strong>：包含在任一候选码中的属性称主属性。</p>
+<p><strong>非主属性</strong>  不包含在候选码中的属性称为非主属性。<br>非主属性是相对与主属性来定义的。<br> 例如：在关系——学生（学号，姓名，年龄，性别，班级）中，</p>
+<p>主码是“学号”，那么其他的“姓名”、“年龄”、“性别”、“班级”就都可以称为非主属性</p>
+<h3 id="判断表是否符合2NF"><a href="#判断表是否符合2NF" class="headerlink" title="判断表是否符合2NF"></a>判断表是否符合2NF</h3><p>接着以上面的表3来举例，看看表3符合第二范式吗？判断的依据实际上就是看数据表中<strong>是否存在非主属性对于码的部分函数依赖</strong>。若存在，则数据表最高只符合1NF的要求，若不存在，则符合2NF的要求。判断的方法是：</p>
+<p>第一步：找出数据表中所有的<strong>码</strong>。<br>第二步：根据第一步所得到的码，找出所有的<strong>主属性</strong>。<br>第三步：数据表中，除去所有的主属性，剩下的就都是<strong>非主属性</strong>了。<br>第四步：查看是否存在非主属性对码的<strong>部分函数依赖</strong>。</p>
+<p>下面我们一步步的来看：</p>
+<h4 id="第一步：找出数据表中所有的码"><a href="#第一步：找出数据表中所有的码" class="headerlink" title="第一步：找出数据表中所有的码"></a>第一步：找出数据表中所有的码</h4><ol>
+<li>查看所有每一单个属性，当它的值确定了，是否剩下的所有属性值都能确定。</li>
+<li>查看所有包含有两个属性的属性组，当它的值确定了，是否剩下的所有属性值都能确定。</li>
+<li>……</li>
+<li>查看所有包含了六个属性，也就是所有属性的属性组，当它的值确定了，是否剩下的所有属性值都能确定。</li>
+</ol>
+<p>看起来很麻烦是，但是这里有一个诀窍，就是假如A是码，这里的A可能是一个单独属性也可能是多个属性，那么所有包含了A的属性组，如（A，B）、（A，C）、（A，B，C）等等，都不是码了（因为码的要求里有一个“<strong>完全函数依赖</strong>要求）。</p>
+<p><strong>下图是表3中所有的函数依赖关系：</strong></p>
+<p><img src="/images/pasted-327.png" alt="upload successful"></p>
+<p>这一步完成以后，可以得到，表3的码只有一个，就是<strong>（学号、课名）</strong>。</p>
+<h4 id="第二步：根据第一步所得到的码，找出所有的主属性"><a href="#第二步：根据第一步所得到的码，找出所有的主属性" class="headerlink" title="第二步：根据第一步所得到的码，找出所有的主属性"></a>第二步：根据第一步所得到的码，找出所有的主属性</h4><p>主属性有俩个：学号与课名</p>
+<h4 id="第三步：找出所有的非主属性"><a href="#第三步：找出所有的非主属性" class="headerlink" title="第三步：找出所有的非主属性"></a>第三步：找出所有的非主属性</h4><p>非主属性有四个：<strong>姓名</strong>、<strong>系名</strong>、<strong>系主任</strong>、<strong>分数</strong></p>
+<h4 id="第四步：是否存在非主属性对码的部分函数依赖"><a href="#第四步：是否存在非主属性对码的部分函数依赖" class="headerlink" title="第四步：是否存在非主属性对码的部分函数依赖"></a>第四步：是否存在非主属性对码的部分函数依赖</h4><p>对于<strong>（学号，课名） → 姓名</strong>，有 <strong>学号 → 姓名</strong>，存在非主属性 <strong>姓名</strong> 对码<strong>（学号，课名）</strong>的部分函数依赖。<br>对于<strong>（学号，课名） → 系名</strong>，有 <strong>学号 → 系名</strong>，存在非主属性 系<strong>名</strong> 对码<strong>（学号，课名）</strong>的部分函数依赖。<br>对于<strong>（学号，课名） → 系主任</strong>，有 <strong>学号 → 系主任</strong>，存在非主属性  对码<strong>（学号，课名）</strong>的部分函数依赖。</p>
+<p>所以表3存在非主属性对于码的部分函数依赖，最高只符合1NF的要求，不符合2NF的要求。</p>
+<p>为了让表3符合2NF的要求，我们必须消除这些部分函数依赖，只有一个办法，就是将大数据表拆分成两个或者更多个更小的数据表，在拆分的过程中，要达到更高一级范式的要求，这个过程叫做<strong>模式分解</strong>。模式分解的方法不是唯一的，以下是其中一种方法：<br><strong>选课（学号，课名，分数）</strong><br><strong>学生（学号，姓名，系名，系主任）</strong></p>
+<p>我们先来判断以下，<strong>选课</strong>表与<strong>学生</strong>表，是否符合了2NF的要求？</p>
+<p>对于<strong>选课</strong>表，其码是<strong>（学号，课名）</strong>，主属性是<strong>学号</strong>和<strong>课名</strong>，非主属性是<strong>分数</strong>，<strong>学号</strong>确定，并不能唯一确定<strong>分数</strong>，<strong>课名</strong>确定，也不能唯一确定<strong>分数</strong>，所以不存在非主属性<strong>分数</strong>对于码 <strong>（学号，课名）</strong>的部分函数依赖，所以此表符合2NF的要求。</p>
+<p>对于<strong>学生</strong>表，其码是<strong>学号，</strong>主属性是<strong>学号</strong>，非主属性是<strong>姓名、系名</strong>和<strong>系主任</strong>，因为码只有一个属性，所以不可能存在非主属性对于码 的部分函数依赖，所以此表符合2NF的要求。</p>
+<p>下表表示了模式分解以后的新的函数依赖关系</p>
+<p><img src="/images/pasted-328.png" alt="upload successful"></p>
+<p>下图是相对应上面表3进行模式分解之后的数据表4图</p>
+<p><img src="/images/pasted-329.png" alt="表4"></p>
+<p>这里来看看相对于上面的第一范式出现的问题，使用上表进行同样的操作，是否还存在问题？</p>
+<ol>
+<li>数据冗余减少：从上表可以明显的看出，学生的姓名，系主任和系名明显的减少。有改进</li>
+<li>修改异常：如果李晓明转到法律系，这里只需要修改一条数据。有改进</li>
+<li>删除异常：删除某个系中所有的学生记录，改系的信息任然全部丢失。无改进。</li>
+<li>插入异常：插入一个尚无学生的新系的信息，因为学生的学号是主码。不能为空，所以操作不允许。无改进</li>
+</ol>
+<p>从上面可以看出，仅仅符合2NF还是不够。在于仍然存在非主属性<strong>系主任</strong>对于码<strong>学号</strong>的传递函数依赖。为了能进一步解决这些问题，我们还需要将符合2NF要求的数据表改进为符合3NF的要求。</p>
+<h2 id="第三范式"><a href="#第三范式" class="headerlink" title="第三范式"></a>第三范式</h2><p><strong>在2NF的基础之上，消除了非主属性对于码的传递函数依赖</strong>。</p>
+<p>接下来看看我们上面分解出来的表4是否符合3NF的要求：</p>
+<p>对于选课表，主码为(学号，课名)，主属性为学号和课名，非主属性只有一个，为分数，不可能存在函数传递依赖，所以此表符合3NF。</p>
+<p>对于学生表，主码为学号，主属性为学号，非主属性姓名、系名和系主任。因为学号-&gt;系名，同时系名-&gt;系主任，所以存在非主属性系主任对于主码学号的函数传递依赖，因此学生表不符合3NF。</p>
+<p>为了让数据表设计达到3NF，我们必须进一步进行模式分解为以下形式：<br><strong>选课（学号，课名，分数）</strong><br><strong>学生（学号，姓名，系名）</strong><br><strong>系（系名，系主任）</strong></p>
+<p>对于<strong>选课</strong>表，符合3NF的要求，之前已经分析过了。</p>
+<p>对于<strong>学生</strong>表，码为<strong>学号</strong>，主属性为<strong>学号</strong>，非主属性为<strong>系名</strong>，不可能存在非主属性对于码的传递函数依赖，所以符合3NF的要求。</p>
+<p>对于<strong>系</strong>表，码为<strong>系名</strong>，主属性为<strong>系名</strong>，非主属性为<strong>系主任</strong>，不可能存在非主属性对于码的传递函数依赖（至少要有三个属性才可能存在传递函数依赖关系），所以符合3NF的要求。</p>
+<p>新的依赖关系如下图：</p>
+<p><img src="/images/pasted-330.png" alt="upload successful"></p>
+<p>新的数据表如下图</p>
+<p><img src="/images/pasted-331.png" alt="upload successful"></p>
+<p>现在我们来看一下，进行同样的操作，是否还存在着之前的那些问题？</p>
+<ol>
+<li>删除某个系中所有的学生记录<br>该系的信息不会丢失。——有改进</li>
+<li>插入一个尚无学生的新系的信息。<br>因为系表与学生表目前是独立的两张表，所以不影响。——有改进</li>
+<li>数据冗余更加少了。——有改进</li>
+</ol>
+<p>由此可见，符合3NF要求的数据库设计，<strong>基本</strong>上解决了数据冗余过大，插入异常，修改异常，删除异常的问题。当然，在实际中，往往为了性能上或者应对扩展的需要，经常 做到2NF或者1NF，但是作为数据库设计人员，至少应该知道，3NF的要求是怎样的。</p>
+<h2 id="BCNF-范式"><a href="#BCNF-范式" class="headerlink" title="BCNF 范式"></a>BCNF 范式</h2><p>要了解 BCNF 范式，那么先看这样一个问题：</p>
+<ol>
+<li>某公司有若干个仓库；</li>
+<li>每个仓库只能有一名管理员，一名管理员只能在一个仓库中工作；</li>
+<li>一个仓库中可以存放多种物品，一种物品也可以存放在不同的仓库中。每种物品在每个仓库中都有对应的数量。</li>
+</ol>
+<p>那么关系模式仓库（仓库名，管理员，物品名，数量） 属于哪一级范式？</p>
+<p>答：已知函数依赖集：仓库名 → 管理员，管理员 → 仓库名，（仓库名，物品名）→ 数量<br>码：（管理员，物品名），（仓库名，物品名）<br>主属性：仓库名、管理员、物品名<br>非主属性：数量<br>所以不存在非主属性对码的部分函数依赖和传递函数依赖，此关系模式属于3NF。</p>
+<p>基于此关系模式的关系（具体的数据）可能如图所示：</p>
+<p><img src="/images/pasted-332.png" alt="upload successful"></p>
+<p>好，既然此关系模式已经属于了 3NF，那么这个关系模式是否存在问题呢？我们来看以下几种操作：</p>
+<ol>
+<li>先新增加一个仓库，但尚未存放任何物品，是否可以为该仓库指派管理员？——不可以，因为物品名也是主属性，根据实体完整性的要求，主属性不能为空。</li>
+<li>某仓库被清空后，需要删除所有与这个仓库相关的物品存放记录，会带来什么问题？——仓库本身与管理员的信息也被随之删除了。</li>
+<li>如果某仓库更换了管理员，会带来什么问题？——这个仓库有几条物品存放记录，就要修改多少次管理员信息。</li>
+</ol>
+<p>从这里我们可以得出结论，在某些特殊情况下，即使关系模式符合 3NF 的要求，仍然存在着插入异常，修改异常与删除异常的问题，仍然不是好的设计。</p>
+<p>造成此问题的原因：存在着<strong>主属性</strong>对于码的部分函数依赖与传递函数依赖。（在此例中就是存在主属性【仓库名】对于码【（管理员，物品名）】的部分函数依赖。</p>
+<p>解决办法就是要在 3NF 的基础上消除<strong>主属性</strong>对于码的部分与传递函数依赖。</p>
+<p>仓库（仓库名，管理员）<br>库存（仓库名，物品名，数量）</p>
+<p>这样，之前的插入异常，修改异常与删除异常的问题就被解决了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从上面可以看出，在设计表的时候，通过提高表的数据库范式，可以减少数据冗余，删除异常，插入异常和修改异常。</p>
+<p>但是数据库范式越高，则表越多，表多会带来很多问题：</p>
+<ol>
+<li><p>查询时要连接多个表，增加了查询的复杂度</p>
+</li>
+<li><p>查询时需要连接多个表，降低了数据库查询性能</p>
+</li>
+</ol>
+<p>而现在的情况，磁盘空间成本基本可以忽略不计，所以数据冗余所造成的问题也并不是应用数据库范式的理由。</p>
+<p>因此，并不是应用的范式越高越好，要看实际情况而定。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1591955163343123446&wfr=spider&for=pc">数据库三大范式【面试+工作】</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/24696366">如何解释关系数据库的第一第二第三范式？</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/CareySon/archive/2010/02/16/1668803.html">数据库范式那些事</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/dc527cae.html" rel="bookmark">数据库和缓存双写一致性方案简介</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀天涯
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/f413b470.html" title="数据库三范式">http://fengxiu.club/archives/f413b470.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/31ad40b4.html" rel="prev" title="InnoDB存储引擎 之 锁">
+      <i class="fa fa-chevron-left"></i> InnoDB存储引擎 之 锁
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/aeafbee0.html" rel="next" title="IO模型：阻塞、非阻塞、同步和异步之间的区别">
+      IO模型：阻塞、非阻塞、同步和异步之间的区别 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E8%8C%83%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">第一范式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E8%8C%83%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">第二范式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E4%BE%9D%E8%B5%96"><span class="nav-number">3.1.</span> <span class="nav-text">函数依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%8C%E5%85%A8%E5%87%BD%E6%95%B0%E4%BE%9D%E8%B5%96"><span class="nav-number">3.1.1.</span> <span class="nav-text">完全函数依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%83%A8%E5%88%86%E5%87%BD%E6%95%B0%E4%BE%9D%E8%B5%96%EF%BC%9A"><span class="nav-number">3.1.2.</span> <span class="nav-text">部分函数依赖：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%A0%E9%80%92%E5%87%BD%E6%95%B0%E4%BE%9D%E8%B5%96"><span class="nav-number">3.1.3.</span> <span class="nav-text">传递函数依赖</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%81%E3%80%81%E5%80%99%E9%80%89%E7%A0%81%E5%92%8C%E4%B8%BB%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">码、候选码和主码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%B1%9E%E6%80%A7%E4%B8%8E%E9%9D%9E%E4%B8%BB%E5%B1%9E%E6%80%A7"><span class="nav-number">3.3.</span> <span class="nav-text">主属性与非主属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E8%A1%A8%E6%98%AF%E5%90%A6%E7%AC%A6%E5%90%882NF"><span class="nav-number">3.4.</span> <span class="nav-text">判断表是否符合2NF</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E6%89%BE%E5%87%BA%E6%95%B0%E6%8D%AE%E8%A1%A8%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E7%A0%81"><span class="nav-number">3.4.1.</span> <span class="nav-text">第一步：找出数据表中所有的码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E6%A0%B9%E6%8D%AE%E7%AC%AC%E4%B8%80%E6%AD%A5%E6%89%80%E5%BE%97%E5%88%B0%E7%9A%84%E7%A0%81%EF%BC%8C%E6%89%BE%E5%87%BA%E6%89%80%E6%9C%89%E7%9A%84%E4%B8%BB%E5%B1%9E%E6%80%A7"><span class="nav-number">3.4.2.</span> <span class="nav-text">第二步：根据第一步所得到的码，找出所有的主属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E6%89%BE%E5%87%BA%E6%89%80%E6%9C%89%E7%9A%84%E9%9D%9E%E4%B8%BB%E5%B1%9E%E6%80%A7"><span class="nav-number">3.4.3.</span> <span class="nav-text">第三步：找出所有的非主属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8%E9%9D%9E%E4%B8%BB%E5%B1%9E%E6%80%A7%E5%AF%B9%E7%A0%81%E7%9A%84%E9%83%A8%E5%88%86%E5%87%BD%E6%95%B0%E4%BE%9D%E8%B5%96"><span class="nav-number">3.4.4.</span> <span class="nav-text">第四步：是否存在非主属性对码的部分函数依赖</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E8%8C%83%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">第三范式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BCNF-%E8%8C%83%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">BCNF 范式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/f413b470.html";
+    this.page.identifier = "archives/f413b470.html";
+    this.page.title = "数据库三范式";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

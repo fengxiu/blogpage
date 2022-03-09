@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概要本文只是先简单的介绍下线程池的整体架构，对整体有一个清晰的认识，接着演示一个简单的线程池使用案例。  线程池整体架构介绍 简单示例">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java多线程系列-JUC线程池之 01 线程池架构">
+<meta property="og:url" content="http://fengxiu.club/archives/984191f2.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="概要本文只是先简单的介绍下线程池的整体架构，对整体有一个清晰的认识，接着演示一个简单的线程池使用案例。  线程池整体架构介绍 简单示例">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-345.png">
+<meta property="article:published_time" content="2018-07-23T14:07:00.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.380Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="JUC">
+<meta property="article:tag" content="线程池">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fengxiu.club/images/pasted-345.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/984191f2.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>java多线程系列-JUC线程池之 01 线程池架构 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/984191f2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          java多线程系列-JUC线程池之 01 线程池架构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-23 14:07:00" itemprop="dateCreated datePublished" datetime="2018-07-23T14:07:00+00:00">2018-07-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/juc/Executors/" itemprop="url" rel="index"><span itemprop="name">Executors</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/984191f2.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/984191f2.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/984191f2.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/984191f2.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>本文只是先简单的介绍下线程池的整体架构，对整体有一个清晰的认识，接着演示一个简单的线程池使用案例。</p>
+<ol>
+<li>线程池整体架构介绍</li>
+<li>简单示例<span id="more"></span></li>
+</ol>
+<h2 id="线程池整体架构介绍"><a href="#线程池整体架构介绍" class="headerlink" title="线程池整体架构介绍"></a>线程池整体架构介绍</h2><p>线程池类图如下：<br><img src="/images/pasted-345.png" alt="Executor 框架"></p>
+<h3 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h3><p>Executor将任务的执行和任务的创建分离开来。他提供了执行的接口，是来执行任务的。只要提交的任务实现了Runnable接口，就可以将此任务交给Executor来执行，这个接口只包含一个函数，代码如下:</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Executor</span>&#123;</span><br><span class="line">    <span class="comment">//执行提交的任务</span></span><br><span class="line">    <span class="keyword">void</span>	<span class="title function_">execute</span><span class="params">(Runnable command)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ExecutorService"><a href="#ExecutorService" class="headerlink" title="ExecutorService"></a>ExecutorService</h3><p>虽然可以通过Executor来实现任务的提交与运行。通常Executor的实现通常会创建线程来执行任务。但JVM只有在所有非守护线程全部终止后才会退出，因此如果无法正确的关闭Executor，那么JVM将无法结束。此外我们还希望线程池有一些关闭线程池，批量提交任务等功能，这个Executor是无法做的。因此使用ExecutorService接口来丰富线程池的功能，但是为什么这么设计，设计的合理性我自己看来是不合理的，如果你觉得我说的不对，可以在下面评论区评论发表意见。<br>ExecutorService源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 请求关闭、发生超时或者当前线程中断，无论哪一个首先发生之后，都将导致阻塞，直到所有任务完成执行。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">awaitTermination</span><span class="params">(<span class="type">long</span> timeout, TimeUnit unit)</span></span><br><span class="line"><span class="comment">// 批量执行任务，当所有任务完成时，返回保持任务状态和结果的 Future 列表。</span></span><br><span class="line">&lt;T List&lt;Future&lt;T <span class="title function_">invokeAll</span><span class="params">(Collection&lt;? extends Callable&lt;T tasks)</span></span><br><span class="line"><span class="comment">// 批量执行的任务，当所有任务完成或超时期满时（无论哪个首先发生），返回保持任务状态和结果的 Future 列表。</span></span><br><span class="line">&lt;T List&lt;Future&lt;T <span class="title function_">invokeAll</span><span class="params">(Collection&lt;? extends Callable&lt;T tasks, <span class="type">long</span> timeout, TimeUnit unit)</span></span><br><span class="line"><span class="comment">// 批量执行任务，如果某个任务已成功完成（也就是未抛出异常），则返回其结果。</span></span><br><span class="line">&lt;T T <span class="title function_">invokeAny</span><span class="params">(Collection&lt;? extends Callable&lt;T tasks)</span></span><br><span class="line"><span class="comment">// 批量执行任务，如果在给定的超时期满前某个任务已成功完成（也就是未抛出异常），则返回其结果。</span></span><br><span class="line">&lt;T T <span class="title function_">invokeAny</span><span class="params">(Collection&lt;? extends Callable&lt;T tasks, <span class="type">long</span> timeout, TimeUnit unit)</span></span><br><span class="line"><span class="comment">// 线程池是否关闭，关闭则返回 true。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">isShutdown</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 线程池关闭操作已完成则返回 true。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">isTerminated</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 启动一次顺序关闭，执行以前提交的任务，但不接受新任务。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">shutdown</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 试图停止所有正在执行的活动任务，暂停处理正在等待的任务，并返回等待执行的任务列表。</span></span><br><span class="line">List&lt;Runnable <span class="title function_">shutdownNow</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 提交一个返回值的任务用于执行，返回一个表示任务的未决结果的 Future。</span></span><br><span class="line">&lt;T Future&lt;T <span class="title function_">submit</span><span class="params">(Callable&lt;T task)</span></span><br><span class="line"><span class="comment">// 提交一个 Runnable 任务用于执行，并返回一个表示该任务的 Future。</span></span><br><span class="line">Future&lt;? submit(Runnable task)</span><br><span class="line"><span class="comment">// 提交一个 Runnable 任务用于执行，并返回一个表示该任务的 Future。</span></span><br><span class="line">&lt;T Future&lt;T <span class="title function_">submit</span><span class="params">(Runnable task, T result)</span></span><br></pre></td></tr></table></figure>
+
+<p>关闭任务的方式：</p>
+<ol>
+<li>直接关闭，相当于断开电源</li>
+<li>执行完所有当前线程上执行的任务，不在接收新的任务。然后关闭</li>
+</ol>
+<p>Executor接口定义的方法不足以满足这些要求的实现，所以有了ExecutorService接口。添加了一些用于生命周期管理的方法（同时还有一些用于任务提交的便利方法）。</p>
+<p>ExecutorService的生命周期有三种状态：运行、关闭和已终止。</p>
+<ol>
+<li>在初始创建时处于运行状态，</li>
+<li>shutdown方法将执行平缓的关闭状态：不在接收新的任务，同时等待已经提交的任务执行完成，包括那些还未开始执行的任务</li>
+<li>shutdownNow方法将执行粗暴的关闭过程，将尝试取消所有运行中的任务。通过isTerminated来确定线程池是否终止，终止后不同拒绝策略有不同的返回结果的方式。</li>
+</ol>
+<h3 id="AbstractExecutorService"><a href="#AbstractExecutorService" class="headerlink" title="AbstractExecutorService"></a>AbstractExecutorService</h3><p>AbstractExecutorService是一个抽象类，实现了ExecutorService接口。AbstractExecutorService存在的目的是为ExecutorService中的函数接口提供了默认实现。方便我们定制线程池。这个类的方法和ExecutorService一样，所有就不列出来，后面再分析线程池源码时我会在来说这个类。</p>
+<h3 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h3><p>ThreadPoolExecutor就是大名鼎鼎的”线程池”，它继承于AbstractExecutorService抽象类。是线程池的主要实现类，也是我们后面关注的重点，因此就现在这里提一下，后面会仔细讲。</p>
+<h3 id="ScheduledExecutorService"><a href="#ScheduledExecutorService" class="headerlink" title="ScheduledExecutorService"></a>ScheduledExecutorService</h3><p>ScheduledExecutorService是一个接口，它继承于于ExecutorService。它提供了<strong>延时</strong>和<strong>周期执行</strong>功能的ExecutorService。可以取代原有的定时任务类Timer。 ScheduledExecutorService提供了相应的函数接口，可以安排任务在给定的延迟后执行，也可以让任务周期的执行。</p>
+<p><strong>ScheduledExecutorService函数列表</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建并执行在给定延迟后启用的 ScheduledFuture。</span></span><br><span class="line">&lt;V ScheduledFuture&lt;V <span class="title function_">schedule</span><span class="params">(Callable&lt;V callable, <span class="type">long</span> delay, TimeUnit unit)</span></span><br><span class="line"><span class="comment">// 创建并执行在给定延迟后启用的一次性操作。</span></span><br><span class="line">ScheduledFuture&lt;? schedule(Runnable command, <span class="type">long</span> delay, TimeUnit unit)</span><br><span class="line"><span class="comment">// 创建并执行一个在给定初始延迟后首次启用的定期操作，后续操作具有给定的周期；也就是将在 initialDelay 后开始执行，然后在 initialDelay+period 后执行，接着在 initialDelay + 2 * period 后执行，依此类推。</span></span><br><span class="line">ScheduledFuture&lt;? scheduleAtFixedRate(Runnable command, <span class="type">long</span> initialDelay, <span class="type">long</span> period, TimeUnit unit)</span><br><span class="line"><span class="comment">// 创建并执行一个在给定初始延迟后首次启用的定期操作，随后，在每一次执行终止和下一次执行开始之间都存在给定的延迟。</span></span><br><span class="line">ScheduledFuture&lt;? scheduleWithFixedDelay(Runnable command, <span class="type">long</span> initialDelay, <span class="type">long</span> delay, TimeUnit unit)</span><br></pre></td></tr></table></figure>
+
+<h3 id="ScheduledThreadPoolExecutor"><a href="#ScheduledThreadPoolExecutor" class="headerlink" title="ScheduledThreadPoolExecutor"></a>ScheduledThreadPoolExecutor</h3><p>ScheduledThreadPoolExecutor继承于ThreadPoolExecutor，并且实现了ScheduledExecutorService接口。它相当于提供了”延时”和”周期执行”功能的ExecutorService。 ScheduledThreadPoolExecutor类似于Timer，但是在高并发程序中，ScheduledThreadPoolExecutor的性能要优于Timer。</p>
+<p>在没有此接口之前，我们使用Timer来做定时任务，Timer定时任务的缺陷：</p>
+<ol>
+<li>执行定时任务时，只创建一个线程，因此如果某个任务执行时间过长，会导致其他定时任务的执行周期加长</li>
+<li>由于只创建了一个线程，当这个线程因为异常关闭之后，其他定时任务就无法启动。（这个问题称之为线程泄漏）</li>
+</ol>
+<p> 因此在5.0 之后很少使用这个类来做定时任务，换成了ScheduledThreadPoolExecutor来做定时任务。</p>
+<p> 同时要构建自己的调度任务还需要队列的支持，这时可以使用DelayQueue，他实现了BlockingQueue，并为ScheduledThreadPoolExecutor提供调度功能，DelayQUeue管理者一组Delayed对象，每个Delayed对象都有一个相应的延迟时间。在DelayQueue中，只有某个元素逾期后，才能从这个队列中take操作。<br>函数列表：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用给定核心池大小创建一个新 ScheduledThreadPoolExecutor。</span></span><br><span class="line">ScheduledThreadPoolExecutor(<span class="type">int</span> corePoolSize)</span><br><span class="line"><span class="comment">// 使用给定初始参数创建一个新 ScheduledThreadPoolExecutor。</span></span><br><span class="line">ScheduledThreadPoolExecutor(<span class="type">int</span> corePoolSize, RejectedExecutionHandler handler)</span><br><span class="line"><span class="comment">// 使用给定的初始参数创建一个新 ScheduledThreadPoolExecutor。</span></span><br><span class="line">ScheduledThreadPoolExecutor(<span class="type">int</span> corePoolSize, ThreadFactory threadFactory)</span><br><span class="line"><span class="comment">// 使用给定初始参数创建一个新 ScheduledThreadPoolExecutor。</span></span><br><span class="line">ScheduledThreadPoolExecutor(<span class="type">int</span> corePoolSize, ThreadFactory threadFactory, RejectedExecutionHandler handler)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改或替换用于执行 callable 的任务。</span></span><br><span class="line"><span class="keyword">protected</span> &lt;V RunnableScheduledFuture&lt;V <span class="title function_">decorateTask</span><span class="params">(Callable&lt;V callable, RunnableScheduledFuture&lt;V task)</span></span><br><span class="line"><span class="comment">// 修改或替换用于执行 runnable 的任务。</span></span><br><span class="line"><span class="keyword">protected</span> &lt;V RunnableScheduledFuture&lt;V <span class="title function_">decorateTask</span><span class="params">(Runnable runnable, RunnableScheduledFuture&lt;V task)</span></span><br><span class="line"><span class="comment">// 使用所要求的零延迟执行命令。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">execute</span><span class="params">(Runnable command)</span></span><br><span class="line"><span class="comment">// 获取有关在此执行程序已 shutdown 的情况下、是否继续执行现有定期任务的策略。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">getContinueExistingPeriodicTasksAfterShutdownPolicy</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 获取有关在此执行程序已 shutdown 的情况下是否继续执行现有延迟任务的策略。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">getExecuteExistingDelayedTasksAfterShutdownPolicy</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 返回此执行程序使用的任务队列。</span></span><br><span class="line">BlockingQueue&lt;Runnable <span class="title function_">getQueue</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 从执行程序的内部队列中移除此任务（如果存在），从而如果尚未开始，则其不再运行。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">remove</span><span class="params">(Runnable task)</span></span><br><span class="line"><span class="comment">// 创建并执行在给定延迟后启用的 ScheduledFuture。</span></span><br><span class="line">&lt;V ScheduledFuture&lt;V <span class="title function_">schedule</span><span class="params">(Callable&lt;V callable, <span class="type">long</span> delay, TimeUnit unit)</span></span><br><span class="line"><span class="comment">// 创建并执行在给定延迟后启用的一次性操作。</span></span><br><span class="line">ScheduledFuture&lt;? schedule(Runnable command, <span class="type">long</span> delay, TimeUnit unit)</span><br><span class="line"><span class="comment">// 创建并执行一个在给定初始延迟后首次启用的定期操作，后续操作具有给定的周期；也就是将在 initialDelay 后开始执行，然后在 initialDelay+period 后执行，接着在 initialDelay + 2 * period 后执行，依此类推。</span></span><br><span class="line">ScheduledFuture&lt;? scheduleAtFixedRate(Runnable command, <span class="type">long</span> initialDelay, <span class="type">long</span> period, TimeUnit unit)</span><br><span class="line"><span class="comment">// 创建并执行一个在给定初始延迟后首次启用的定期操作，随后，在每一次执行终止和下一次执行开始之间都存在给定的延迟。</span></span><br><span class="line">ScheduledFuture&lt;? scheduleWithFixedDelay(Runnable command, <span class="type">long</span> initialDelay, <span class="type">long</span> delay, TimeUnit unit)</span><br><span class="line"><span class="comment">// 设置有关在此执行程序已 shutdown 的情况下是否继续执行现有定期任务的策略。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setContinueExistingPeriodicTasksAfterShutdownPolicy</span><span class="params">(<span class="type">boolean</span> value)</span></span><br><span class="line"><span class="comment">// 设置有关在此执行程序已 shutdown 的情况下是否继续执行现有延迟任务的策略。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setExecuteExistingDelayedTasksAfterShutdownPolicy</span><span class="params">(<span class="type">boolean</span> value)</span></span><br><span class="line"><span class="comment">// 在以前已提交任务的执行中发起一个有序的关闭，但是不接受新任务。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">shutdown</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 尝试停止所有正在执行的任务、暂停等待任务的处理，并返回等待执行的任务列表。</span></span><br><span class="line">List&lt;Runnable <span class="title function_">shutdownNow</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 提交一个返回值的任务用于执行，返回一个表示任务的未决结果的 Future。</span></span><br><span class="line">&lt;T Future&lt;T <span class="title function_">submit</span><span class="params">(Callable&lt;T task)</span></span><br><span class="line"><span class="comment">// 提交一个 Runnable 任务用于执行，并返回一个表示该任务的 Future。</span></span><br><span class="line">Future&lt;? submit(Runnable task)</span><br><span class="line"><span class="comment">// 提交一个 Runnable 任务用于执行，并返回一个表示该任务的 Future。</span></span><br><span class="line">&lt;T Future&lt;T <span class="title function_">submit</span><span class="params">(Runnable task, T result)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Executors"><a href="#Executors" class="headerlink" title="Executors"></a>Executors</h3><p>Executors是个静态工厂类。它通过静态工厂方法返回ExecutorService、ScheduledExecutorService、ThreadFactory 和 Callable 等类的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回 Callable 对象，调用它时可运行给定特权的操作并返回其结果。</span></span><br><span class="line"><span class="keyword">static</span> Callable&lt;Object <span class="title function_">callable</span><span class="params">(PrivilegedAction&lt;? action)</span></span><br><span class="line"><span class="comment">// 返回 Callable 对象，调用它时可运行给定特权的异常操作并返回其结果。</span></span><br><span class="line"><span class="keyword">static</span> Callable&lt;Object <span class="title function_">callable</span><span class="params">(PrivilegedExceptionAction&lt;? action)</span></span><br><span class="line"><span class="comment">// 返回 Callable 对象，调用它时可运行给定的任务并返回 null。</span></span><br><span class="line"><span class="keyword">static</span> Callable&lt;Object <span class="title function_">callable</span><span class="params">(Runnable task)</span></span><br><span class="line"><span class="comment">// 返回 Callable 对象，调用它时可运行给定的任务并返回给定的结果。</span></span><br><span class="line"><span class="keyword">static</span> &lt;T Callable&lt;T <span class="title function_">callable</span><span class="params">(Runnable task, T result)</span></span><br><span class="line"><span class="comment">// 返回用于创建新线程的默认线程工厂。</span></span><br><span class="line"><span class="keyword">static</span> ThreadFactory <span class="title function_">defaultThreadFactory</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 创建一个可根据需要创建新线程的线程池，但是在以前构造的线程可用时将重用它们。</span></span><br><span class="line"><span class="keyword">static</span> ExecutorService <span class="title function_">newCachedThreadPool</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 创建一个可根据需要创建新线程的线程池，但是在以前构造的线程可用时将重用它们，并在需要时使用提供的 ThreadFactory 创建新线程。</span></span><br><span class="line"><span class="keyword">static</span> ExecutorService <span class="title function_">newCachedThreadPool</span><span class="params">(ThreadFactory threadFactory)</span></span><br><span class="line"><span class="comment">// 创建一个可重用固定线程数的线程池，以共享的无界队列方式来运行这些线程。</span></span><br><span class="line"><span class="keyword">static</span> ExecutorService <span class="title function_">newFixedThreadPool</span><span class="params">(<span class="type">int</span> nThreads)</span></span><br><span class="line"><span class="comment">// 创建一个可重用固定线程数的线程池，以共享的无界队列方式来运行这些线程，在需要时使用提供的 ThreadFactory 创建新线程。</span></span><br><span class="line"><span class="keyword">static</span> ExecutorService <span class="title function_">newFixedThreadPool</span><span class="params">(<span class="type">int</span> nThreads, ThreadFactory threadFactory)</span></span><br><span class="line"><span class="comment">// 创建一个线程池，它可安排在给定延迟后运行命令或者定期地执行。</span></span><br><span class="line"><span class="keyword">static</span> ScheduledExecutorService <span class="title function_">newScheduledThreadPool</span><span class="params">(<span class="type">int</span> corePoolSize)</span></span><br><span class="line"><span class="comment">// 创建一个线程池，它可安排在给定延迟后运行命令或者定期地执行。</span></span><br><span class="line"><span class="keyword">static</span> ScheduledExecutorService <span class="title function_">newScheduledThreadPool</span><span class="params">(<span class="type">int</span> corePoolSize, ThreadFactory threadFactory)</span></span><br><span class="line"><span class="comment">// 创建一个使用单个 worker 线程的 Executor，以无界队列方式来运行该线程。</span></span><br><span class="line"><span class="keyword">static</span> ExecutorService <span class="title function_">newSingleThreadExecutor</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 创建一个使用单个 worker 线程的 Executor，以无界队列方式来运行该线程，并在需要时使用提供的 ThreadFactory 创建新线程。</span></span><br><span class="line"><span class="keyword">static</span> ExecutorService <span class="title function_">newSingleThreadExecutor</span><span class="params">(ThreadFactory threadFactory)</span></span><br><span class="line"><span class="comment">// 创建一个单线程执行程序，它可安排在给定延迟后运行命令或者定期地执行。</span></span><br><span class="line"><span class="keyword">static</span> ScheduledExecutorService <span class="title function_">newSingleThreadScheduledExecutor</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 创建一个单线程执行程序，它可安排在给定延迟后运行命令或者定期地执行。</span></span><br><span class="line"><span class="keyword">static</span> ScheduledExecutorService <span class="title function_">newSingleThreadScheduledExecutor</span><span class="params">(ThreadFactory threadFactory)</span></span><br><span class="line"><span class="comment">// 返回 Callable 对象，调用它时可在当前的访问控制上下文中执行给定的 callable 对象。</span></span><br><span class="line"><span class="keyword">static</span> &lt;T Callable&lt;T <span class="title function_">privilegedCallable</span><span class="params">(Callable&lt;T callable)</span></span><br><span class="line"><span class="comment">// 返回 Callable 对象，调用它时可在当前的访问控制上下文中，使用当前上下文类加载器作为上下文类加载器来执行给定的 callable 对象。</span></span><br><span class="line"><span class="keyword">static</span> &lt;T Callable&lt;T <span class="title function_">privilegedCallableUsingCurrentClassLoader</span><span class="params">(Callable&lt;T callable)</span></span><br><span class="line"><span class="comment">// 返回用于创建新线程的线程工厂，这些新线程与当前线程具有相同的权限。</span></span><br><span class="line"><span class="keyword">static</span> ThreadFactory <span class="title function_">privilegedThreadFactory</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 返回一个将所有已定义的 ExecutorService 方法委托给指定执行程序的对象，但是使用强制转换可能无法访问其他方法。</span></span><br><span class="line"><span class="keyword">static</span> ExecutorService <span class="title function_">unconfigurableExecutorService</span><span class="params">(ExecutorService executor)</span></span><br><span class="line"><span class="comment">// 返回一个将所有已定义的 ExecutorService 方法委托给指定执行程序的对象，但是使用强制转换可能无法访问其他方法。</span></span><br><span class="line"><span class="keyword">static</span> ScheduledExecutorService <span class="title function_">unconfigurableScheduledExecutorService</span><span class="params">(ScheduledExecutorService executor)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="简单演示"><a href="#简单演示" class="headerlink" title="简单演示"></a>简单演示</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadPoolDemo1</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// 创建一个可重用固定线程数的线程池</span></span><br><span class="line">        <span class="type">ExecutorService</span> <span class="variable">pool</span> <span class="operator">=</span> Executors.newFixedThreadPool(<span class="number">2</span>);</span><br><span class="line">        <span class="comment">// 创建实现了Runnable接口对象，Thread对象当然也实现了Runnable接口</span></span><br><span class="line">        <span class="type">Thread</span> <span class="variable">ta</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>();</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">tb</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>();</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">tc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>();</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">td</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>();</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">te</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>();</span><br><span class="line">        <span class="comment">// 将线程放入池中进行执行</span></span><br><span class="line">        pool.execute(ta);</span><br><span class="line">        pool.execute(tb);</span><br><span class="line">        pool.execute(tc);</span><br><span class="line">        pool.execute(td);</span><br><span class="line">        pool.execute(te);</span><br><span class="line">        <span class="comment">// 关闭线程池</span></span><br><span class="line">        pool.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyThread</span> <span class="keyword">extends</span> <span class="title class_">Thread</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName()+ <span class="string">&quot; is running.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行结果</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pool-1-thread-1 is running.</span><br><span class="line">pool-1-thread-2 is running.</span><br><span class="line">pool-1-thread-1 is running.</span><br><span class="line">pool-1-thread-2 is running.</span><br><span class="line">pool-1-thread-1 is running.</span><br></pre></td></tr></table></figure>
+
+<p><strong>结果说明</strong>：</p>
+<p>主线程中创建了线程池pool，线程池的容量是2。即，线程池中最多能同时运行2个线程。紧接着，将ta,tb,tc,td,te这3个线程添加到线程池中运行。最后，通过shutdown()关闭线程池。</p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/a1d13062.html" rel="bookmark">java多线程系列-JUC线程池之03 ThreadPoolExecutor 线程池的创建</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/fac740ad.html" rel="bookmark">java多线程系列-JUC线程池之06 CompletionService</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/ca60f1d2.html" rel="bookmark">Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/d4c4bc29.html" rel="bookmark">java多线程系列-JUC线程池之04 Future 和Callable</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/3ade2f8f.html" rel="bookmark">Java并发工具类之LongAdder原理总结</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/984191f2.html" title="java多线程系列-JUC线程池之 01 线程池架构">http://fengxiu.club/archives/984191f2.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JUC/" rel="tag"># JUC</a>
+              <a href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="tag"># 线程池</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/1354fe55.html" rel="prev" title="java多线程系列 08 ThreadLocal">
+      <i class="fa fa-chevron-left"></i> java多线程系列 08 ThreadLocal
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/ca60f1d2.html" rel="next" title="Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析">
+      Java多线程系列-JUC线程池之02 ThreadPoolExecutor 执行流程分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">线程池整体架构介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Executor"><span class="nav-number">2.1.</span> <span class="nav-text">Executor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ExecutorService"><span class="nav-number">2.2.</span> <span class="nav-text">ExecutorService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AbstractExecutorService"><span class="nav-number">2.3.</span> <span class="nav-text">AbstractExecutorService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor"><span class="nav-number">2.4.</span> <span class="nav-text">ThreadPoolExecutor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ScheduledExecutorService"><span class="nav-number">2.5.</span> <span class="nav-text">ScheduledExecutorService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ScheduledThreadPoolExecutor"><span class="nav-number">2.6.</span> <span class="nav-text">ScheduledThreadPoolExecutor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Executors"><span class="nav-number">2.7.</span> <span class="nav-text">Executors</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%BC%94%E7%A4%BA"><span class="nav-number">3.</span> <span class="nav-text">简单演示</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/984191f2.html";
+    this.page.identifier = "archives/984191f2.html";
+    this.page.title = "java多线程系列-JUC线程池之 01 线程池架构";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

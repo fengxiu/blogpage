@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="翻译自[https:&#x2F;&#x2F;www.oracle.com&#x2F;webfolder&#x2F;technetwork&#x2F;tutorials&#x2F;obe&#x2F;java&#x2F;G1GettingStarted&#x2F;index.html#overview](Getting Started with the G1 Garbage Collector) 概述目标本教程介绍了如何使用G1垃圾收集器以及如何将其与Hotspot JVM一起使用的基础知">
+<meta property="og:type" content="article">
+<meta property="og:title" content="G1">
+<meta property="og:url" content="http://fengxiu.club/archives/af3fcb07.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="翻译自[https:&#x2F;&#x2F;www.oracle.com&#x2F;webfolder&#x2F;technetwork&#x2F;tutorials&#x2F;obe&#x2F;java&#x2F;G1GettingStarted&#x2F;index.html#overview](Getting Started with the G1 Garbage Collector) 概述目标本教程介绍了如何使用G1垃圾收集器以及如何将其与Hotspot JVM一起使用的基础知">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://fengxiu.club/source/images/HeapStructure.png">
+<meta property="og:image" content="http://fengxiu.club/source/images/Slide9.png">
+<meta property="article:published_time" content="2019-09-06T11:26:42.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.388Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="GC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fengxiu.club/source/images/HeapStructure.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/af3fcb07.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>G1 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/af3fcb07.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          G1
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-06 11:26:42" itemprop="dateCreated datePublished" datetime="2019-09-06T11:26:42+00:00">2019-09-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/GC/" itemprop="url" rel="index"><span itemprop="name">GC</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/af3fcb07.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/af3fcb07.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/af3fcb07.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/af3fcb07.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>翻译自[<a target="_blank" rel="noopener" href="https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/G1GettingStarted/index.html#overview]">https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/G1GettingStarted/index.html#overview]</a>(Getting Started with the G1 Garbage Collector)</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><strong>目标</strong><br>本教程介绍了如何使用G1垃圾收集器以及如何将其与Hotspot JVM一起使用的基础知识。您将了解G1收集器内部如何运行，如何切换使用G1的关键命令，以及用于记录其操作的选项。</p>
+<p><strong>简介</strong><br>本OBE涵盖了Java中Java虚拟机（JVM）G1垃圾收集（GC）的基础知识。在OBE的第一部分中，提供了JVM的概述以及垃圾收集和性能的介绍。下一批学生将了解CMS收集器如何与Hotspot JVM配合使用。接下来，逐步指导将垃圾收集与Hotspot JVM一起使用时垃圾收集的工作原理。接下来，提供了一个部分，其中包含G1垃圾收集器可用的垃圾收集命令行选项。最后，您将了解用于G1收集器的日志记录选项。</p>
+<span id="more"></span>
+<p><strong>硬件和软件要求</strong><br>以下是硬件和软件要求列表：</p>
+<ul>
+<li>运行Windows XP或更高版本，Mac OS X或Linux的PC。请注意，此操作已在Windows 7中完成，尚未在所有平台上进行测试。但是，一切都应该在OS X或Linux上正常工作。另外，具有多于一个芯的机器也是优选的。</li>
+<li>Java 7 Update 9或更高版本</li>
+<li>最新的Java 7演示和示例Zip文件</li>
+</ul>
+<p><strong>先决条件</strong><br>在开始本教程之前，您应该：</p>
+<ul>
+<li>如果尚未这样做，请下载并安装最新版本的Java JDK（JDK 7 u9或更高版本）。</li>
+<li>Java 7 JDK下载从同一位置下载并安装Demos and Samples zip文件。解压缩文件并将内容放在目录中。例如：C：\ javademos</li>
+</ul>
+<p><strong>性能基础知识</strong><br>通常，在调优Java应用程序时，重点是两个主要目标之一：响应性或吞吐量。随着教程的进展，我们将回顾这些概念。<br><strong>响应</strong><br>响应性是指应用程序或系统对请求的数据进行响应的速度。例子包括：</p>
+<ul>
+<li>桌面UI响应事件的速度有多快</li>
+<li>网站返回页面的速度有多快返回</li>
+<li>数据库查询的速度有多快<br>对于专注于响应性的应用程序，大型暂停时间是不可接受的。重点是在短时间内做出回应。</li>
+</ul>
+<p><strong>吞吐量</strong><br>吞吐量侧重于在特定时间段内最大化应用程序的工作量。如何衡量吞吐量的示例包括：</p>
+<ul>
+<li>在给定时间内完成的交易数量。</li>
+<li>批处理程序可在一小时内完成的作业数。</li>
+<li>可以在一小时内完成的数据库查询数。<br>对于专注于吞吐量的应用程序，高暂停时间是可接受的由于高吞吐量应用程序在较长时间内专注于基准测试，因此不需要考虑快速响应时间。</li>
+</ul>
+<h2 id="G1-垃圾收集器"><a href="#G1-垃圾收集器" class="headerlink" title="G1 垃圾收集器"></a>G1 垃圾收集器</h2><h3 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h3><p>Garbage-First（G1）收集器是一种服务器式（Server-style）垃圾收集器，适用于具有大内存的多处理器机器。它以高可能性满足垃圾收集（GC）暂停时间目标，同时实现高吞吐量。Oracle JDK 7 Update 4及更高版本完全支持G1垃圾收集器。G1收集器专为以下应用而设计：</p>
+<ul>
+<li>可以与CMS收集器等应用程序线程同时运行。</li>
+<li>紧凑的自由空间，没有长时间的GC引起的暂停时间</li>
+<li>需要更多可预测的GC暂停持续时间。</li>
+<li>不想牺牲很多吞吐量性能。</li>
+<li>不需要更大的Java堆。</li>
+</ul>
+<p>G1计划作为Concurrent Mark-Sweep Collector（CMS）的长期替代品。将G1与CMS进行比较，存在差异，使G1成为更好的解决方案。一个区别是G1是压缩收集器。G1足够紧凑以完全避免使用细粒度的自由列表进行分配，而是依赖于区域。这大大简化了收集器的各个部分，并且主要消除了潜在的碎片问题。此外，G1提供比CMS收集器更可预测的垃圾收集暂停，并允许用户指定所需的暂停目标。</p>
+<h3 id="G1操作概览"><a href="#G1操作概览" class="headerlink" title="G1操作概览"></a>G1操作概览</h3><p>旧的垃圾收集器（串行，并行，CMS）都将堆构建为三个部分：年轻代，旧代和永久生成固定内存大小。旧的垃圾收集器（串行，并行，CMS）都将堆构建为三个部分：年轻代，旧代和永久生成固定内存大小。<br><img src="/source/images/HeapStructure.png" alt="HeapStructure"><br>所有内存对象都以这三个部分之一结束。<br>G1收集器采用不同的方法。<br><img src="/source/images/Slide9.png" alt="Slide9"><br>堆被分区为一组大小相等的堆区域，每个区域都是一个连续的虚拟内存区域。某些区域集具有与旧收集器中相同的角色（eden，survivor，old），但它们没有固定的大小。这为内存使用提供了更大的灵活性。</p>
+<p>执行垃圾收集时，G1以类似于CMS收集器的方式运行。G1执行并发全局标记阶段以确定整个堆中对象的活跃度。在标记阶段完成之后，G1知道哪些区域基本上是空的。它首先收集在这些区域，这通常会产生大量的自由空间。这就是为什么这种垃圾收集方法称为Garbage-First。顾名思义，G1将其集合和压缩活动集中在堆的可能充满可回收对象的区域，即垃圾。G1使用暂停预测模型来满足用户定义的暂停时间目标，并根据指定的暂停时间目标选择要收集的区域数。</p>
+<p>由G1确定为回收成熟的区域是使用疏散（evacuation）收集的垃圾。G1将对象从堆的一个或多个区域复制到堆上的单个区域，并且在此过程中压缩并释放内存。这种疏散在多处理器上并行执行，以减少暂停时间并提高吞吐量。因此，对于每次垃圾收集，G1会持续工作以减少碎片，在用户定义的暂停时间内工作。这超出了以前两种方法的能力。CMS（Concurrent Mark Sweep）垃圾收集器不进行压缩。ParallelOld垃圾收集仅执行整堆压缩，这会导致相当长的暂停时间。</p>
+<p>值得注意的是G1不是实时收集器。它以高概率但不是绝对确定性满足设定的暂停时间目标。基于先前集合的数据，G1估计可以在用户指定的目标时间内收集多少个区域。因此，收集器具有收集区域的成本的相当准确的模型，并且它使用该模型来确定在停留在暂停时间目标内时要收集哪些区域和多少区域。<br>注意：G1具有并发（与应用程序线程一起运行，例如，细化，标记，清理）和并行（多线程，例如，STW）阶段。完全垃圾收集仍然是单线程的，但如果正确调整，您的应用程序应该避免使用完整的GC。</p>
+<h3 id="G1-FootPrint"><a href="#G1-FootPrint" class="headerlink" title="G1 FootPrint"></a>G1 FootPrint</h3><p>如果从ParallelOldGC或CMS收集器迁移到G1，您可能会看到更大的JVM进程大小。这主要与“统计”数据结构有关，<br>例如 Remembered Sets and Collection Sets。<br><strong>Remembered Sets</strong>或RSet跟踪对象引用到给定区域。堆中每个区域有一个RSet。RSet支持并行和独立收集区域。RSets的总体footprint影响小于5％。<br><strong>Collection Sets</strong>或CSets将在GC中收集的区域集。在GC期间，CSet中的所有实时数据都被撤离（复制&#x2F;移动）。区域集可以是Eden, survivor, and&#x2F;or old generation。CSets对JVM的大小影响不到1％。</p>
+<h3 id="推荐的G1用例"><a href="#推荐的G1用例" class="headerlink" title="推荐的G1用例"></a>推荐的G1用例</h3><p>G1的第一个重点是为运行需要具有有限GC延迟的大堆的应用程序的用户提供解决方案。这意味着堆大小约为6GB或更大，稳定且可预测的暂停时间低于0.5秒。<br>如果应用程序具有以下一个或多个特征，那么今天使用CMS或ParallelOldGC垃圾收集器运行的应用程序将有利于切换到G1。</p>
+<ul>
+<li>Full GC持续时间太长或太频繁。</li>
+<li>对象分配率或促销率差异很大。</li>
+<li>不期望的长垃圾收集或压实暂停（超过0.5到1秒）</li>
+</ul>
+<p>注意：如果您使用的是CMS或ParallelOldGC，并且您的应用程序没有经历长时间的垃圾收集暂停，那么与您当前的收集器保持联系是可以的。更改为G1收集器不是使用最新JDK的必要条件。</p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/f857a2aa.html" rel="bookmark">GC日志详解1之serial</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/f1158e94.html" rel="bookmark">什么是GC</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/f38ed32c.html" rel="bookmark">GC日志详解3之CMS</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/af3fcb07.html" title="G1">http://fengxiu.club/archives/af3fcb07.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/GC/" rel="tag"># GC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/8551d0c1.html" rel="prev" title="数据库连接池大小设置">
+      <i class="fa fa-chevron-left"></i> 数据库连接池大小设置
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/31404d27.html" rel="next" title="Springboot启动详解">
+      Springboot启动详解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">G1 垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">G1垃圾收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G1%E6%93%8D%E4%BD%9C%E6%A6%82%E8%A7%88"><span class="nav-number">2.2.</span> <span class="nav-text">G1操作概览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G1-FootPrint"><span class="nav-number">2.3.</span> <span class="nav-text">G1 FootPrint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E7%9A%84G1%E7%94%A8%E4%BE%8B"><span class="nav-number">2.4.</span> <span class="nav-text">推荐的G1用例</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/af3fcb07.html";
+    this.page.identifier = "archives/af3fcb07.html";
+    this.page.title = "G1";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

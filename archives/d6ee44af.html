@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="HTTP&#x2F;1.1同源策略与跨域访问同源策略（Same-Origin Policy）是浏览器访问网页过程中最基础的安全策略。它仍然是由大名鼎鼎的网景公司提出的（网景公司对HTTP、SSL等协议的制定做出了巨大贡献，只是在随后的浏览器大战中输给了以垄断见长的微软IE）。所谓“同源”是指浏览器访问目标url的域名（domain）、协议（protocol）、端口（port）这三个要素是相同的。所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Http的演进之路之四">
+<meta property="og:url" content="http://fengxiu.club/archives/d6ee44af.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="HTTP&#x2F;1.1同源策略与跨域访问同源策略（Same-Origin Policy）是浏览器访问网页过程中最基础的安全策略。它仍然是由大名鼎鼎的网景公司提出的（网景公司对HTTP、SSL等协议的制定做出了巨大贡献，只是在随后的浏览器大战中输给了以垄断见长的微软IE）。所谓“同源”是指浏览器访问目标url的域名（domain）、协议（protocol）、端口（port）这三个要素是相同的。所">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-241.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-242.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-243.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-244.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-245.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-246.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-247.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-248.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-249.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-250.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-251.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-252.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-253.png">
+<meta property="article:published_time" content="2019-03-10T10:23:00.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.404Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="http">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fengxiu.club/images/pasted-241.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/d6ee44af.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Http的演进之路之四 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/d6ee44af.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Http的演进之路之四
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-10 10:23:00" itemprop="dateCreated datePublished" datetime="2019-03-10T10:23:00+00:00">2019-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/http/" itemprop="url" rel="index"><span itemprop="name">http</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/d6ee44af.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/d6ee44af.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/d6ee44af.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/d6ee44af.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="HTTP-x2F-1-1"><a href="#HTTP-x2F-1-1" class="headerlink" title="HTTP&#x2F;1.1"></a><strong>HTTP&#x2F;1.1</strong></h2><h2 id="同源策略与跨域访问"><a href="#同源策略与跨域访问" class="headerlink" title="同源策略与跨域访问"></a>同源策略与跨域访问</h2><p>同源策略（Same-Origin Policy）是浏览器访问网页过程中最基础的安全策略。它仍然是由大名鼎鼎的网景公司提出的（网景公司对HTTP、SSL等协议的制定做出了巨大贡献，只是在随后的浏览器大战中输给了以垄断见长的微软IE）。所谓“同源”是指浏览器访问目标url的域名（domain）、协议（protocol）、端口（port）这三个要素是相同的。所谓“同源策略”是指A页面里的脚本通过<a href="http://link.zhihu.com/?target=https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest">XHR</a>和<a href="http://link.zhihu.com/?target=https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API">Fetch</a>等方式加载B页面资源时，如果发现B页面与A页面不是“同源”的，则会禁止访问（准确的说是对跨域请求的返回结果进行屏蔽）。下图显示了一个由script发出的非同源请求，数据最终会在browser端被屏蔽。</p>
+<span id="more"></span>
+
+<p><img src="/images/pasted-241.png" alt="upload successful"></p>
+<p>为了验证一下同源策略的有效性，我进行了如下测试，首先在本地Mac上搭建一个nignx服务器，可以参照这个<a href="http://link.zhihu.com/?target=https://blog.csdn.net/snowrain1108/article/details/50072057">方法</a>搭建。然后在首页（&#x2F;usr&#x2F;local&#x2F;var&#x2F;www&#x2F;index.html）中添加如下script内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"><span class="type">var</span> <span class="variable">xhr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">xhr.onreadystatechange=function()&#123;</span><br><span class="line">    <span class="keyword">if</span> (xhr.readyState == <span class="number">4</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span>((xhr.status &gt;= <span class="number">200</span> &amp;&amp; xhr.status &lt; <span class="number">300</span>) || xhr.status == <span class="number">304</span>) &#123;</span><br><span class="line">            alert(<span class="string">&quot;ok&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            alert(<span class="string">&quot;fail&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">xhr.open(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;http://api.yunos.com&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">xhr.send(<span class="literal">null</span>);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在shell中开启nignx，然后通过chrome浏览器输入<a href="http://localhost:8080会显示以下内容。这表示由xhr发起的跨域请求没有成功。">http://localhost:8080会显示以下内容。这表示由xhr发起的跨域请求没有成功。</a></p>
+<p><img src="/images/pasted-242.png" alt="upload successful"></p>
+<p>再通过chrome浏览器的开发者工具中的console可以看到如下信息。从红色信息中可以看到，由于跨域请求的资源 <a target="_blank" rel="noopener" href="http://api.yunos.com/">http://api.yunos.com</a>的response header中没有Access-Control-Allow-Origin头域（后面会讲到），因此本次跨域请求的返回结果被屏蔽。</p>
+<p><img src="/images/pasted-243.png" alt="upload successful"></p>
+<p>为了进一步验证数据是在浏览器侧被屏蔽的，我们通过wireshark进行了抓包处理，从抓包中可以清楚的看到<a target="_blank" rel="noopener" href="http://api.yunos.com/">http://api.yunos.com</a>的内容已经下载到了客户端：</p>
+<p><img src="/images/pasted-244.png" alt="upload successful"></p>
+<p><img src="/images/pasted-245.png" alt="upload successful"></p>
+<p>从上面的实验可以验证同源测试的有效性。</p>
+<h2 id="跨域资源共享（Cross-Origin-Resource-Sharing-CORS）"><a href="#跨域资源共享（Cross-Origin-Resource-Sharing-CORS）" class="headerlink" title="跨域资源共享（Cross-Origin Resource Sharing, CORS）"></a>跨域资源共享（Cross-Origin Resource Sharing, CORS）</h2><p>随着互联网的不断发展，网站的规模和复杂程度也与日俱增，因此在网页设计上会存在类似上面那样的跨域请求，即需要绕过“同源策略”去完成跨域请求。因此，出现了“跨域资源共享”（CORS）机制，它的实现原理是服务端与客户端配合，新增一组HTTP首部字段，允许服务器声明哪些源站有权限访问哪些资源。例如，通过在response header中添加相关头域（上面看到的Access-Control-Allow-Origin头域）来告知客户端（浏览器）该资源是否可以跨域访问本资源。</p>
+<p>此外，对于那些可能对服务端数据产生副作用的HTTP方法（例如GET以外的一些方法），要求浏览器必须先使用<a href="http://link.zhihu.com/?target=https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/OPTIONS">OPTIONS</a>方法发起一个预检请求（preflight request），从服务器端获知是否允许本次跨域请求。只有当服务器端允许后，才能发起实际的HTTP请求。在预检请求对应的response中，服务端也可以通知客户端是否需要携带身份凭证（例如Cookie等）。因此，CORS将跨域请求分为了三种情况：</p>
+<ul>
+<li>简单请求（Simple Request）</li>
+<li>预检请求（Preflight Request）</li>
+<li>附带身份凭证请求（Request with Credential）</li>
+</ul>
+<h3 id="简单请求（Simple-Request）"><a href="#简单请求（Simple-Request）" class="headerlink" title="简单请求（Simple Request）"></a>简单请求（Simple Request）</h3><p>如果一个请求中没有包含任何自定义的请求头，并且他所使用的HTTP方法是GET、HEAD或POST之一，并且方法为POST时，其Content-Type需要是<code>application/x-www-form-urlencoded</code>，<code>multipart/form-data</code>或<code>text/plain</code>之一。</p>
+<p>下面是一个Simple Request的示例。此处是在<a target="_blank" rel="noopener" href="http://arunranga.com/examples/access-control/simpleXSInvocation.html">arunranga</a>这个域名里面通过一个XHR请求GET申请<a target="_blank" rel="noopener" href="http://aruner.net/resources/access-control-with-get/">aruner</a>里面的资源。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><br><span class="line">    <span class="keyword">var</span> invocation = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">    <span class="keyword">var</span> url = <span class="string">&#x27;http://aruner.net/resources/access-control-with-get/&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    invocation.<span class="title function_">open</span>(<span class="string">&#x27;GET&#x27;</span>, url, <span class="literal">true</span>);</span><br><span class="line">    invocation.<span class="property">onreadystatechange</span> = handler;</span><br><span class="line">    invocation.<span class="title function_">send</span>(); </span><br><span class="line">    ...    </span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>通过chrome的开发者工具来看具体的request请求。当在arunranga中发起对<a target="_blank" rel="noopener" href="http://aruner.net/">http://aruner.net</a>的资源的请求后，<a target="_blank" rel="noopener" href="http://aruner.net/">http://aruner.net</a>返回的response header中添加了Access-Control-Allow-Origin头域并告知可以允许<a target="_blank" rel="noopener" href="http://arunrange.com/">http://arunrange.com</a>使用该资源。</p>
+<p><img src="/images/pasted-246.png" alt="upload successful"></p>
+<p>下面是通过wireshark抓包的情况：</p>
+<p><img src="/images/pasted-247.png" alt="upload successful"></p>
+<p>简单请求的原理是在浏览器中设置了一个白名单，符合以上条件的才是简单请求。当我们要发送一个跨域请求的时候，浏览器会先检查该请求，如果满足以上条件，浏览器会立即发送该请求。如果发现为非简单请求（比如头域中包含一个X-Forwarded-For字段），此时浏览器不会马上发送该请求，而是发送一个Preflight Request，有一个与服务器进行验证的过程。</p>
+<h3 id="预检请求（Preflight-Request）"><a href="#预检请求（Preflight-Request）" class="headerlink" title="预检请求（Preflight Request）"></a>预检请求（Preflight Request）</h3><p>如果一个请求包含了任何自定义的头域，或者它使用的HTTP方法是GET、HEAD、POST之外的任何一个方法，或者POST请求的Content-Type不是application&#x2F;x-www-form-urlencoded，multipart&#x2F;form-data或text&#x2F;plain之一。</p>
+<p>下面是一个Preflight Request的示例。此处是在<a target="_blank" rel="noopener" href="http://arunranga.com/examples/access-control/preflightInvocation.html">arunranga</a>这个域名里面通过一个XHR请求POST一段数据至<a target="_blank" rel="noopener" href="http://aruner.net/resources/access-control-with-post-preflight/">aruner</a>端。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;text/javascript&quot;&gt;</span><br><span class="line">    var invocation = new XMLHttpRequest();</span><br><span class="line">    var url = &#x27;http://aruner.net/resources/access-control-with-post-preflight/&#x27;;</span><br><span class="line">    var body = &#x27;&lt;?xml version=&quot;1.0&quot;?&gt;&lt;person&gt;&lt;name&gt;Arun&lt;/name&gt;&lt;/person&gt;&#x27;;</span><br><span class="line"></span><br><span class="line">    invocation.open(&#x27;POST&#x27;, url, true);</span><br><span class="line">    invocation.setRequestHeader(&#x27;X-PINGARUNER&#x27;, &#x27;pingpong&#x27;);</span><br><span class="line">    invocation.setRequestHeader(&#x27;Content-Type&#x27;, &#x27;application/xml&#x27;);</span><br><span class="line">    invocation.onreadystatechange = handler;</span><br><span class="line">    invocation.send(body);</span><br><span class="line">    ...</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>通过chrome的开发者工具来看具体的request请求。当浏览器发现本次请求存在跨域情况并且不符合“简单请求”的条件（此处为POST操作且包含自定义的头域X-PINGARGUNER，此外Content-Type也不符合“简单请求”的限制），因此将其视为Preflight Request进行操作。此时会先向目标地址发送一个OPTIONS请求并告知服务器随后会使用POST方法（Access-Control-Request-Method: POST）和自定义的请求头部（Access-Control-Request-Headers: X-PINGARUNER, CONTENT-TYPE）以此来问询服务器是否接受。</p>
+<p>服务器在response header中对OPTIONS请求中的问询内容进行了反馈，具体可以看到Access-Control-Allow-Methods: POST, GET, OPTIONS 表明服务端允许客户端使用POST、GET、OPTIONS方法；Access-Control-Allow-Headers: X-PINGARUNER, CONTENT-TYPE表明服务端允许客户端使用携带X-PINGARUNER和CONTENT-TYPE的头域；Access-Control-Max-Age表明该响应的时效为20天，即20天内浏览器无需再为同一个请求发起预检请求（浏览器自身维护了一个最大有效时间，以两者中较小值为准）。</p>
+<p><img src="/images/pasted-248.png" alt="upload successful"></p>
+<p>下面的这个请求就是OPTIONS返回后实际发出的POST请求。在该请求中包含了OPTIONS向服务端查询的那些头域：</p>
+<p><img src="/images/pasted-249.png" alt="upload successful"></p>
+<p>下面是wireshark抓包的情况。从抓包可以看到，两次请求是通过一个tcp connection发出的。首先发送了OPTIONS进行问询，随后发送了真正的POST请求：</p>
+<p><img src="/images/pasted-250.png" alt="upload successful"></p>
+<h3 id="附带身份凭证请求（Request-with-Credential）"><a href="#附带身份凭证请求（Request-with-Credential）" class="headerlink" title="附带身份凭证请求（Request with Credential）"></a>附带身份凭证请求（Request with Credential）</h3><p>如果一个跨域请求中包含了当前页面的用户凭证（例如Cookie信息等）。</p>
+<p>下面是一个的示例。当将XHR的withCredentials设置为“true”以后，则会想服务端发送当前页面的Cookie信息。此处是在arunranga这个域名里面通过一个XHR请求GET申请<a target="_blank" rel="noopener" href="http://aruner.net/resources/access-control-with-credentials/">aruner</a>里面的资源并要求携带本页面的Cookie信息。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt; </span><br><span class="line">    <span class="keyword">var</span> invocation = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>(); </span><br><span class="line">    <span class="keyword">var</span> url = <span class="string">&#x27;http://aruner.net/resources/access-control-with-credentials/&#x27;</span>;       </span><br><span class="line">     </span><br><span class="line">    invocation.<span class="title function_">open</span>(<span class="string">&#x27;GET&#x27;</span>, url, <span class="literal">true</span>);      </span><br><span class="line">    invocation.<span class="property">withCredentials</span> = <span class="string">&quot;true&quot;</span>; <span class="comment">// 向服务器发送Cookie信息     </span></span><br><span class="line">    invocation.<span class="property">onreadystatechange</span> = handler;     </span><br><span class="line">    invocation.<span class="title function_">send</span>();</span><br><span class="line">    ... </span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>由于这是一个GET请求，因此浏览器不会视其为“预检请求”，她会直接发送GET请求。当第一次发起请求的时候，服务端会通过Set-Cookie头域返回Cookie信息，并且通过Access-Control-Allow-Credentials: true 头域告知浏览器可以将响应内容传递给用户（如果响应头域中未包含该项，则浏览器将屏蔽返回内容）。</p>
+<p><img src="/images/pasted-251.png" alt="upload successful"></p>
+<p>当二次发起该请求的时候，可以看到此时已经将Cookie信息带上了。从返回的内容也可以看出，服务端已经识别了客户端的Cookie信息：</p>
+<p><img src="/images/pasted-252.png" alt="upload successful"></p>
+<p>需要注意的是：对于“附带身份凭证请求”，服务器响应的Access-Control-Allow-Origin的值不能为“*”（即不能设置对所有人可见），这是因为在第一次的响应请求头域中携带了Set-Cookie信息、在第二次的请求头域中携带了Cookie信息。</p>
+<p><strong>相关头域</strong></p>
+<p><img src="/images/pasted-253.png" alt="upload successful"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/people/lonniez/activities">lonnieZ http的演进之路</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/6fbc205f.html" rel="bookmark">HTTP 管道化(pipeline)</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/37f5aa4d.html" rel="bookmark">HTTP Keep-Alive</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/e3e09015.html" rel="bookmark">Http的演进之路之一</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/9a3c28b1.html" rel="bookmark">Http的演进之路之三</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/9568466.html" rel="bookmark">HTTP/2 简介</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/d6ee44af.html" title="Http的演进之路之四">http://fengxiu.club/archives/d6ee44af.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/http/" rel="tag"># http</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/9a3c28b1.html" rel="prev" title="Http的演进之路之三">
+      <i class="fa fa-chevron-left"></i> Http的演进之路之三
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/cb0c26ea.html" rel="next" title="Http的演进之路之五">
+      Http的演进之路之五 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-x2F-1-1"><span class="nav-number">1.</span> <span class="nav-text">HTTP&#x2F;1.1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E4%B8%8E%E8%B7%A8%E5%9F%9F%E8%AE%BF%E9%97%AE"><span class="nav-number">2.</span> <span class="nav-text">同源策略与跨域访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%EF%BC%88Cross-Origin-Resource-Sharing-CORS%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">跨域资源共享（Cross-Origin Resource Sharing, CORS）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E8%AF%B7%E6%B1%82%EF%BC%88Simple-Request%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">简单请求（Simple Request）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E6%A3%80%E8%AF%B7%E6%B1%82%EF%BC%88Preflight-Request%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">预检请求（Preflight Request）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%B8%A6%E8%BA%AB%E4%BB%BD%E5%87%AD%E8%AF%81%E8%AF%B7%E6%B1%82%EF%BC%88Request-with-Credential%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">附带身份凭证请求（Request with Credential）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/d6ee44af.html";
+    this.page.identifier = "archives/d6ee44af.html";
+    this.page.title = "Http的演进之路之四";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

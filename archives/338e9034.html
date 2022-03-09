@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概念区分在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，制定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="系统、当前、线程上下文类加载概念介绍？">
+<meta property="og:url" content="http://fengxiu.club/archives/338e9034.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="概念区分在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，制定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://fengxiu.club/images/20170625143404387.png">
+<meta property="og:image" content="http://fengxiu.club/images/20170625164611435.png">
+<meta property="article:published_time" content="2019-07-02T13:25:00.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.392Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="类加载">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fengxiu.club/images/20170625143404387.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/338e9034.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>系统、当前、线程上下文类加载概念介绍？ | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/338e9034.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          系统、当前、线程上下文类加载概念介绍？
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-02 13:25:00" itemprop="dateCreated datePublished" datetime="2019-07-02T13:25:00+00:00">2019-07-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/%E7%B1%BB%E5%8A%A0%E8%BD%BD/" itemprop="url" rel="index"><span itemprop="name">类加载</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/338e9034.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/338e9034.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/338e9034.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/338e9034.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概念区分"><a href="#概念区分" class="headerlink" title="概念区分"></a>概念区分</h2><p>在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，制定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：</p>
+<span id="more"></span>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">m</span><span class="params">()</span>&#123;</span><br><span class="line">        A.class.getClassLoader().loaClass(<span class="string">&quot;B&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码很简单，主要是为了说明下面三个概念：</p>
+<ul>
+<li>CurrentClassLoader，称之为当前类加载器，简称CCL：在上面的代码中对应的就是类型A的类加载器。</li>
+<li>SpecificClassLoader，称之为指定类加载器，简称SCL：在代码中对应的是<code>A.class.getClassLoader()</code>，如果使用任意的ClassLoader进行加载，这个ClassLoader都可以称之为SCL。</li>
+<li>ThreadContextClassLoader，称之为线程上下文类加载器，简称TCCL：每个线程都可以通过<code>Thread.currentThread().setContextClassLoader(ClassLoader)</code>来进行切换。</li>
+</ul>
+<p>SCL和TCCL都可以理解为在代码中使用CLassLoader的引用进行类加载，我们可以自定义。但是CCL的加载过程是由JVM运行时来控制的，是无法通过Java编程来更改的。</p>
+<!-- more -->
+
+<h2 id="系统、当前、线程上下文类加载器，该如何选择"><a href="#系统、当前、线程上下文类加载器，该如何选择" class="headerlink" title="系统、当前、线程上下文类加载器，该如何选择"></a>系统、当前、线程上下文类加载器，该如何选择</h2><p>这个问题虽然不经常问到，但是这个问题却很难有一个正确的答案。一般来说，这个问题都来自于框架编程过程中需要动态的加载资源。一般来说，加载一个资源的时候，你会有至少三个CLassLoader可以用来加载资源，系统ClassLoader（AppClassLoader），当前CLassLoader和线程上下文ThreadContextClassLoader。如何去选择使用哪个CLassLoader呢？<br>首先应该被排除掉的应该是系统ClassLoader，这个就是main的入口，通过载入<code>-classPath</code>的资源来加载类，这段代码是从sun.mis.Launcher.AppClassLoader中摘抄：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> ClassLoader <span class="title function_">getAppClassLoader</span><span class="params">(<span class="keyword">final</span> ClassLoader var0)</span> </span><br><span class="line">    <span class="keyword">throws</span> IOException &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="type">String</span> <span class="variable">var1</span> <span class="operator">=</span> System.getProperty(<span class="string">&quot;java.class.path&quot;</span>);</span><br><span class="line">    <span class="keyword">final</span> File[] var2 = var1 == <span class="literal">null</span> ? <span class="keyword">new</span> <span class="title class_">File</span>[<span class="number">0</span>] : Launcher.getClassPath(var1);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (ClassLoader)AccessController</span><br><span class="line">        .doPrivileged(<span class="keyword">new</span> <span class="title class_">PrivilegedAction</span>&lt;Launcher.AppClassLoader&gt;() &#123;</span><br><span class="line">            <span class="keyword">public</span> Launcher.AppClassLoader <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">                URL[] var1x = var1 == <span class="literal">null</span> ? <span class="keyword">new</span> <span class="title class_">URL</span>[<span class="number">0</span>] : Launcher.pathToURLs(var2);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Launcher</span>.AppClassLoader(var1x, var0);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其实AppClassLoader继承了URLClassLoader，它所做的工作，就是将<code>java.class.path</code>下的资源，转换为URL，然后加入到AppClassLoader中，除此没有别的特殊的地方。</p>
+<p>能够通过静态方法<code>ClassLoader.getSystemClassLoader()</code>来获取到这个AppClassLoader。一般来说非常少的需求，需要获取到AppClassLoader，然后用它来加载一个类，因为都会使用其他的ClassLoader来加载类，并通过委派的方式到达AppClassLoader。</p>
+<p>如果你编写的程序运行在ClassLoader是AppClassLoader的情况下，那么你的程序就只能在命令行下运行，因为你的程序需要依赖均在<code>classpath</code>下设置好，而如果将程序直接部署在WebApp容器中，那么肯定会出问题，因为webApp的一些资源并不在<code>classPath</code>下面。</p>
+<p>接下来，只有两个选择了，当前ClassLoader和线程上下文ClassLoader，以下简称：CurrentClassLoader（CCL）和ThreadContextClassLoader（TCCL）。</p>
+<h3 id="当前类加载器"><a href="#当前类加载器" class="headerlink" title="当前类加载器"></a>当前类加载器</h3><p>这里简单介绍一下这个仿佛看不到的CurrentClassLoader是如何出现的。在如下这段代码中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> &#123;</span><br><span class="line">     <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">m</span><span class="params">()</span> &#123;</span><br><span class="line">          <span class="type">B</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">B</span>();</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>B是如何加载的呢？其实等值于<code>A.class.getClassLoader().loadClass(“B”)</code>;通过这种方式获取到B的类型。 那么如果是这段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> &#123;</span><br><span class="line">     <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">m</span><span class="params">()</span> &#123;</span><br><span class="line">          Class&lt;?&gt; clazz = B.class;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面加载B的Class，相当于<code>Class.forName(&quot;B&quot;)</code>，而进入<code>Class.forName()</code>方法后，后续的载入会利用<code>Class.class.getClassLoader().loadClass(“B”)</code>，也就是利用bootstrap来载入B，但是事实上还是利用载入A的ClassLoader，也就是CurrentClassLoader来载入B，看一下Class.forName的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Class&lt;?&gt; forName(String className)</span><br><span class="line">                <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">    <span class="keyword">return</span> forName0(className, <span class="literal">true</span>, ClassLoader.getClassLoader(Reflection.getCallerClass()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Class.forName</code>运作时，通过<code>Reflection.getCallerClass()</code>，能够获取是谁调用了<code>Class.forName</code>，这时 <code>ClassLoader.getClassLoader()</code>返回的就是当前ClassLoader，这就符合原有含义了。</p>
+<!-- 可以通过观察，通过Java的rt.jar中的API，返回给客户端时，都是使用了获取调用者的ClassLoader的特性，因为在rt.jar中，是无法找到自定义类型的。 -->
+
+<p>通过<code>Reflection.getCallerClass()</code>可以获取到调用<code>Class.forName</code>的类的ClassLoader，从而虽然中间涉及到了bootstrap加载的类（Class），但是依旧能够维护<strong>当前</strong>这个语义。</p>
+<p>Java自身除了通过<code>Reflection.getCallerClass</code>来获取调用的类的类型，在deSerialization中也需要知道类型的信息。在序列化后的内容中，已经包含了当前用户自定义类的类型信息，那么如何在ObjectInputStream调用中，能够拿到客户端的类型呢？通过调用Class.forName？肯定不可以，因为在ObjectInputStream中调用这个，会使用bootstrap来加载，那么它肯定加载不到所需要的类。<br>答案是通过查询栈信息，通过<code>sun.misc.VM.latestUserDefinedLoader()</code>; 获取从栈上开始计算，第一个不为空（bootstrap classloader是空）的ClassLoader便返回。<br>可以试想，在ObjectInputStream运作中，通过直接获取当前调用栈中，第一个非空的ClassLoader，这种做法能够非常便捷的定位用户的ClassLoader，也就是用户在进行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">FileInputStream</span>(“xx.dat”));</span><br><span class="line"><span class="type">B</span> <span class="variable">b</span> <span class="operator">=</span> (B) ois.readObject();</span><br></pre></td></tr></table></figure>
+
+<p>这种调用的时候，依旧能够通过<strong>当前</strong>的ClassLoader正确的加载用户的类。</p>
+<p>可以说<code>Reflection.getCallerClass</code>和<code>sun.misc.VM.latestuserDefinedLoader</code>都是用来突破双亲委派模型的一种解决方式，它能让Java在bootstrap加载的代码中运行时，能够获取到外界（用户）使用的子ClassLoader。</p>
+<h3 id="线程上下文类加载器"><a href="#线程上下文类加载器" class="headerlink" title="线程上下文类加载器"></a>线程上下文类加载器</h3><p>线程上下文类加载器（ThreadContextClassLoader）是从 JDK 1.2 开始引入的，我们可以通过java.lang.Thread类中的getContextClassLoader()和 setContextClassLoader(ClassLoader cl)方法来获取和设置线程的上下文类加载器。如果没有手动设置上下文类加载器，线程将继承其父线程的上下文类加载器，初始线程的上下文类加载器是系统类加载器（AppClassLoader）,在线程中运行的代码可以通过此类加载器来加载类和资源，<br>在介绍CurrentClassLoader中，已经说明它用来突破双亲委派模型的目的，而ThreadContextClassLoader也是为了完成这个工作。<br>在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的SPI有JDBC、JNDI等，这些SPI的接口属于Java核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而SPI的第三方实现代码则是作为Java应用所依赖的jar包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</p>
+<p>以jdbc.jar加载为例,类的加载如下图所示，<br><img src="/images/20170625143404387.png" alt="20170625143404387"></p>
+<p>从图可知rt.jar核心包是有Bootstrap类加载器加载的，其内包含SPI核心接口类，由于SPI中的类经常需要调用外部实现类的方法，而jdbc.jar包含外部实现类(jdbc.jar存在于classpath路径)无法通过Bootstrap类加载器加载，因此只能委派线程上下文类加载器把jdbc.jar中的实现类加载到内存以便SPI相关类使用。显然这种线程上下文类加载器的加载方式破坏了“双亲委派模型”，它在执行过程中抛弃双亲委派加载链模式，使程序可以逆向使用类加载器，当然这也使得Java类加载器变得更加灵活。为了进一步证实这种场景，不妨看看DriverManager类的源码，DriverManager是Java核心rt.jar包中的类，该类用来管理不同数据库的实现驱动即Driver，它们都实现了Java核心包中的java.sql.Driver接口，如mysql驱动包中的<code>com.mysql.jdbc.Driver</code>，这里主要看看如何加载外部实现类，在DriverManager初始化时会执行如下代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DriverManager是Java核心包rt.jar的类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DriverManager</span> &#123;</span><br><span class="line">    <span class="comment">//省略不必要的代码</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        loadInitialDrivers();<span class="comment">//执行该方法</span></span><br><span class="line">        println(<span class="string">&quot;JDBC DriverManager initialized&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//loadInitialDrivers方法</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">loadInitialDrivers</span><span class="params">()</span> &#123;</span><br><span class="line">     sun.misc.Providers()</span><br><span class="line">     AccessController.doPrivileged(<span class="keyword">new</span> <span class="title class_">PrivilegedAction</span>&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="keyword">public</span> Void <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">                <span class="comment">//加载外部的Driver的实现类</span></span><br><span class="line">                ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">              <span class="comment">//省略不必要的代码......</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在DriverManager类初始化时执行了loadInitialDrivers()方法,在该方法中通过<code>ServiceLoader.load(Driver.class)</code>;去加载外部实现的驱动类，ServiceLoader类会去读取mysql的jdbc.jar下META-INF文件的内容，如下所示</p>
+<p><img src="/images/20170625164611435.png" alt="20170625164611435"></p>
+<p>而com.mysql.jdbc.Driver继承类如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Driver</span> <span class="keyword">extends</span> <span class="title class_">com</span>.mysql.cj.jdbc.Driver &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Driver</span><span class="params">()</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.err.println(<span class="string">&quot;Loading class `com.mysql.jdbc.Driver&#x27;. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver&#x27;. &quot;</span></span><br><span class="line">                + <span class="string">&quot;The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从注释可以看出平常我们使用<code>com.mysql.jdbc.Driver</code>已被丢弃了，取而代之的是<code>com.mysql.cj.jdbc.Driver</code>，也就是说官方不再建议我们使用如下代码注册mysql驱动</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//不建议使用该方式注册驱动类</span></span><br><span class="line">Class.forName(<span class="string">&quot;com.mysql.jdbc.Driver&quot;</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;jdbc:mysql://localhost:3306/cm-storylocker?characterEncoding=UTF-8&quot;</span>;</span><br><span class="line"><span class="comment">// 通过java库获取数据库连接</span></span><br><span class="line"><span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> java.sql.DriverManager.getConnection(url, <span class="string">&quot;root&quot;</span>, <span class="string">&quot;root@555&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>而是直接去掉注册步骤，如下即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;jdbc:mysql://localhost:3306/cm-storylocker?characterEncoding=UTF-8&quot;</span>;</span><br><span class="line"><span class="comment">// 通过java库获取数据库连接</span></span><br><span class="line"><span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> java.sql.DriverManager.getConnection(url, <span class="string">&quot;root&quot;</span>, <span class="string">&quot;root@555&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这样ServiceLoader会帮助我们处理一切，并最终通过load()方法加载，看看load()方法实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; ServiceLoader&lt;S&gt; <span class="title function_">load</span><span class="params">(Class&lt;S&gt; service)</span> &#123;</span><br><span class="line">      <span class="comment">//通过线程上下文类加载器加载</span></span><br><span class="line">      <span class="type">ClassLoader</span> <span class="variable">cl</span> <span class="operator">=</span> Thread.currentThread().getContextClassLoader();</span><br><span class="line">      <span class="keyword">return</span> ServiceLoader.load(service, cl);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>很明显了确实通过线程上下文类加载器加载的，实际上核心包的SPI类对外部实现类的加载都是基于线程上下文类加载器执行的，通过这种方式实现了Java核心代码内部去调用外部实现类。我们知道线程上下文类加载器默认情况下就是AppClassLoader，那为什么不直接通过getSystemClassLoader()获取类加载器来加载classpath路径下的类的呢？其实是可行的，但这种直接使用getSystemClassLoader()方法获取AppClassLoader加载类有一个缺点，那就是代码部署到不同服务时会出现问题，如把代码部署到Java Web应用服务或者EJB之类的服务将会出问题，因为这些服务使用的线程上下文类加载器并非AppClassLoader，而是Java Web应用服自家的类加载器，类加载器不同。所以我们应用该少用getSystemClassLoader()。总之不同的服务使用的可能默认ClassLoader是不同的，但使用线程上下文类加载器总能获取到与当前程序执行相同的ClassLoader，从而避免不必要的问题。ok~.关于线程上下文类加载器暂且聊到这，前面阐述的DriverManager类，大家可以自行看看源码，相信会有更多的体会，另外关于ServiceLoader本篇并没有过多的阐述，毕竟我们主题是类加载器，但ServiceLoader是个很不错的解耦机制，大家可以自行查阅其相关用法。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从上面可以得出，CurrentClassLoader对用户来说是自动的，隐式的，而ThreadContextClassLoader需要显示的使用，先进行设置然后再进行使用。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://www.javaworld.com/article/2077344/core-java/find-a-way-out-of-the-classloader-maze.html">Find a way out of the ClassLoader maze</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/a064c1bf.html" rel="bookmark">类加载实战</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/53cf9979.html" rel="bookmark">类加载之SystemDictionary:系统字典</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/2735b28b.html" rel="bookmark">深入理解ClassLoader及双亲委派模型</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/338e9034.html" title="系统、当前、线程上下文类加载概念介绍？">http://fengxiu.club/archives/338e9034.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/" rel="tag"># 类加载</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/3ade2f8f.html" rel="prev" title="Java并发工具类之LongAdder原理总结">
+      <i class="fa fa-chevron-left"></i> Java并发工具类之LongAdder原理总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/53cf9979.html" rel="next" title="类加载之SystemDictionary:系统字典">
+      类加载之SystemDictionary:系统字典 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%8C%BA%E5%88%86"><span class="nav-number">1.</span> <span class="nav-text">概念区分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E3%80%81%E5%BD%93%E5%89%8D%E3%80%81%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%EF%BC%8C%E8%AF%A5%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">系统、当前、线程上下文类加载器，该如何选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">当前类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">线程上下文类加载器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/338e9034.html";
+    this.page.identifier = "archives/338e9034.html";
+    this.page.title = "系统、当前、线程上下文类加载概念介绍？";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

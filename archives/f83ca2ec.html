@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="spring源码解析之 22构造函数实例化autowireConstructor()这个初始化方法我们可以简单理解为是带有参数的初始化 bean 。">
+<meta property="og:type" content="article">
+<meta property="og:title" content=" spring源码解析之 22构造函数实例化">
+<meta property="og:url" content="http://fengxiu.club/archives/f83ca2ec.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="spring源码解析之 22构造函数实例化autowireConstructor()这个初始化方法我们可以简单理解为是带有参数的初始化 bean 。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-01-15T03:36:00.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.392Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="spring源码解析">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://fengxiu.club/archives/f83ca2ec.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> spring源码解析之 22构造函数实例化 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/f83ca2ec.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+           spring源码解析之 22构造函数实例化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-15 03:36:00" itemprop="dateCreated datePublished" datetime="2019-01-15T03:36:00+00:00">2019-01-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/spring/spring-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">spring 源码分析</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/spring/spring-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringCore/" itemprop="url" rel="index"><span itemprop="name">SpringCore</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/f83ca2ec.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/f83ca2ec.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/f83ca2ec.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/f83ca2ec.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="spring源码解析之-22构造函数实例化"><a href="#spring源码解析之-22构造函数实例化" class="headerlink" title="spring源码解析之 22构造函数实例化"></a>spring源码解析之 22构造函数实例化</h1><h2 id="autowireConstructor"><a href="#autowireConstructor" class="headerlink" title="autowireConstructor()"></a>autowireConstructor()</h2><p>这个初始化方法我们可以简单理解为是带有参数的初始化 bean 。</p>
+<span id="more"></span>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> BeanWrapper <span class="title function_">autowireConstructor</span><span class="params">(String beanName, RootBeanDefinition mbd,</span></span><br><span class="line"><span class="params">                                       <span class="meta">@Nullable</span> Constructor&lt;?&gt;[] chosenCtors, </span></span><br><span class="line"><span class="params">                                       <span class="meta">@Nullable</span> Object[] explicitArgs)</span> &#123;</span><br><span class="line">    <span class="comment">// 实例化BeanWrapper对象</span></span><br><span class="line">    <span class="type">BeanWrapperImpl</span> <span class="variable">bw</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BeanWrapperImpl</span>();</span><br><span class="line">    <span class="built_in">this</span>.beanFactory.initBeanWrapper(bw);</span><br><span class="line"></span><br><span class="line">    Constructor&lt;?&gt; constructorToUse = <span class="literal">null</span>;</span><br><span class="line">    <span class="type">ArgumentsHolder</span> <span class="variable">argsHolderToUse</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    Object[] argsToUse = <span class="literal">null</span>;</span><br><span class="line">    <span class="comment">// explicit通过getBean方法传入</span></span><br><span class="line">    <span class="comment">// 如果getBean方法调用的时候指定方法参数，那么直接使用</span></span><br><span class="line">    <span class="keyword">if</span> (explicitArgs != <span class="literal">null</span>) &#123;</span><br><span class="line">        argsToUse = explicitArgs;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 如果在getBean方法时候没有指定则尝试从配置文件中解析</span></span><br><span class="line">        Object[] argsToResolve = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 尝试从缓存中获取获取参数</span></span><br><span class="line">        <span class="keyword">synchronized</span> (mbd.constructorArgumentLock) &#123;</span><br><span class="line">            constructorToUse = (Constructor&lt;?&gt;)</span><br><span class="line">                mbd.resolvedConstructorOrFactoryMethod;</span><br><span class="line">            <span class="keyword">if</span> (constructorToUse != <span class="literal">null</span> &amp;&amp; mbd.constructorArgumentsResolved) &#123;</span><br><span class="line">                <span class="comment">// 缓存中的构造参数</span></span><br><span class="line">                argsToUse = mbd.resolvedConstructorArguments;</span><br><span class="line">                <span class="keyword">if</span> (argsToUse == <span class="literal">null</span>) &#123;</span><br><span class="line">                    argsToResolve = mbd.preparedConstructorArguments;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果缓存中存在</span></span><br><span class="line">        <span class="keyword">if</span> (argsToResolve != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 解析参数类型，如给定方法的构造函数A(int,int)则通过此方法后就会</span></span><br><span class="line">            <span class="comment">// 把配置中(&quot;1&quot;,&quot;1&quot;)转换为(1,1)</span></span><br><span class="line">            <span class="comment">// 缓存中的值可能是原始值也可能是最终值，在这里做处理</span></span><br><span class="line">            argsToUse = resolvePreparedArguments(beanName, mbd,</span><br><span class="line">                                                 bw, constructorToUse, </span><br><span class="line">                                                 argsToResolve, <span class="literal">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 没有缓存也没有明确指定</span></span><br><span class="line">    <span class="keyword">if</span> (constructorToUse == <span class="literal">null</span> || argsToUse == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// Take specified constructors, if any.</span></span><br><span class="line">        Constructor&lt;?&gt;[] candidates = chosenCtors;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果参数中没有指定构造函数</span></span><br><span class="line">        <span class="keyword">if</span> (candidates == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 获取当前bean对应的class对象</span></span><br><span class="line">            Class&lt;?&gt; beanClass = mbd.getBeanClass();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 获取所有的构造函数</span></span><br><span class="line">                candidates = (mbd.isNonPublicAccessAllowed() ?</span><br><span class="line">                              beanClass.getDeclaredConstructors() : </span><br><span class="line">                              beanClass.getConstructors());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果只有默认构造函数并且配置文件中也没有参数配置</span></span><br><span class="line">        <span class="keyword">if</span> (candidates.length == <span class="number">1</span> &amp;&amp; explicitArgs == <span class="literal">null</span> </span><br><span class="line">            &amp;&amp; !mbd.hasConstructorArgumentValues()) &#123;</span><br><span class="line">            Constructor&lt;?&gt; uniqueCandidate = candidates[<span class="number">0</span>];</span><br><span class="line">            <span class="comment">// 缓存构造函数</span></span><br><span class="line">            <span class="keyword">if</span> (uniqueCandidate.getParameterCount() == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (mbd.constructorArgumentLock) &#123;</span><br><span class="line">                    mbd.resolvedConstructorOrFactoryMethod = uniqueCandidate;</span><br><span class="line">                    mbd.constructorArgumentsResolved = <span class="literal">true</span>;</span><br><span class="line">                    mbd.resolvedConstructorArguments = EMPTY_ARGS;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 使用默认构造函数初始化对象</span></span><br><span class="line">                bw.setBeanInstance(instantiate(beanName, mbd, </span><br><span class="line">                                               uniqueCandidate, EMPTY_ARGS));</span><br><span class="line">                <span class="keyword">return</span> bw;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Need to resolve the constructor.</span></span><br><span class="line">        <span class="comment">// 判断是否需要解析构造函数</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">autowiring</span> <span class="operator">=</span> (chosenCtors != <span class="literal">null</span> ||</span><br><span class="line">                              mbd.getResolvedAutowireMode() == </span><br><span class="line">                              AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 用于承载解析后的构造函数的值</span></span><br><span class="line">        <span class="type">ConstructorArgumentValues</span> <span class="variable">resolvedValues</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> minNrOfArgs;</span><br><span class="line">        <span class="keyword">if</span> (explicitArgs != <span class="literal">null</span>) &#123;</span><br><span class="line">            minNrOfArgs = explicitArgs.length;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 从BeanDefinition中获取构造参数，也就是从配置文件中提取构造函数</span></span><br><span class="line">            <span class="type">ConstructorArgumentValues</span> <span class="variable">cargs</span> <span class="operator">=</span> mbd.getConstructorArgumentValues();</span><br><span class="line">            resolvedValues = <span class="keyword">new</span> <span class="title class_">ConstructorArgumentValues</span>();</span><br><span class="line">            <span class="comment">// 解析构造函数的参数</span></span><br><span class="line">            <span class="comment">// 将该bean的构造函数参数解析为resolvedValues对象，其中会涉及到其它bean</span></span><br><span class="line">            minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, </span><br><span class="line">                                                      cargs, resolvedValues);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对构造函数进行排序处理</span></span><br><span class="line">        <span class="comment">// public 构造函数优先参数数量降序，非public 构造函数参数数量降序</span></span><br><span class="line">        AutowireUtils.sortConstructors(candidates);</span><br><span class="line">        <span class="comment">//  最小参数类型权重</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">minTypeDiffWeight</span> <span class="operator">=</span> Integer.MAX_VALUE;</span><br><span class="line">        Set&lt;Constructor&lt;?&gt;&gt; ambiguousConstructors = <span class="literal">null</span>;</span><br><span class="line">        LinkedList&lt;UnsatisfiedDependencyException&gt; causes = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 迭代所有构造函数</span></span><br><span class="line">        <span class="keyword">for</span> (Constructor&lt;?&gt; candidate : candidates) &#123;</span><br><span class="line">            <span class="comment">// 获取构造函数参数类型</span></span><br><span class="line">            Class&lt;?&gt;[] paramTypes = candidate.getParameterTypes();</span><br><span class="line">            <span class="comment">// 如果已经找到选用的构造函数或者需要的参数个数小于当前的构造函数参数个数，则终止</span></span><br><span class="line">            <span class="comment">// 因为已经按照参数个数降序排列了</span></span><br><span class="line">            <span class="keyword">if</span> (constructorToUse != <span class="literal">null</span> &amp;&amp; argsToUse != <span class="literal">null</span> &amp;&amp;</span><br><span class="line">                argsToUse.length &gt; paramTypes.length) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 参数个数不等，继续</span></span><br><span class="line">            <span class="keyword">if</span> (paramTypes.length &lt; minNrOfArgs) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 参数持有者</span></span><br><span class="line">            ArgumentsHolder argsHolder;</span><br><span class="line">            <span class="comment">// 有参数</span></span><br><span class="line">            <span class="keyword">if</span> (resolvedValues != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">// 注解上获取参数名称</span></span><br><span class="line">                    String[] paramNames = </span><br><span class="line">                        ConstructorPropertiesChecker.evaluate(candidate, </span><br><span class="line">                                                              paramTypes.length);</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (paramNames == <span class="literal">null</span>) &#123;</span><br><span class="line">                        <span class="comment">// 获取构造函数、方法参数的探测器</span></span><br><span class="line">                        <span class="type">ParameterNameDiscoverer</span> <span class="variable">pnd</span> <span class="operator">=</span> </span><br><span class="line">                            <span class="built_in">this</span>.beanFactory.getParameterNameDiscoverer();</span><br><span class="line">                        <span class="keyword">if</span> (pnd != <span class="literal">null</span>) &#123;</span><br><span class="line">                            <span class="comment">// 通过探测器获取构造函数的参数名称</span></span><br><span class="line">                            paramNames = pnd.getParameterNames(candidate);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">// 根据构造函数和构造参数创建参数持有者</span></span><br><span class="line">                    argsHolder = createArgumentArray(beanName, mbd, </span><br><span class="line">                                                     resolvedValues, bw, </span><br><span class="line">                                                     paramTypes, paramNames,</span><br><span class="line">     						getUserDeclaredConstructor(candidate), autowiring, </span><br><span class="line">                                                     candidates.length == <span class="number">1</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (UnsatisfiedDependencyException ex) &#123;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// Swallow and try next constructor.</span></span><br><span class="line">                <span class="keyword">if</span> (causes == <span class="literal">null</span>) &#123;</span><br><span class="line">                    causes = <span class="keyword">new</span> <span class="title class_">LinkedList</span>&lt;&gt;();</span><br><span class="line">                &#125;</span><br><span class="line">                causes.add(ex);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 构造函数没有参数</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (paramTypes.length != explicitArgs.length) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            argsHolder = <span class="keyword">new</span> <span class="title class_">ArgumentsHolder</span>(explicitArgs);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//isLenientConstructorResolution判断解析构造函数的时候是否以宽松模式还是严格模式</span></span><br><span class="line">        <span class="comment">// 严格模式：解析构造函数时，必须所有的都需要匹配，否则抛出异常</span></span><br><span class="line">        <span class="comment">// 宽松模式：使用具有&quot;最接近的模式&quot;进行匹配</span></span><br><span class="line">        <span class="comment">// typeDiffWeight：类型差异权重</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">typeDiffWeight</span> <span class="operator">=</span> (mbd.isLenientConstructorResolution() ?</span><br><span class="line">                              argsHolder.getTypeDifferenceWeight(paramTypes) :</span><br><span class="line">                              argsHolder.getAssignabilityWeight(paramTypes));</span><br><span class="line">        <span class="comment">// Choose this constructor if it represents the closest match.</span></span><br><span class="line">        <span class="comment">// 如果它代表着当前最接近的匹配则选择其作为构造函数</span></span><br><span class="line">        <span class="keyword">if</span> (typeDiffWeight &lt; minTypeDiffWeight) &#123;</span><br><span class="line">            constructorToUse = candidate;</span><br><span class="line">            argsHolderToUse = argsHolder;</span><br><span class="line">            argsToUse = argsHolder.arguments;</span><br><span class="line">            minTypeDiffWeight = typeDiffWeight;</span><br><span class="line">            ambiguousConstructors = <span class="literal">null</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (constructorToUse != <span class="literal">null</span> &amp;&amp;</span><br><span class="line">                   typeDiffWeight == minTypeDiffWeight) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ambiguousConstructors == <span class="literal">null</span>) &#123;</span><br><span class="line">                ambiguousConstructors = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>&lt;&gt;();</span><br><span class="line">                ambiguousConstructors.add(constructorToUse);</span><br><span class="line">            &#125;</span><br><span class="line">            ambiguousConstructors.add(candidate);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (constructorToUse == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (causes != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">UnsatisfiedDependencyException</span> <span class="variable">ex</span> <span class="operator">=</span> causes.removeLast();</span><br><span class="line">            <span class="keyword">for</span> (Exception cause : causes) &#123;</span><br><span class="line">                <span class="built_in">this</span>.beanFactory.onSuppressedException(cause);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">throw</span> ex;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ambiguousConstructors != <span class="literal">null</span> &amp;&amp; </span><br><span class="line">               !mbd.isLenientConstructorResolution()) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将构造函数、构造参数保存到缓存中</span></span><br><span class="line">    <span class="keyword">if</span> (explicitArgs == <span class="literal">null</span> &amp;&amp; argsHolderToUse != <span class="literal">null</span>) &#123;</span><br><span class="line">        argsHolderToUse.storeCache(mbd, constructorToUse);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Assert.state(argsToUse != <span class="literal">null</span>, <span class="string">&quot;Unresolved constructor arguments&quot;</span>);</span><br><span class="line"><span class="comment">// 实例化bean</span></span><br><span class="line">bw.setBeanInstance(instantiate(beanName, mbd, constructorToUse, argsToUse));</span><br><span class="line"><span class="keyword">return</span> bw;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>代码与 <code>instantiateUsingFactoryMethod()</code> 一样，又长又难懂，但是如果理解了 <code>instantiateUsingFactoryMethod()</code> 初始化 bean 的过程，那么 <code>autowireConstructor()</code> 也不存在什么难的地方了，一句话概括：首先确定构造函数参数、构造函数，然后调用相应的初始化策略进行 bean 的初始化。关于如何确定构造函数、构造参数，该部分逻辑和 <code>instantiateUsingFactoryMethod()</code> 基本一致。所以这里你应该相对会轻松点</p>
+<ol>
+<li><p>构造函数参数的确定</p>
+<ul>
+<li><p>根据explicitArgs参数判断</p>
+<p>如果传入的参数explicitArgs不为空，那边可以直接确定参数，因为explicitArgs参数是在调用bean的时候用户指定的，在BeanFactory类中存在这样的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Object <span class="title function_">getBean</span><span class="params">(String name,Object... args)</span> <span class="keyword">throws</span> BeansException</span><br></pre></td></tr></table></figure>
+
+<p>在获取bean的时候，用户不但可以指定bean的名称还可以指定bean对应类的构造函数或者工厂方法的方法参数，主要用于静态工厂方法的调用，而这里需要先给定完全匹配的参数，如果传入参数explicitArg不为空，则可以确定构造函数参数就是它。</p>
+</li>
+<li><p>缓存中获取</p>
+<p>除此之外，确定参数的办法如果之前已经分析过，也就是说构造参数已经记录在缓存中，那么便可以直接拿来使用。而且，这里要提到的是，在魂村中换粗的可能是参数的最终类型也可能是参数的初始类型。如果是初始类型，则需要进行转换。</p>
+</li>
+<li><p>配置文件中获取</p>
+<p>如果不能根据传入参数explicitArg确定构造函数的参数也无法在缓存中得到相关信息，那么只能开始新一轮的分析。分析从配置文件中配置的构造函数信息开始，经过之前的分析，我们知道，spring中配置文件中的信息经过转换都会通过BeanDefinition实例承载，也就是参数mbd中包含，那么可以通过调用mdb.getContructorArgumentValues来获取配置的构造函数信息。有了配置中的信息便可以获取对应的参数值信息。获取参数值的信息包括直接指定值，如：直接指定构造函数中某个值为原始类型String类型，或者是一个队其他bean的引用，这里处理委托给resolveConstrucorArguments方法，并返回能解析到的参数的个数</p>
+</li>
+</ul>
+</li>
+<li><p>构造函数的确定</p>
+<p>经过了第一步后已经确定了构造函数的参数，接下来的任务就是根据构造函数参数在所有构造函数中锁定对应的构造函数，而匹配的方法就是根据参数个数匹配，所以在匹配之前需要先对构造函数按照public构造函数优先参数量降序、feipublic构造函数参数数量降序，这样可以在遍历的情况下循序判断牌子啊后面的构造函数参数个数是否符合条件。</p>
+<p>由于在配置文件中并不是唯一现在使用参数位置索引的方式去创建，同样还支持指定参数名称进行设定参数值的情况，如<code>&lt;constructor-arg name=&quot;aa&quot;&gt;</code>，那么这种情况就需要首先确定构造函数中的参数名称。</p>
+<p>获取参数名称可以有俩种方式，一种是通过注解的方式直接获取，另一种就是使用spring中提供的工具类ParameterNameDiscover来获取，构造函数、参数名称、参数哦类型、参数值都确定后就可以锁定构造函数以及转换对应的参数类型。</p>
+</li>
+<li><p>根据确定的构造函数转换对应的参数类型</p>
+<p>主要使用spring中提供的类型转换器或者用户提供的自定义类型转换器进行转换。</p>
+</li>
+<li><p>根据构造函数不确定性的验证</p>
+<p>当然，有时候即使构造函数，参数名称，参数类型、参数值都确定后也不一定会直接锁定构造函数，不同构造函数的参数为父子类型，所以spring在最后有做了一次验证。</p>
+<p>根据实例化策略以及得到的构造函数即构造函数参数实例化bean。下面我们重点分析初始化策略：</p>
+</li>
+</ol>
+<p>对于初始化策略，首先是获取实例化 bean 的策略，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">InstantiationStrategy</span> <span class="variable">strategy</span> <span class="operator">=</span> beanFactory.getInstantiationStrategy();</span><br></pre></td></tr></table></figure>
+
+<p>然后是调用其 <code>instantiate()</code>方法，该方法在 SimpleInstantiationStrategy 中实现，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Object <span class="title function_">instantiate</span><span class="params">(RootBeanDefinition bd, </span></span><br><span class="line"><span class="params">                          <span class="meta">@Nullable</span> String beanName, BeanFactory owner)</span> &#123;</span><br><span class="line">    <span class="comment">// 没有覆盖</span></span><br><span class="line">    <span class="comment">// 直接使用反射实例化即可</span></span><br><span class="line">    <span class="keyword">if</span> (!bd.hasMethodOverrides()) &#123;</span><br><span class="line">        <span class="comment">// 重新检测获取下构造函数</span></span><br><span class="line">        <span class="comment">// 该构造函数是经过前面 N 多复杂过程确认的构造函数</span></span><br><span class="line">        Constructor&lt;?&gt; constructorToUse;</span><br><span class="line">        <span class="keyword">synchronized</span> (bd.constructorArgumentLock) &#123;</span><br><span class="line">            <span class="comment">// 获取已经解析的构造函数</span></span><br><span class="line">            constructorToUse = (Constructor&lt;?&gt;) </span><br><span class="line">                bd.resolvedConstructorOrFactoryMethod;</span><br><span class="line">            <span class="comment">// 如果为 null，从 class 中解析获取，并设置</span></span><br><span class="line">            <span class="keyword">if</span> (constructorToUse == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">final</span> Class&lt;?&gt; clazz = bd.getBeanClass();</span><br><span class="line">                <span class="keyword">if</span> (clazz.isInterface()) &#123;</span><br><span class="line">                  。。。。省略异常</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (System.getSecurityManager() != <span class="literal">null</span>) &#123;</span><br><span class="line">                        constructorToUse = AccessController.doPrivileged(</span><br><span class="line">                            (PrivilegedExceptionAction&lt;Constructor&lt;?&gt;&gt;) </span><br><span class="line">                            clazz::getDeclaredConstructor);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                        constructorToUse =  clazz.getDeclaredConstructor();</span><br><span class="line">                    &#125;</span><br><span class="line">                    bd.resolvedConstructorOrFactoryMethod = constructorToUse;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">                  。。。省略异常</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过BeanUtils直接使用构造器对象实例化bean</span></span><br><span class="line">        <span class="keyword">return</span> BeanUtils.instantiateClass(constructorToUse);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 生成CGLIB创建的子类对象</span></span><br><span class="line">        <span class="keyword">return</span> instantiateWithMethodInjection(bd, beanName, owner);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果该 bean 没有配置 lookup-method、replaced-method 标签或者 @Lookup 注解，则直接通过反射的方式实例化 bean 即可，方便快捷，但是如果存在需要覆盖的方法或者动态替换的方法则需要使用 CGLIB 进行动态代理，因为可以在创建代理的同时将动态方法织入类中。</p>
+<p><strong>反射</strong></p>
+<p>调用工具类 BeanUtils 的 <code>instantiateClass()</code> 方法完成反射工作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">instantiateClass</span><span class="params">(Constructor&lt;T&gt; ctor, Object... args)</span></span><br><span class="line">    <span class="keyword">throws</span> BeanInstantiationException &#123;</span><br><span class="line">    Assert.notNull(ctor, <span class="string">&quot;Constructor must not be null&quot;</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        ReflectionUtils.makeAccessible(ctor);</span><br><span class="line">        <span class="keyword">return</span> (KotlinDetector.isKotlinType(ctor.getDeclaringClass()) ?</span><br><span class="line">                KotlinDelegate.instantiateClass(ctor, args) : </span><br><span class="line">                ctor.newInstance(args));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 省略一些 catch </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>CGLIB</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">instantiateWithMethodInjection</span><span class="params">(RootBeanDefinition bd,</span></span><br><span class="line"><span class="params">        <span class="meta">@Nullable</span> String beanName, BeanFactory owner)</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>(<span class="string">&quot;Method Injection not supported in </span></span><br><span class="line"><span class="string">                                            SimpleInstantiationStrategy&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>方法默认是没有实现的，具体过程由其子类 CglibSubclassingInstantiationStrategy 实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">instantiateWithMethodInjection</span><span class="params">(RootBeanDefinition bd, </span></span><br><span class="line"><span class="params">                    <span class="meta">@Nullable</span> String beanName, BeanFactory owner)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> instantiateWithMethodInjection(bd, beanName, owner, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> Object <span class="title function_">instantiateWithMethodInjection</span><span class="params">(RootBeanDefinition bd, </span></span><br><span class="line"><span class="params">              <span class="meta">@Nullable</span> String beanName, BeanFactory owner,</span></span><br><span class="line"><span class="params">              <span class="meta">@Nullable</span> Constructor&lt;?&gt; ctor, <span class="meta">@Nullable</span> Object... args)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通过CGLIB生成一个子类对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">CglibSubclassCreator</span>(bd, owner).instantiate(ctor, args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建一个 CglibSubclassCreator 对象，调用其 <code>instantiate()</code> 方法生成其子类对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Object <span class="title function_">instantiate</span><span class="params">(<span class="meta">@Nullable</span> Constructor&lt;?&gt; ctor, <span class="meta">@Nullable</span> Object... args)</span> </span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 通过 Cglib 创建一个代理类</span></span><br><span class="line">    Class&lt;?&gt; subclass = createEnhancedSubclass(<span class="built_in">this</span>.beanDefinition);</span><br><span class="line">    Object instance;</span><br><span class="line">    <span class="comment">// 没有构造器，通过 BeanUtils 使用默认构造器创建一个bean实例</span></span><br><span class="line">    <span class="keyword">if</span> (ctor == <span class="literal">null</span>) &#123;</span><br><span class="line">        instance = BeanUtils.instantiateClass(subclass);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 获取代理类对应的构造器对象，并实例化 bean</span></span><br><span class="line">            Constructor&lt;?&gt; enhancedSubclassConstructor = </span><br><span class="line">                subclass.getConstructor(ctor.getParameterTypes());</span><br><span class="line">            instance = enhancedSubclassConstructor.newInstance(args);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 为了避免memory leaks异常，直接在bean实例上设置回调对象</span></span><br><span class="line">    <span class="type">Factory</span> <span class="variable">factory</span> <span class="operator">=</span> (Factory) instance;</span><br><span class="line">    factory.setCallbacks(<span class="keyword">new</span> <span class="title class_">Callback</span>[] &#123;NoOp.INSTANCE,</span><br><span class="line">                 <span class="keyword">new</span> <span class="title class_">CglibSubclassingInstantiationStrategy</span></span><br><span class="line">                     .LookupOverrideMethodInterceptor(<span class="built_in">this</span>.beanDefinition, <span class="built_in">this</span>.owner),</span><br><span class="line">                                         <span class="keyword">new</span> <span class="title class_">CglibSubclassingInstantiationStrategy</span></span><br><span class="line">			.ReplaceOverrideMethodInterceptor(<span class="built_in">this</span>.beanDefinition, <span class="built_in">this</span>.owner)&#125;);</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到这类 CGLIB 的方式分析完毕了，当然这里还没有具体分析 CGLIB 生成子类的详细过程，具体的过程等后续分析 AOP 的时候再详细地介绍。</p>
+<h2 id="instantiateBean"><a href="#instantiateBean" class="headerlink" title="instantiateBean()"></a>instantiateBean()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> BeanWrapper <span class="title function_">instantiateBean</span><span class="params">(<span class="keyword">final</span> String beanName,</span></span><br><span class="line"><span class="params">                                      <span class="keyword">final</span> RootBeanDefinition mbd)</span> &#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         Object beanInstance;</span><br><span class="line">         <span class="keyword">final</span> <span class="type">BeanFactory</span> <span class="variable">parent</span> <span class="operator">=</span> <span class="built_in">this</span>;</span><br><span class="line">         <span class="keyword">if</span> (System.getSecurityManager() != <span class="literal">null</span>) &#123;</span><br><span class="line">             beanInstance = AccessController.doPrivileged(</span><br><span class="line">                 (PrivilegedAction&lt;Object&gt;) () -&gt;</span><br><span class="line">                             getInstantiationStrategy().instantiate(mbd,</span><br><span class="line">                                beanName, parent),</span><br><span class="line">                     getAccessControlContext());</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">else</span> &#123;</span><br><span class="line">             beanInstance = getInstantiationStrategy()</span><br><span class="line">                 		.instantiate(mbd, beanName, parent);</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="type">BeanWrapper</span> <span class="variable">bw</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BeanWrapperImpl</span>(beanInstance);</span><br><span class="line">         initBeanWrapper(bw);</span><br><span class="line">         <span class="keyword">return</span> bw;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">       	、、。。。</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个方法相比于 <code>instantiateUsingFactoryMethod()</code> 、 <code>autowireConstructor()</code> 方法相对简单，因为它没有参数，所以不需要确认经过复杂的过来来确定构造器、构造参数，所以这里就不过多阐述了。</p>
+<p>对于 <code>createBeanInstance()</code> 而言，他就是选择合适实例化策略来为 bean 创建实例对象，具体的策略有：Supplier 回调方式、工厂方法初始化、构造函数自动注入初始化、默认构造函数注入。其中工厂方法初始化和构造函数自动注入初始化两种方式最为复杂，主要是因为构造函数和构造参数的不确定性，Spring 需要花大量的精力来确定构造函数和构造参数，如果确定了则好办，直接选择实例化策略即可。当然在实例化的时候会根据是否有需要覆盖或者动态替换掉的方法，因为存在覆盖或者织入的话需要创建动态代理将方法织入，这个时候就只能选择 CGLIB 的方式来实例化，否则直接利用反射的方式即可，方便快捷。</p>
+<p>到这里 <code>createBeanInstance()</code> 的过程就已经分析完毕了，下篇介绍 <code>doCreateBean()</code> 方法中的第二个过程：属性填充。</p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/48fb5eaf.html" rel="bookmark">Spring源码解析之 08bean标签：BeanDefinition简单介绍与bean节点解析</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/c51c4fa0.html" rel="bookmark">Spring源码解析之 01环境搭建</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/1284c29c.html" rel="bookmark">Spring源码分析之 02IOC原理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/f89484e0.html" rel="bookmark">spring 源码解析之 04（上）加载bean</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/e84d4767.html" rel="bookmark">spring源码解析之 04（下）获取验证模型</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>fengxiutianya
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/f83ca2ec.html" title=" spring源码解析之 22构造函数实例化">http://fengxiu.club/archives/f83ca2ec.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="tag"># spring源码解析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/f61178aa.html" rel="prev" title="spring源码解析之 21 实例化bean">
+      <i class="fa fa-chevron-left"></i> spring源码解析之 21 实例化bean
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/fc74fa99.html" rel="next" title="spring源码解析之 23属性填充">
+      spring源码解析之 23属性填充 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8B-22%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">spring源码解析之 22构造函数实例化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#autowireConstructor"><span class="nav-number">1.1.</span> <span class="nav-text">autowireConstructor()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#instantiateBean"><span class="nav-number">1.2.</span> <span class="nav-text">instantiateBean()</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/f83ca2ec.html";
+    this.page.identifier = "archives/f83ca2ec.html";
+    this.page.title = " spring源码解析之 22构造函数实例化";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

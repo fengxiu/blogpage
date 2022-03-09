@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述在多个事务并发执行时，事务的隔离性不一定能保持。为保持事务的隔离性，系统必须对并发事务之间的相互协作加以控制；这种控制是通过一种称为并发控制来实现。下面将介绍多种机制，但是没有哪种机制明显是最好的。每种机制都有优势。在实践中，最常用的是俩阶段封锁和快照隔离。本篇文章的主要内容就是分别介绍下面几种并发控制机制。  基于封锁的协议 基于时间戳的协议 多版本机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事务隔离性实现">
+<meta property="og:url" content="http://fengxiu.club/archives/70e3f5d8.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="概述在多个事务并发执行时，事务的隔离性不一定能保持。为保持事务的隔离性，系统必须对并发事务之间的相互协作加以控制；这种控制是通过一种称为并发控制来实现。下面将介绍多种机制，但是没有哪种机制明显是最好的。每种机制都有优势。在实践中，最常用的是俩阶段封锁和快照隔离。本篇文章的主要内容就是分别介绍下面几种并发控制机制。  基于封锁的协议 基于时间戳的协议 多版本机制">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-310.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-311.png">
+<meta property="og:image" content="http://fengxiu.club/images/pasted-312.png">
+<meta property="article:published_time" content="2019-03-21T06:33:27.000Z">
+<meta property="article:modified_time" content="2022-03-09T08:51:06.400Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="事务">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fengxiu.club/images/pasted-310.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/70e3f5d8.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>事务隔离性实现 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">94</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">194</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/70e3f5d8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          事务隔离性实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-21 06:33:27" itemprop="dateCreated datePublished" datetime="2019-03-21T06:33:27+00:00">2019-03-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-09 08:51:06" itemprop="dateModified" datetime="2022-03-09T08:51:06+00:00">2022-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/70e3f5d8.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/70e3f5d8.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/70e3f5d8.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/70e3f5d8.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在多个事务并发执行时，事务的隔离性不一定能保持。为保持事务的隔离性，系统必须对并发事务之间的相互协作加以控制；这种控制是通过一种称为<strong>并发控制</strong>来实现。下面将介绍多种机制，但是没有哪种机制明显是最好的。每种机制都有优势。在实践中，最常用的是俩阶段封锁和快照隔离。本篇文章的主要内容就是分别介绍下面几种并发控制机制。</p>
+<ol>
+<li>基于封锁的协议</li>
+<li>基于时间戳的协议</li>
+<li>多版本机制</li>
+</ol>
+<span id="more"></span>
+
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>这里先补充几个概念，后面会多次用到。</p>
+<p>read操作表示从磁盘读数据到内存，write操作表示从将数据写回磁盘。不考虑缓存这些概念，就是简单的读数据到内存，写数据到硬盘。文章后面说道这俩个操作都是这个意思。</p>
+<h3 id="可恢复调度"><a href="#可恢复调度" class="headerlink" title="可恢复调度"></a>可恢复调度</h3><p>这里首先举一个例子,有俩个事务，T6和T7，调度情况如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">T6</th>
+<th align="center">T7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">read(A)<br> write(A)</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">-</td>
+<td align="center">read(A) <br> commit</td>
+</tr>
+<tr>
+<td align="center">read(B)</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">看上面俩个事务，T6中我们是截取了一个事务中的一段操作，所以没有commit和abort。现在我们来分析上面调度。T7执行read(A)指令后立即提交。因此T7提交时T6仍处于活跃状态。现在假定T6在提交前发生故障。T7已读取了由T6写入的数据项A的值。因此，我们说T7依赖于T6。因此我们必须终止T7以保证事务的原子性。但是T7已提交，不能再中止。这样就出现了T6发生故障后不能正确恢复的情形。</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">因此这个调度是不可恢复调度的一个例子。一个<strong>可恢复调度</strong>应该满足：对于每个事务T和J，如果J读取了事务T所写的数据项，则T应先于提交。</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h3 id="无级联调度"><a href="#无级联调度" class="headerlink" title="无级联调度"></a>无级联调度</h3><p>下面是一个级联调度例子</p>
+<table>
+<thead>
+<tr>
+<th align="center">T8</th>
+<th align="center">T9</th>
+<th align="center">T10</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">read(A) <br/> read(B)<br/> write()A</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">-</td>
+<td align="center">read(A)<br/> write(A)</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">read(A)</td>
+</tr>
+<tr>
+<td align="center">abort</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">上面就是一个级联调度，由于T8的回滚，导致后面T9和T10俩个事务的回滚。</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">几连调度导致撤销大量工作，使我们不希望发生的。我们希望对调度加以限制，避免级联回滚发生。</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center"><strong>无级联调度</strong>：对于事务T和J，如果J读取了先前有T所写的数据项，则T必须在J读这个数据项前进行提交。无级联调度一定是可恢复调度。</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h2 id="基于封锁的协议"><a href="#基于封锁的协议" class="headerlink" title="基于封锁的协议"></a>基于封锁的协议</h2><p>确保隔离性的方法之一就是对数据项以互斥的方式进行访问，实现此需求最常用的方法是只允许事务访问当前事务持有锁的数据项。<br>锁大致分为俩种：</p>
+<ol>
+<li>共享锁：事务T获取了数据项Q的共享锁(记为S)则T可读但不能写Q</li>
+<li>互斥锁：事务获取了数据项Q的互斥锁(记为X)则T可写可读Q。<br>每个事务根据自己对数据项Q进行的操作申请合适的锁。在并发控制中，锁的申请是由并发控制管理器管理的，事务只有在并发控制管理器授予锁后才能继续事务的操作。而上面俩种锁又会存在相容性情况：如果事务A在Q数据项上加锁，事务B可以在数据向Q上立即获得锁，则说这个锁是相容的否则就是不相容。共享和互斥锁的相容性矩阵如下：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">-</th>
+<th align="center">s</th>
+<th align="center">x</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">s</td>
+<td align="center">yes</td>
+<td align="center">no</td>
+</tr>
+<tr>
+<td align="center">x</td>
+<td align="center">no</td>
+<td align="center">no</td>
+</tr>
+<tr>
+<td align="center">但是事务对于自己需要操作的数据项进行上锁不一定能够保证数据的一致性。如果在数据使用前进行上锁，使用后立即释放锁，也有可能导致数据的不一致性。但是如果在事务开始前申请所有数据项的锁，事务结束或者中止时释放所有的锁，又会导致事务的并发性比较低。</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">基于上述情况，需要求数据库系统中的事务都遵从称为<strong>封锁协议</strong>的一组规则，这组规则规定事务何时对数据项进行加锁、解锁。下面将介绍一个使用比较广泛的封锁协议。</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h3 id="俩阶段封锁协议"><a href="#俩阶段封锁协议" class="headerlink" title="俩阶段封锁协议"></a>俩阶段封锁协议</h3><p>此协议要求每个事务分来个阶段提出加锁和解锁申请：</p>
+<ol>
+<li>增长阶段：事务可以申请锁，但不能释放锁。</li>
+<li>缩减阶段：事务可以释放锁，但不能申请锁。</li>
+</ol>
+<p>最初事务处于增长阶段，事务根据需要获取锁。一旦事务释放了锁，他将进入缩减阶段，并且不能再发出加锁请求。<br><strong>俩阶段锁的缺点：</strong></p>
+<ol>
+<li>俩阶段锁可能会发生死锁。</li>
+<li>可能发生级联回滚。但是级联回滚可以通过俩阶段锁修改为<strong>严格俩阶段封锁协议</strong>加以避免。这个协议出了要求是俩阶段之外，还要求事务持有所有互斥锁必须在事务提交后方可释放。这就保证事务修改的数据项在没有提交前辈其他事务读取到。</li>
+</ol>
+<p>此外俩阶段封锁协议还有一个变体就是<strong>强俩阶段封锁协议</strong>，要求事务提交之前不得释放任何锁。在整个阶段可以允许<strong>锁转换</strong>，有俩种转换：将共享锁转换为互斥锁称为锁升级，将互斥锁转换为共享锁称为锁降级。锁升级只能发生在增长阶段，锁降级只能发生在缩减阶段。</p>
+<p>严格俩阶段封锁与强俩阶段封锁（含锁转换）在商用数据库系统中广发使用。<br>下面介绍一种简单却广泛使用的机制，它基于来自事务的读、写请求，自动地为事务产生适当的加锁、解锁指令：</p>
+<ul>
+<li>当事务T进行读操作时系统就产生一条申请共享锁的指令，然后执行read操作</li>
+<li>当事务T执行写操作时，系统首先检查事务T是否已经持有该数据项的共享锁，如果持有则发出锁升级执行，然后进行写操作。否则系统直接发出申请互斥锁指令，接着执行写操作。</li>
+<li>当一个事务提交或终止后，该事物持有的所有锁操作都被释放。</li>
+</ul>
+<p>这里补充一点：在锁授予时，如果不加以控制，会导致某个事务产生饿死现象，使得事务可能永远不能取得进展。我们可以通过如下方式授权事务加锁请求来避免事务饿死：事务T申请对数据项Q加M型锁时，并发控制管理器授权锁的条件是：</p>
+<ol>
+<li>不存在在数据项Q上持有与M型锁冲突的锁的其他事务</li>
+<li>不存在等待对数据项Q加锁且先于T申请加锁的的事务。</li>
+</ol>
+<h3 id="死锁处理"><a href="#死锁处理" class="headerlink" title="死锁处理"></a>死锁处理</h3><p>前面说过，封锁协议会产生死锁。那么如何处理死锁呢。首先看看死锁的定义：如果存在一组事务集，该集合中的每个事务都在等待集合中另一个事务，因此产生了一个环，我们就说系统处于死锁状态。<br>处理死锁主要由俩种主要方法：</p>
+<ol>
+<li>死锁预防保证系统永远不会进入死锁状态</li>
+<li>允许系统进入死锁状态，然后试着用死锁检测与死锁恢复机制进行恢复。</li>
+</ol>
+<p>上面俩种方法都有可能引起事务回滚。相对来说，如果系统产生死锁的概率相对较高，则通常使用死锁预防机制，否则使用死锁检测与恢复机制会更有效。死锁检测与恢复机制带来的各种开销，不仅包括在运行时需要维护必要信息及执行检测算法的代价，还要包括从死锁中恢复的损失。</p>
+<h4 id="死锁预防"><a href="#死锁预防" class="headerlink" title="死锁预防"></a>死锁预防</h4><p>预防死锁有俩种方法。一种是通过对加锁请求进行排序或要求同时获得所有的锁来保证不会发生循环等待。另一种方法比较接近死锁恢复，每当等待有可能导致死锁时，进行事务回滚而不是等待加锁。</p>
+<ol>
+<li>第一种方法下最简单的机制要求每个事务在开始之前封锁他的所有数据项。此外，要么一次全部封锁要么全部不封锁。这个协议主要由俩个缺点：<ol>
+<li>在事务开始前通常很难预测哪些数据项需要封锁</li>
+<li>数据项使用率可能很低，因为许多数据可能封锁很长时间却用不到。<br>或者对所有的数据项加一个次序，同时要求事务只能按次序规定的顺序封锁数据项，但是这个很难实现如何确定数据项的数据。因此不常用。</li>
+</ol>
+</li>
+<li>第二种方法就是抢占与回滚。抢占机制就是，如果满足某种条件，事务可以抢占其他事务的数据项来保持继续的运行。<br>抢占机制会首先为每个事务提供一个唯一的时间戳，系统通过时间戳来决定事务应该等待还是回滚。如果事务回滚，则事务保持原来的时间戳。基于时间戳主要由以下来钟不同的死锁预防机制<ol>
+<li>基于非抢占机制。当事务T1申请的数据项当前被T2持有，仅当T1事务开始的时间早于T2，允许T1进行等待，否则T1进行回滚。</li>
+<li>基于抢占机制。当事务T1申请的数据项当前被T2持有，仅当T1事务开始的时间早于T2，允许T2进行等待，否则T2回滚。</li>
+</ol>
+</li>
+</ol>
+<p>上述俩种机制都会面临的主要问题是可能发生不必要的回滚。<br>还有一种简单的机制，锁超时，就是如果申请事务至多等待一段给定的时间，如果获取不到锁，则进行回滚。但是确定时间的长短比较难。时间短了，事务的回滚比较多，造成不要的浪费。如果已经发生死锁，等待时间设置的比较久，从而造成事务不必要的等待。因此，基于超时的机制应用有限。</p>
+<h4 id="死锁检测与恢复"><a href="#死锁检测与恢复" class="headerlink" title="死锁检测与恢复"></a>死锁检测与恢复</h4><p>如果系统没有采用保证不产生死锁的协议，呢么系统必须采用检测与恢复机制。检测系统状态的算法周期性地进行激活，判断有无死锁发生，如果有则采用恢复算法，让系统从死锁中恢复。实现这一点，系统必须：</p>
+<ul>
+<li>维护当前数据项分配给事务的有关信息，以及任何尚未解决的数据项的请求信息。</li>
+<li>提供一个使用这些信息判断系统是否进入死锁状态的算法。</li>
+<li>当检测算法判断存在死锁时，从死锁中恢复。</li>
+</ul>
+<h5 id="死锁检测"><a href="#死锁检测" class="headerlink" title="死锁检测"></a>死锁检测</h5><p>可以采用称为等待图的有向图来精确描述系统中事务的关系。其中顶点集是有事务来描述，边是由事务之间的关系来描述。当事务T申请的数据项被J持有，那么就有一条从T到J的边。当数据项被申请到后，就把这条边删除。<br>当且仅当数图中包含环时，系统中存在死锁，该环中的每个事务处于死锁状态。要检测死锁必须维护一个等待图，并周期的激活一个等待图搜索算法。<br>何时激活死锁检测算法，取决于俩个因素</p>
+<ol>
+<li>死锁发生频度怎么样</li>
+<li>有多少事务将受到死锁的影响</li>
+</ol>
+<h5 id="死锁恢复"><a href="#死锁恢复" class="headerlink" title="死锁恢复"></a>死锁恢复</h5><p>当检测到系统中存在死锁时，系统必须从死锁中欧冠恢复。解除死锁最通常的做法是回滚一个或多个事务。采取的动作主要由三个</p>
+<ol>
+<li>选择牺牲者：需要决定回滚哪个事务来打破死锁，这个事务的代价又必须很小。但是代价很小的定义很多，回滚的事务比较少，回滚事务的等待时间最小等等一些列的回滚代价。</li>
+<li>回滚：一旦决定回滚事务，就要判断事务回滚多远能够解除死锁。最简单的做法是彻底回滚。但是比较浪费。另一种是部分回滚，就必须在维护额外的信息，来确定回滚哪些数据项上的操作就能就出死锁。</li>
+<li>饿死：在系统中，有可能一个事务总被选成牺牲者，这样这个事务总不能完成事务，这样就会产生饿死。因此在选择回滚事务的时候，保证一个事务被选择牺牲的次数有限。</li>
+</ol>
+<h3 id="多粒度"><a href="#多粒度" class="headerlink" title="多粒度"></a>多粒度</h3><p>在并发控制中，如果我们以数据项为单位进行加锁，则必须要对事务中所有使用的数据项一个个的加锁，这中操作很浪费时间。如果我们能够将多个数据项作为一个同步单元，这样我们加锁的操作就会大大的减少。</p>
+<p>因此出现了一种允许系统定义多级粒度的机制。这是通过允许各种大小的数据项并定义数据粒度的层次结构，其中小的数据项嵌套在大粒度数据项中实现，这种层次化结构可以图形化的表示成树。如下图，</p>
+<p><img src="/images/pasted-310.png" alt="upload successful"></p>
+<p>上图中，最高层是代表整个数据库，下面俩个节点代表数据库中的表，然后是表中的数据。<br>现在如果希望对其中的叶子节点加锁，则需要从根节点到到叶子节点进行遍历，看路径上是否有与自己加的锁不相容的锁，如果有则加锁必须等待。但是这种操作会使得我们需要遍历树来进行确认，如果我们有一种方法，能够从根节点或者需要加锁的叶子节点的其中一个父节点就能判断加锁是否会有冲突，这可以大大节约时间。</p>
+<p>因此，引入了一种新的类型的锁，意向锁。这时在给某个节点加锁时，就提出了一个新的要求，必须先给他的父节点加上某中类型的意向锁，才能给需要加锁的节点加上与意向锁类型相容的共享锁或者互斥锁。则通过父节点就能够判断出是否会有冲突。<br>意向锁的类型如下</p>
+<ol>
+<li>共享型意向锁（IS）：如果父节点加上这种类型的锁，其子节点只能加共享锁。</li>
+<li>互斥型意向锁（IX）：如果父节点加上这种类型的锁，其子节点可以是共享锁或者互斥锁。<br>这俩种锁和前面介绍的互斥和共享锁的相容性如下图：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">-</th>
+<th align="center">IS</th>
+<th align="center">IX</th>
+<th align="center">S</th>
+<th align="center">X</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">IS</td>
+<td align="center">true</td>
+<td align="center">true</td>
+<td align="center">true</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">IX</td>
+<td align="center">true</td>
+<td align="center">true</td>
+<td align="center">false</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">S</td>
+<td align="center">true</td>
+<td align="center">false</td>
+<td align="center">true</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">X</td>
+<td align="center">false</td>
+<td align="center">false</td>
+<td align="center">false</td>
+<td align="center">false</td>
+</tr>
+</tbody></table>
+<p>多粒度封锁协议要求加锁从上往下，如果有有自己要加的锁不相容的锁，则进行等待。而释放锁是从下往上。</p>
+<h2 id="基于时间戳的协议"><a href="#基于时间戳的协议" class="headerlink" title="基于时间戳的协议"></a>基于时间戳的协议</h2><p>前面我们讲解的封锁协议中，每一对冲突事务的次序是在执行时由二者申请的，如果发生冲突，则由谁先执行就决定后一个事务的锁能不能加成功个，如果相容则成功，不相容则等待。而另外一种是由预先选定好的顺序决定的，最常用的就是时间戳排序机制。</p>
+<h3 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h3><p>对于系统中的每个事务T，会把一个唯一的固定时间戳和他关联起来。该时间戳是由事务在进入系统时就确定下来的。时间戳的选取主要由俩种：</p>
+<ol>
+<li>系统时钟的值作为时间戳 </li>
+<li>使用逻辑计数器，每赋予一个时间戳，计数器增加计数。</li>
+</ol>
+<p>事务的时间戳决定了事务的调度顺序，如果T1 &lt; T2，则说明T1比T2早进入系统，因此必须保证所产生的调度等价于事务T1出现在事务T2之前的调度中。</p>
+<p>同时要实现这个机制，每个数据项Q需要与来个时间戳相关联：</p>
+<ul>
+<li>写时间戳：表示成功执行写数据项Q的事务中最大的时间戳，也就是进系统最晚的事务的时间戳</li>
+<li>读时间戳：表示成功执行度数据项Q中事务最大的时间戳。</li>
+</ul>
+<h3 id="时间戳排序协议"><a href="#时间戳排序协议" class="headerlink" title="时间戳排序协议"></a>时间戳排序协议</h3><p><img src="/images/pasted-311.png" alt="upload successful"></p>
+<h2 id="多版本并发控制机制"><a href="#多版本并发控制机制" class="headerlink" title="多版本并发控制机制"></a>多版本并发控制机制</h2><p>到目前为止讲述的并发控制机制要么延迟一项操作要么中止该操作的事务来保证可串行性。类如。read操作可能由于相应的值还未写入而延迟，或因为他要读取的值已被覆盖而被拒绝执行。如果每一个数据项的旧值拷贝保存在系统中，这些问题就可以避免。</p>
+<p>在多版本并发控制机制中，每个write操作会创建数据项的一个新版本。当事务发出一个read操作，并发控制管理器选择数据项的一个版本进行读取。但是如何快速而且容易的判定哪个版本的数据项也很关键。</p>
+<p>多版本并发控制机制主要由俩种：多版本时间戳排序和多版本俩阶段封锁</p>
+<h3 id="多版本时间戳排序"><a href="#多版本时间戳排序" class="headerlink" title="多版本时间戳排序"></a>多版本时间戳排序</h3><p>这个是结合时间戳排序协议的多版本协议。和前面时间戳协议一样，每个事务都会和一个唯一的时间戳关联。对于一个数据项Q，会有一个版本序列Q1、Q2 。。。。，每个版本Qk包含三个数据字段：</p>
+<ul>
+<li>Content是Qk版本的值</li>
+<li>写时间戳：创建Qk版本的事务的时间戳</li>
+<li>读时间戳：所有成功读取Qk版本的事务的最大时间戳</li>
+</ul>
+<p>如果事务发出写操作，创建一个数据项Q的新版本Qk，版本的Content字段保存事务写入的值，系统将写时间戳和读时间戳初始化为事务的时间戳。每当一个新的事务读取Qk的值且读时间戳小于这个读事务的时间戳就会更新读时间戳。</p>
+<p>下面展示多版本时间戳排序机制的俩条规则：</p>
+<p>假设事务T发出read或write操作，令Q满足如下条件的版本，其写时间戳是小于或等于T的最大时间戳。(事务T表示一些列的事务)</p>
+<ol>
+<li>如果事务T发出Read操作，则返回Q的内容</li>
+<li>如果事务T发出write操作，且T的时间戳小于Q的读时间戳，也就是事务T比Q版本最大读时间戳对应的事务进系统要早。则系统回滚事务T。另一方面，如果T的时间戳等于Q的时间戳，则覆盖Q的内容。否则(T的时间戳大于Q的最大读时间戳)，创建Q的一个新版本。</li>
+</ol>
+<h3 id="多版本俩阶段封锁"><a href="#多版本俩阶段封锁" class="headerlink" title="多版本俩阶段封锁"></a>多版本俩阶段封锁</h3><p><img src="/images/pasted-312.png" alt="upload successful"></p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/e9892254.html" rel="bookmark">事务隔离性简介</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/70e3f5d8.html" title="事务隔离性实现">http://fengxiu.club/archives/70e3f5d8.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag"># 事务</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/e9892254.html" rel="prev" title="事务隔离性简介">
+      <i class="fa fa-chevron-left"></i> 事务隔离性简介
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/df9a61f7.html" rel="next" title="索引">
+      索引 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E6%81%A2%E5%A4%8D%E8%B0%83%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">可恢复调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E7%BA%A7%E8%81%94%E8%B0%83%E5%BA%A6"><span class="nav-number">2.2.</span> <span class="nav-text">无级联调度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%B0%81%E9%94%81%E7%9A%84%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.</span> <span class="nav-text">基于封锁的协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%A9%E9%98%B6%E6%AE%B5%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.1.</span> <span class="nav-text">俩阶段封锁协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E5%A4%84%E7%90%86"><span class="nav-number">3.2.</span> <span class="nav-text">死锁处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E9%A2%84%E9%98%B2"><span class="nav-number">3.2.1.</span> <span class="nav-text">死锁预防</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E6%A3%80%E6%B5%8B%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="nav-number">3.2.2.</span> <span class="nav-text">死锁检测与恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E6%A3%80%E6%B5%8B"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">死锁检测</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E6%81%A2%E5%A4%8D"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">死锁恢复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%B2%92%E5%BA%A6"><span class="nav-number">3.3.</span> <span class="nav-text">多粒度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E6%88%B3%E7%9A%84%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.</span> <span class="nav-text">基于时间戳的协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E6%88%B3"><span class="nav-number">4.1.</span> <span class="nav-text">时间戳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E6%88%B3%E6%8E%92%E5%BA%8F%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.2.</span> <span class="nav-text">时间戳排序协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%89%88%E6%9C%AC%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">5.</span> <span class="nav-text">多版本并发控制机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%89%88%E6%9C%AC%E6%97%B6%E9%97%B4%E6%88%B3%E6%8E%92%E5%BA%8F"><span class="nav-number">5.1.</span> <span class="nav-text">多版本时间戳排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%89%88%E6%9C%AC%E4%BF%A9%E9%98%B6%E6%AE%B5%E5%B0%81%E9%94%81"><span class="nav-number">5.2.</span> <span class="nav-text">多版本俩阶段封锁</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">20:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/70e3f5d8.html";
+    this.page.identifier = "archives/70e3f5d8.html";
+    this.page.title = "事务隔离性实现";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "提出大佬宝贵的建议",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
