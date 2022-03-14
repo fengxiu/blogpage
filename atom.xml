@@ -6,7 +6,7 @@
   <link href="http://fengxiu.club/atom.xml" rel="self"/>
   
   <link href="http://fengxiu.club/"/>
-  <updated>2022-03-10T06:43:20.544Z</updated>
+  <updated>2022-03-14T09:57:58.694Z</updated>
   <id>http://fengxiu.club/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="http://fengxiu.club/archives/undefined.html"/>
     <id>http://fengxiu.club/archives/undefined.html</id>
     <published>2022-03-10T14:39:08.000Z</published>
-    <updated>2022-03-10T06:43:20.544Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;p&gt;本篇文章记录对@Import注解学习的整个过程。首先文章会介绍@Import注解的使用，接着分析下spring是如何处理@Import注解，最后通过@EnableAsync来举例说明该类型注解实现的原理。&lt;/p&gt;
@@ -61,7 +61,7 @@
     <link href="http://fengxiu.club/archives/22104.html"/>
     <id>http://fengxiu.club/archives/22104.html</id>
     <published>2021-11-11T06:46:00.000Z</published>
-    <updated>2022-03-10T06:43:20.544Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring类型转换整理&quot;&gt;&lt;a href=&quot;#Spring类型转换整理&quot; class=&quot;headerlink&quot; title=&quot;Spring类型转换整理&quot;&gt;&lt;/a&gt;Spring类型转换整理&lt;/h1&gt;&lt;!-- 
@@ -103,7 +103,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f7de8aa8.html"/>
     <id>http://fengxiu.club/archives/f7de8aa8.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.552Z</updated>
+    <updated>2022-03-14T09:57:58.702Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;外观模式&quot;&gt;&lt;a href=&quot;#外观模式&quot; class=&quot;headerlink&quot; title=&quot;外观模式&quot;&gt;&lt;/a&gt;外观模式&lt;/h1&gt;&lt;p&gt;外观模式是一种结构型设计模式， 能为程序库、 框架或其他复杂类提供一个简单的接口。&lt;/p&gt;
@@ -122,7 +122,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f5c535ea.html"/>
     <id>http://fengxiu.club/archives/f5c535ea.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.552Z</updated>
+    <updated>2022-03-14T09:57:58.702Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;适配器模式&quot;&gt;&lt;a href=&quot;#适配器模式&quot; class=&quot;headerlink&quot; title=&quot;适配器模式&quot;&gt;&lt;/a&gt;适配器模式&lt;/h1&gt;&lt;p&gt;适配器模式是一种结构型设计模式， 它能使接口不兼容的对象能够相互合作。&lt;/p&gt;
@@ -142,7 +142,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/b4c41cf9.html"/>
     <id>http://fengxiu.club/archives/b4c41cf9.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;linux-查看文件命令&quot;&gt;&lt;a href=&quot;#linux-查看文件命令&quot; class=&quot;headerlink&quot; title=&quot;linux 查看文件命令&quot;&gt;&lt;/a&gt;linux 查看文件命令&lt;/h1&gt;&lt;p&gt;当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。&lt;/p&gt;
@@ -178,7 +178,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/76d29d45.html"/>
     <id>http://fengxiu.club/archives/76d29d45.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hiberate-Validator使用教程之自定义约束&quot;&gt;&lt;a href=&quot;#Hiberate-Validator使用教程之自定义约束&quot; class=&quot;headerlink&quot; title=&quot;Hiberate Validator使用教程之自定义约束&quot;&gt;&lt;/a&gt;Hiberate Validator使用教程之自定义约束&lt;/h1&gt;&lt;!-- 
@@ -208,7 +208,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/afb2f833.html"/>
     <id>http://fengxiu.club/archives/afb2f833.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven冲突解决流程&quot;&gt;&lt;a href=&quot;#maven冲突解决流程&quot; class=&quot;headerlink&quot; title=&quot;maven冲突解决流程&quot;&gt;&lt;/a&gt;maven冲突解决流程&lt;/h1&gt;&lt;!-- 
@@ -233,7 +233,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d2073860.html"/>
     <id>http://fengxiu.club/archives/d2073860.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven依赖机制简介&quot;&gt;&lt;a href=&quot;#maven依赖机制简介&quot; class=&quot;headerlink&quot; title=&quot;maven依赖机制简介&quot;&gt;&lt;/a&gt;maven依赖机制简介&lt;/h1&gt;&lt;p&gt;本文主要是对maven官方文档&lt;a href=&quot;https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#introduction-to-the-dependency-mechanism&quot;&gt;Introduction to the Dependency Mechanism&lt;/a&gt;翻译与整理。其中加上了自己的一些理解。&lt;/p&gt;
@@ -253,7 +253,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d1a2b8ab.html"/>
     <id>http://fengxiu.club/archives/d1a2b8ab.html</id>
     <published>2020-11-11T06:46:00.000Z</published>
-    <updated>2022-03-10T06:43:20.540Z</updated>
+    <updated>2022-03-14T09:57:58.686Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring注解-Autoired和-Resource区别对比&quot;&gt;&lt;a href=&quot;#Spring注解-Autoired和-Resource区别对比&quot; class=&quot;headerlink&quot; title=&quot;Spring注解@Autoired和@Resource区别对比&quot;&gt;&lt;/a&gt;Spring注解@Autoired和@Resource区别对比&lt;/h1&gt;&lt;!-- 
@@ -283,7 +283,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/236c7534.html"/>
     <id>http://fengxiu.club/archives/236c7534.html</id>
     <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.544Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;URL详解&quot;&gt;&lt;a href=&quot;#URL详解&quot; class=&quot;headerlink&quot; title=&quot;URL详解&quot;&gt;&lt;/a&gt;URL详解&lt;/h1&gt;&lt;!-- 
@@ -313,7 +313,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/fc06a9d1.html"/>
     <id>http://fengxiu.club/archives/fc06a9d1.html</id>
     <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hibernate-Validator-学习与使用&quot;&gt;&lt;a href=&quot;#Hibernate-Validator-学习与使用&quot; class=&quot;headerlink&quot; title=&quot;Hibernate Validator 学习与使用&quot;&gt;&lt;/a&gt;Hibernate Validator 学习与使用&lt;/h1&gt;&lt;!-- 
@@ -353,7 +353,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/a61a4fcc.html"/>
     <id>http://fengxiu.club/archives/a61a4fcc.html</id>
     <published>2020-09-13T17:22:53.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring-Validation教程&quot;&gt;&lt;a href=&quot;#Spring-Validation教程&quot; class=&quot;headerlink&quot; title=&quot;Spring Validation教程&quot;&gt;&lt;/a&gt;Spring Validation教程&lt;/h1&gt;&lt;!-- 
@@ -387,7 +387,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/7e5ec6ca.html"/>
     <id>http://fengxiu.club/archives/7e5ec6ca.html</id>
     <published>2020-09-13T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.544Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;如何从Jar包中加载class&quot;&gt;&lt;a href=&quot;#如何从Jar包中加载class&quot; class=&quot;headerlink&quot; title=&quot;如何从Jar包中加载class&quot;&gt;&lt;/a&gt;如何从Jar包中加载class&lt;/h1&gt;&lt;!--  
@@ -414,7 +414,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/bb156b86.html"/>
     <id>http://fengxiu.club/archives/bb156b86.html</id>
     <published>2020-09-13T10:09:53.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;MapStruct使用教程一&quot;&gt;&lt;a href=&quot;#MapStruct使用教程一&quot; class=&quot;headerlink&quot; title=&quot;MapStruct使用教程一&quot;&gt;&lt;/a&gt;MapStruct使用教程一&lt;/h1&gt;&lt;!-- 
@@ -452,7 +452,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/8095452f.html"/>
     <id>http://fengxiu.club/archives/8095452f.html</id>
     <published>2020-09-13T01:08:00.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;MapStruct使用教程二&quot;&gt;&lt;a href=&quot;#MapStruct使用教程二&quot; class=&quot;headerlink&quot; title=&quot;MapStruct使用教程二&quot;&gt;&lt;/a&gt;MapStruct使用教程二&lt;/h1&gt;&lt;!--  
@@ -480,7 +480,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/250adeef.html"/>
     <id>http://fengxiu.club/archives/250adeef.html</id>
     <published>2020-07-18T21:44:59.000Z</published>
-    <updated>2022-03-10T06:43:20.528Z</updated>
+    <updated>2022-03-14T09:57:58.674Z</updated>
     
     
     <summary type="html">&lt;!-- 
@@ -513,7 +513,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/5a8a6c8d.html"/>
     <id>http://fengxiu.club/archives/5a8a6c8d.html</id>
     <published>2020-03-31T04:30:35.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.698Z</updated>
     
     
       
@@ -539,7 +539,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/54f801f1.html"/>
     <id>http://fengxiu.club/archives/54f801f1.html</id>
     <published>2020-03-11T06:46:00.000Z</published>
-    <updated>2022-03-10T06:43:20.544Z</updated>
+    <updated>2022-03-14T09:57:58.694Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;SpringBoot源码分析之spring-boot-loader可执行文件解析&quot;&gt;&lt;a href=&quot;#SpringBoot源码分析之spring-boot-loader可执行文件解析&quot; class=&quot;headerlink&quot; title=&quot;SpringBoot源码分析之spring-boot-loader可执行文件解析&quot;&gt;&lt;/a&gt;SpringBoot源码分析之spring-boot-loader可执行文件解析&lt;/h1&gt;&lt;!-- 
@@ -570,7 +570,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/cd65b57.html"/>
     <id>http://fengxiu.club/archives/cd65b57.html</id>
     <published>2019-12-26T09:08:11.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.698Z</updated>
     
     
       
@@ -593,7 +593,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/dd2855a.html"/>
     <id>http://fengxiu.club/archives/dd2855a.html</id>
     <published>2019-12-26T09:08:11.000Z</published>
-    <updated>2022-03-10T06:43:20.548Z</updated>
+    <updated>2022-03-14T09:57:58.698Z</updated>
     
     
     <summary type="html">&lt;p&gt;列表就是将所要表达的内容分为若干个条目并按一定的顺序排列，达到简明、直观的效果。在论文的写作中会经常使用到列表。LaTeX 中常见的列表环境有 enumerate、itemize 和description。这三种列表环境的主要区别是列表项标签的不同。&lt;/p&gt;</summary>
