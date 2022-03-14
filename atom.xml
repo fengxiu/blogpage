@@ -6,7 +6,7 @@
   <link href="http://fengxiu.club/atom.xml" rel="self"/>
   
   <link href="http://fengxiu.club/"/>
-  <updated>2022-03-14T09:57:58.694Z</updated>
+  <updated>2022-03-14T17:58:06.000Z</updated>
   <id>http://fengxiu.club/</id>
   
   <author>
@@ -17,11 +17,56 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>spring之aop源码解析</title>
+    <link href="http://fengxiu.club/archives/1930.html"/>
+    <id>http://fengxiu.club/archives/1930.html</id>
+    <published>2022-03-14T17:58:06.000Z</published>
+    <updated>2022-03-14T17:58:06.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本篇文章主要用来记录研究aop源码的过程。&lt;/p&gt;
+&lt;h2 id=&quot;aop-基本概念&quot;&gt;&lt;a href=&quot;#aop-基本概念&quot; class=&quot;headerlink&quot; title=&quot;aop 基本概念&quot;&gt;&lt;/a&gt;aop 基本概念&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;方面（Aspect）：跨越多个类的模块化关注点。事务管理是企业Java应用程序中横切关注点的一个很好的例子。在SpringAOP中，方面是通过使用常规类（基于xml的方法）或使用@Aspect注解（@Aspectj样式）注解的常规类来实现的。&lt;/li&gt;
+&lt;li&gt;连接点（Join point）：程序执行过程中的一点，如方法的执行或异常的处理。在SpringAOP中，连接点总是表示一个方法执行。&lt;/li&gt;
+&lt;li&gt;通知（Advice）：一个方面在特定连接点采取的行动。不同类型的通知包括“环绕”、“前“和”后”通知。（稍后将讨论通知类型。）许多AOP框架（包括Spring）将通知建模为拦截器，并在连接点周围维护拦截器链。&lt;/li&gt;
+&lt;li&gt;切点（Pointcut）：与连接点匹配的谓词。通知与切入点表达式关联，并在与切入点匹配的任何连接点上运行（例如，使用特定名称执行方法）。pointcut表达式匹配的连接点概念是AOP的核心，Spring默认使用AspectJ pointcut表达式语言。&lt;/li&gt;
+&lt;li&gt;引入（Introduction）：代表类型声明其他方法或字段。SpringAOP允许你向任何advised对象引入新的接口（和相应的实现）。例如，你可以使用一个Introduction使bean实现一个IsModified接口，以简化缓存。（introduction在AspectJ社区中称为类型间声明。）&lt;/li&gt;
+&lt;li&gt;目标对象（Target object）：由一个或多个方面advised的对象。也称为“advised 对象”。因为SpringAOP是通过使用运行时代理实现的，所以这个对象始终是一个代理对象。&lt;/li&gt;
+&lt;li&gt;AOP代理：由AOP框架创建的用于实现aspect contracts（通知方法执行等）的对象。在Spring框架中，AOP代理是JDK动态代理或CGLIB代理。&lt;/li&gt;
+&lt;li&gt;编织（Weaving）：将aspects与其他应用程序类型或对象链接，以创建advised的对象。这可以在编译时（例如，使用AspectJ编译器）、加载时或运行时完成。Spring AOP和其他纯Java AOP框架一样，在运行时进行编织。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Spring AOP包含以下几种通知类型：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Before advice:在连接点之前运行但不能阻止执行到连接点的通知（除非它抛出异常）。&lt;/li&gt;
+&lt;li&gt;After returning advice:在连接点正常完成后要运行的通知（例如，如果方法返回并且不引发异常）。&lt;/li&gt;
+&lt;li&gt;After throwing advice: 如果方法通过引发异常而退出，则要执行的通知。&lt;/li&gt;
+&lt;li&gt;After (finally) advice:无论连接点退出的方式如何（正常或异常返回），都要执行的通知。&lt;/li&gt;
+&lt;li&gt;Around advice:环绕连接点（如方法调用）的通知。这是最有力的通知。around通知可以在方法调用前后执行自定义行为。它还负责通过返回自己的返回值或引发异常来选择是继续到连接点还是快捷地执行通知的方法。&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="spring" scheme="http://fengxiu.club/categories/spring/"/>
+    
+    <category term="aop" scheme="http://fengxiu.club/categories/spring/aop/"/>
+    
+    <category term="源码解析" scheme="http://fengxiu.club/categories/spring/aop/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"/>
+    
+    
+    <category term="spring" scheme="http://fengxiu.club/tags/spring/"/>
+    
+    <category term="aop" scheme="http://fengxiu.club/tags/aop/"/>
+    
+    <category term="源码解析" scheme="http://fengxiu.club/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
     <title>spring之@import注解使用与源码解析</title>
     <link href="http://fengxiu.club/archives/undefined.html"/>
     <id>http://fengxiu.club/archives/undefined.html</id>
     <published>2022-03-10T14:39:08.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.503Z</updated>
     
     
     <summary type="html">&lt;p&gt;本篇文章记录对@Import注解学习的整个过程。首先文章会介绍@Import注解的使用，接着分析下spring是如何处理@Import注解，最后通过@EnableAsync来举例说明该类型注解实现的原理。&lt;/p&gt;
@@ -50,9 +95,49 @@
     <category term="java" scheme="http://fengxiu.club/categories/spring/java/"/>
     
     
+    <category term="spring" scheme="http://fengxiu.club/tags/spring/"/>
+    
     <category term="java" scheme="http://fengxiu.club/tags/java/"/>
     
+  </entry>
+  
+  <entry>
+    <title>spring之@import注解使用与源码解析</title>
+    <link href="http://fengxiu.club/archives/undefined.html"/>
+    <id>http://fengxiu.club/archives/undefined.html</id>
+    <published>2022-03-10T14:39:08.000Z</published>
+    <updated>2022-03-14T10:04:21.503Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本篇文章记录对@Import注解学习的整个过程。首先文章会介绍@Import注解的使用，接着分析下spring是如何处理@Import注解，最后通过@EnableAsync来举例说明该类型注解实现的原理。&lt;/p&gt;
+&lt;h2 id=&quot;基本用法&quot;&gt;&lt;a href=&quot;#基本用法&quot; class=&quot;headerlink&quot; title=&quot;基本用法&quot;&gt;&lt;/a&gt;基本用法&lt;/h2&gt;&lt;p&gt;大体上有三种用法&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;引入其它Configuration&lt;/li&gt;
+&lt;li&gt;初始化其它的bean&lt;/li&gt;
+&lt;li&gt;个性化加载bean&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下面依次介绍这三种的用法，首先定义几个类，方便后面的讲解&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ServiceInterface&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;                      &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ServiceA&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ServiceInterface&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&lt;span class=&quot;string&quot;&gt;&amp;quot;ServiceA&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ServiceB&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ServiceInterface&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&lt;span class=&quot;string&quot;&gt;&amp;quot;ServiceB&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;引入configuration&quot;&gt;&lt;a href=&quot;#引入configuration&quot; class=&quot;headerlink&quot; title=&quot;引入configuration&quot;&gt;&lt;/a&gt;引入configuration&lt;/h3&gt;&lt;p&gt;创建了俩个Config类，其中ConfigA通过@Import引入ConfigB，&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Import(ConfigB.class)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Configuration&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ConfigA&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Bean&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@ConditionalOnMissingBean&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; ServiceInterface &lt;span class=&quot;title function_&quot;&gt;getServiceA&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ServiceA&lt;/span&gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Configuration&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ConfigB&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Bean&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@ConditionalOnMissingBean&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; ServiceInterface &lt;span class=&quot;title function_&quot;&gt;getServiceB&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;ServiceB&lt;/span&gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;同时这里也使用了ConditionalOnMissingBean注解，主要用于判断哪个bean先生成。&lt;/p&gt;
+&lt;p&gt;通过ConfigA创建AnnotationConfigApplicationContext，获取ServiceInterface，看是哪种实现：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title function_&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String[] args)&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;type&quot;&gt;ApplicationContext&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;ctx&lt;/span&gt; &lt;span class=&quot;operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;title class_&quot;&gt;AnnotationConfigApplicationContext&lt;/span&gt;(ConfigA.class);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;type&quot;&gt;ServiceInterface&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;bean&lt;/span&gt; &lt;span class=&quot;operator&quot;&gt;=&lt;/span&gt; ctx.getBean(ServiceInterface.class);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    bean.test();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;输出为：ServiceB.证明@Import的优先于本身的的类定义加载。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="spring" scheme="http://fengxiu.club/categories/spring/"/>
+    
+    <category term="java" scheme="http://fengxiu.club/categories/spring/java/"/>
+    
+    
     <category term="spring" scheme="http://fengxiu.club/tags/spring/"/>
+    
+    <category term="java" scheme="http://fengxiu.club/tags/java/"/>
     
   </entry>
   
@@ -61,7 +146,7 @@
     <link href="http://fengxiu.club/archives/22104.html"/>
     <id>http://fengxiu.club/archives/22104.html</id>
     <published>2021-11-11T06:46:00.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.503Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring类型转换整理&quot;&gt;&lt;a href=&quot;#Spring类型转换整理&quot; class=&quot;headerlink&quot; title=&quot;Spring类型转换整理&quot;&gt;&lt;/a&gt;Spring类型转换整理&lt;/h1&gt;&lt;!-- 
@@ -103,7 +188,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f7de8aa8.html"/>
     <id>http://fengxiu.club/archives/f7de8aa8.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.702Z</updated>
+    <updated>2022-03-14T10:04:21.511Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;外观模式&quot;&gt;&lt;a href=&quot;#外观模式&quot; class=&quot;headerlink&quot; title=&quot;外观模式&quot;&gt;&lt;/a&gt;外观模式&lt;/h1&gt;&lt;p&gt;外观模式是一种结构型设计模式， 能为程序库、 框架或其他复杂类提供一个简单的接口。&lt;/p&gt;
@@ -122,7 +207,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f5c535ea.html"/>
     <id>http://fengxiu.club/archives/f5c535ea.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.702Z</updated>
+    <updated>2022-03-14T10:04:21.511Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;适配器模式&quot;&gt;&lt;a href=&quot;#适配器模式&quot; class=&quot;headerlink&quot; title=&quot;适配器模式&quot;&gt;&lt;/a&gt;适配器模式&lt;/h1&gt;&lt;p&gt;适配器模式是一种结构型设计模式， 它能使接口不兼容的对象能够相互合作。&lt;/p&gt;
@@ -142,7 +227,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/b4c41cf9.html"/>
     <id>http://fengxiu.club/archives/b4c41cf9.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;linux-查看文件命令&quot;&gt;&lt;a href=&quot;#linux-查看文件命令&quot; class=&quot;headerlink&quot; title=&quot;linux 查看文件命令&quot;&gt;&lt;/a&gt;linux 查看文件命令&lt;/h1&gt;&lt;p&gt;当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。&lt;/p&gt;
@@ -178,7 +263,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/76d29d45.html"/>
     <id>http://fengxiu.club/archives/76d29d45.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hiberate-Validator使用教程之自定义约束&quot;&gt;&lt;a href=&quot;#Hiberate-Validator使用教程之自定义约束&quot; class=&quot;headerlink&quot; title=&quot;Hiberate Validator使用教程之自定义约束&quot;&gt;&lt;/a&gt;Hiberate Validator使用教程之自定义约束&lt;/h1&gt;&lt;!-- 
@@ -208,7 +293,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/afb2f833.html"/>
     <id>http://fengxiu.club/archives/afb2f833.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven冲突解决流程&quot;&gt;&lt;a href=&quot;#maven冲突解决流程&quot; class=&quot;headerlink&quot; title=&quot;maven冲突解决流程&quot;&gt;&lt;/a&gt;maven冲突解决流程&lt;/h1&gt;&lt;!-- 
@@ -233,7 +318,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d2073860.html"/>
     <id>http://fengxiu.club/archives/d2073860.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven依赖机制简介&quot;&gt;&lt;a href=&quot;#maven依赖机制简介&quot; class=&quot;headerlink&quot; title=&quot;maven依赖机制简介&quot;&gt;&lt;/a&gt;maven依赖机制简介&lt;/h1&gt;&lt;p&gt;本文主要是对maven官方文档&lt;a href=&quot;https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#introduction-to-the-dependency-mechanism&quot;&gt;Introduction to the Dependency Mechanism&lt;/a&gt;翻译与整理。其中加上了自己的一些理解。&lt;/p&gt;
@@ -253,7 +338,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d1a2b8ab.html"/>
     <id>http://fengxiu.club/archives/d1a2b8ab.html</id>
     <published>2020-11-11T06:46:00.000Z</published>
-    <updated>2022-03-14T09:57:58.686Z</updated>
+    <updated>2022-03-14T10:04:21.499Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring注解-Autoired和-Resource区别对比&quot;&gt;&lt;a href=&quot;#Spring注解-Autoired和-Resource区别对比&quot; class=&quot;headerlink&quot; title=&quot;Spring注解@Autoired和@Resource区别对比&quot;&gt;&lt;/a&gt;Spring注解@Autoired和@Resource区别对比&lt;/h1&gt;&lt;!-- 
@@ -283,7 +368,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/236c7534.html"/>
     <id>http://fengxiu.club/archives/236c7534.html</id>
     <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.503Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;URL详解&quot;&gt;&lt;a href=&quot;#URL详解&quot; class=&quot;headerlink&quot; title=&quot;URL详解&quot;&gt;&lt;/a&gt;URL详解&lt;/h1&gt;&lt;!-- 
@@ -313,7 +398,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/fc06a9d1.html"/>
     <id>http://fengxiu.club/archives/fc06a9d1.html</id>
     <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hibernate-Validator-学习与使用&quot;&gt;&lt;a href=&quot;#Hibernate-Validator-学习与使用&quot; class=&quot;headerlink&quot; title=&quot;Hibernate Validator 学习与使用&quot;&gt;&lt;/a&gt;Hibernate Validator 学习与使用&lt;/h1&gt;&lt;!-- 
@@ -353,7 +438,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/a61a4fcc.html"/>
     <id>http://fengxiu.club/archives/a61a4fcc.html</id>
     <published>2020-09-13T17:22:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring-Validation教程&quot;&gt;&lt;a href=&quot;#Spring-Validation教程&quot; class=&quot;headerlink&quot; title=&quot;Spring Validation教程&quot;&gt;&lt;/a&gt;Spring Validation教程&lt;/h1&gt;&lt;!-- 
@@ -387,7 +472,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/7e5ec6ca.html"/>
     <id>http://fengxiu.club/archives/7e5ec6ca.html</id>
     <published>2020-09-13T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;如何从Jar包中加载class&quot;&gt;&lt;a href=&quot;#如何从Jar包中加载class&quot; class=&quot;headerlink&quot; title=&quot;如何从Jar包中加载class&quot;&gt;&lt;/a&gt;如何从Jar包中加载class&lt;/h1&gt;&lt;!--  
@@ -414,7 +499,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/bb156b86.html"/>
     <id>http://fengxiu.club/archives/bb156b86.html</id>
     <published>2020-09-13T10:09:53.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;MapStruct使用教程一&quot;&gt;&lt;a href=&quot;#MapStruct使用教程一&quot; class=&quot;headerlink&quot; title=&quot;MapStruct使用教程一&quot;&gt;&lt;/a&gt;MapStruct使用教程一&lt;/h1&gt;&lt;!-- 
@@ -452,7 +537,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/8095452f.html"/>
     <id>http://fengxiu.club/archives/8095452f.html</id>
     <published>2020-09-13T01:08:00.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;MapStruct使用教程二&quot;&gt;&lt;a href=&quot;#MapStruct使用教程二&quot; class=&quot;headerlink&quot; title=&quot;MapStruct使用教程二&quot;&gt;&lt;/a&gt;MapStruct使用教程二&lt;/h1&gt;&lt;!--  
@@ -480,7 +565,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/250adeef.html"/>
     <id>http://fengxiu.club/archives/250adeef.html</id>
     <published>2020-07-18T21:44:59.000Z</published>
-    <updated>2022-03-14T09:57:58.674Z</updated>
+    <updated>2022-03-14T10:04:21.487Z</updated>
     
     
     <summary type="html">&lt;!-- 
@@ -513,7 +598,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/5a8a6c8d.html"/>
     <id>http://fengxiu.club/archives/5a8a6c8d.html</id>
     <published>2020-03-31T04:30:35.000Z</published>
-    <updated>2022-03-14T09:57:58.698Z</updated>
+    <updated>2022-03-14T10:04:21.507Z</updated>
     
     
       
@@ -539,7 +624,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/54f801f1.html"/>
     <id>http://fengxiu.club/archives/54f801f1.html</id>
     <published>2020-03-11T06:46:00.000Z</published>
-    <updated>2022-03-14T09:57:58.694Z</updated>
+    <updated>2022-03-14T10:04:21.503Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;SpringBoot源码分析之spring-boot-loader可执行文件解析&quot;&gt;&lt;a href=&quot;#SpringBoot源码分析之spring-boot-loader可执行文件解析&quot; class=&quot;headerlink&quot; title=&quot;SpringBoot源码分析之spring-boot-loader可执行文件解析&quot;&gt;&lt;/a&gt;SpringBoot源码分析之spring-boot-loader可执行文件解析&lt;/h1&gt;&lt;!-- 
@@ -561,46 +646,6 @@ https://juejin.im/post/6844903940484513806
     <category term="spring" scheme="http://fengxiu.club/categories/java/spring/"/>
     
     <category term="springboot" scheme="http://fengxiu.club/categories/java/spring/springboot/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>latex之插入图片</title>
-    <link href="http://fengxiu.club/archives/cd65b57.html"/>
-    <id>http://fengxiu.club/archives/cd65b57.html</id>
-    <published>2019-12-26T09:08:11.000Z</published>
-    <updated>2022-03-14T09:57:58.698Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;!--  TODO:添加latex图片使用   </summary>
-        
-      
-    
-    
-    
-    <category term="tex" scheme="http://fengxiu.club/categories/tex/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>latex之列表使用</title>
-    <link href="http://fengxiu.club/archives/dd2855a.html"/>
-    <id>http://fengxiu.club/archives/dd2855a.html</id>
-    <published>2019-12-26T09:08:11.000Z</published>
-    <updated>2022-03-14T09:57:58.698Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;列表就是将所要表达的内容分为若干个条目并按一定的顺序排列，达到简明、直观的效果。在论文的写作中会经常使用到列表。LaTeX 中常见的列表环境有 enumerate、itemize 和description。这三种列表环境的主要区别是列表项标签的不同。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="tex" scheme="http://fengxiu.club/categories/tex/"/>
     
     
   </entry>
