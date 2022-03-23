@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">196</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">195</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,144 +196,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/df9a61f7.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/df9a61f7.html" class="post-title-link" itemprop="url">索引</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-21 12:23:00" itemprop="dateCreated datePublished" datetime="2019-03-21T12:23:00+00:00">2019-03-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/df9a61f7.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/df9a61f7.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/df9a61f7.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/df9a61f7.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ol>
-<li>索引基础</li>
-<li>索引主要类型</li>
-<li>索引优化</li>
-<li>InnoDB和MyISAM数据分布对比</li>
-</ol>
-<h2 id="1-索引基础"><a href="#1-索引基础" class="headerlink" title="1. 索引基础"></a>1. 索引基础</h2><ul>
-<li><p>索引，又叫key（键）</p>
-</li>
-<li><p>在mysql中，存储引擎先在索引中找到检索的内容，然后根据索引结果找到对应的<code>数据行</code></p>
-</li>
-<li><p>索引可以包含一个或多个列的值，如果索引包含多个列，那么<code>列的顺序十分重要</code>，因为mysql只能高效的使用索引的<code>最左前缀列</code>，<code>最左前缀列</code>就是<code>KEY(id, name, sex)</code>，<code>id</code>在<code>id、name、sex</code>里面是写在左边的，这就叫最左前缀</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/df9a61f7.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/70e3f5d8.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -365,7 +227,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -497,7 +359,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -732,7 +594,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -911,7 +773,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1044,7 +906,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1179,7 +1041,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1416,7 +1278,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1554,7 +1416,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1997,7 +1859,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 06:50:01" itemprop="dateModified" datetime="2022-03-23T06:50:01+00:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2093,6 +1955,263 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/3a5a614f.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/3a5a614f.html" class="post-title-link" itemprop="url">Atomic</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-18 08:37:00" itemprop="dateCreated datePublished" datetime="2019-03-18T08:37:00+00:00">2019-03-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-23 06:52:05" itemprop="dateModified" datetime="2022-03-23T06:52:05+00:00">2022-03-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/juc/atomic/" itemprop="url" rel="index"><span itemprop="name">atomic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/3a5a614f.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/3a5a614f.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/3a5a614f.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/3a5a614f.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Atomic"><a href="#Atomic" class="headerlink" title="Atomic"></a>Atomic</h1><h3 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h3><blockquote>
+<ol>
+<li>Atomic包介绍</li>
+<li>CAS 介绍</li>
+<li>基本类型解析以及使用</li>
+<li>引用类型解析以及使用</li>
+<li>数组类型解析以及使用</li>
+<li>属性原子修改器(Updater)解析以及使用</li>
+<li>Java 8新增加的LongAdder等类的解析以及使用</li>
+</ol>
+</blockquote>
+<h3 id="Atomic包介绍"><a href="#Atomic包介绍" class="headerlink" title="Atomic包介绍"></a>Atomic包介绍</h3><blockquote>
+<p>这个包主要是一个小型工具包，支持<strong>单个变量</strong>上的无锁线程安全编程。</p>
+<p>主要的类如下图</p>
+<p><img src="/images/pasted-298.png" alt="upload successful"></p>
+<p>其中other这一类是java 8中新增加的类，后面会介绍。</p>
+<p>虽然这包下面类很多，但是你只需要看懂其中一个，其余的方法和使用都是大同小异。</p>
+</blockquote>
+<h3 id="CAS-介绍"><a href="#CAS-介绍" class="headerlink" title="CAS 介绍"></a>CAS 介绍</h3><blockquote>
+<p>在讲解Atomic包下面具体类的使用，我们先了解一下什么是CAS，全称Compare-and-Swap，是指比较和交换，一种特殊的处理器指令。</p>
+<ul>
+<li>CAS是乐观锁思想的一种实现，是为了保证一组比较替换操作原子性；当多个线程尝试使用CAS同时更新同一个变量时，只有其中一个线程能更新变量的值，而其它线程都失败， 失败的线程并不会被挂起，而是被告知这次竞争中失败，并可以再次尝试。</li>
+<li>CAS乐观锁的实现与悲观锁的区别在于当资源不用的时候悲观锁会将线程挂起而CAS会继续重试直到资源可用；</li>
+</ul>
+<p>乐观锁的核心算法是CAS（Compareand Swap，比较并交换），它涉及到三个操作数：内存值、预期值、新值。当且仅当预期值和内存值相等时才将内存值修改为新值。这样处理的逻辑是，首先检查某块内存的值是否跟之前我读取时的一样，如不一样则表示期间此内存值已经被别的线程更改过，舍弃本次操作，否则说明期间没有其他线程对此内存值操作，可以把新值设置给此块内存。</p>
+<p>假如你足够细心你可能会发现一个疑问，比较和交换，从字面上就有两个操作了，更别说实际CAS可能会有更多的执行指令，他们是原子性的吗？如果非原子性又怎么保证CAS操作期间出现并发带来的问题？我是不是需要用上节提到的互斥锁来保证他的原子性操作？<strong>CAS肯定是具有原子性的</strong>，不然就谈不上在并发中使用了，<strong>但这个原子性是由CPU硬件指令实现保证的</strong>，即使用JNI调用native方法调用由C++编写的硬件级别指令，jdk中提供了Unsafe类执行这些操作。另外，你可能想着CAS是通过互斥锁来实现原子性的，这样确实能实现，但用这种方式来保证原子性显示毫无意义。</p>
+<p>其实Atomic包下面绝大部分的实现都是通过Unsafe这个类来实现的。全名为：sun.misc.Unsafe，这个类包含了大量的对C代码的操作，包括很多直接内存分配以及原子操作的调用，而它之所以标记为非安全的，是告诉你这个里面大量的方法调用都会存在安全隐患，需要小心使用，否则会导致严重的后果，例如在通过unsafe分配内存的时候，如果自己指定某些区域可能会导致一些类似C++一样的指针越界到其他进程的问题，不过它的具体使用并不是本文的重点，</p>
+<p>本文重点是Atomic系列的内容大多会基于unsafe类中的以下几个本地方法来操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> </span><br><span class="line"> <span class="title function_">compareAndSwapObject</span><span class="params">(Object paramObject1, <span class="type">long</span> paramLong, </span></span><br><span class="line"><span class="params">                        Object paramObject2, Object paramObject3)</span>; </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> </span><br><span class="line">	<span class="title function_">compareAndSwapInt</span><span class="params">(Object paramObject,<span class="type">long</span> paramLong,</span></span><br><span class="line"><span class="params">                    		<span class="type">int</span> paramInt1, <span class="type">int</span> paramInt2)</span>; </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="type">boolean</span> </span><br><span class="line">		<span class="title function_">compareAndSwapLong</span><span class="params">(Object paramObject, <span class="type">long</span> paramLong1, </span></span><br><span class="line"><span class="params">                         		<span class="type">long</span> paramLong2, <span class="type">long</span> paramLong3)</span>;  </span><br></pre></td></tr></table></figure>
+
+<p>首先拿<strong>compareAndSwapObject</strong>这个函数来讲解一下大概的意思：</p>
+<p><strong>对象的引用进行对比后交换，交换成功返回true，交换失败返回false</strong>，这个交换过程完全是原子的，在CPU上计算完结果后，都会对比内存的结果是否还是原先的值，若不是，则认为不能替换，因为变量是volatile类型所以最终写入的数据会被其他线程看到，所以一个线程修改成功后，其他线程就发现自己修改失败了。</p>
+<p><strong>参数1：</strong>对象所在的类本身的对象（一般这里是对一个对象的属性做修改，才会出现并发，所以该对象所存在的类也是有一个对象的）</p>
+<p><strong>参数2：</strong>这个属性在这个对象里面的相对便宜量位置，其实对比时是对比内存单元，所以需要属性的起始位置，而引用就是修改引用地址（根据OS、VM位数和参数配置决定宽度一般是4-8个字节），int就是修改相关的4个字节，而long就是修改相关的8个字节。</p>
+<p>获取偏移量也是通过unsafe的一个方法：objectFieldOffset(Fieldfield)来获取属性在对象中的偏移量；静态变量需要通过：staticFieldOffset(Field field)获取，调用的总方法是：fieldOffset(Fieldfield)</p>
+<p><strong>参数3：</strong>修改的引用的原始值，用于对比原来的引用和要修改的目标是否一致。</p>
+<p><strong>参数4：</strong>修改的目标值，要将数据修改成什么。</p>
+<p>其中要注意的是<strong>对long的操作，要看VM是否支持对Long的CAS，因为有可能VM本身不支持，若不支持，此时运算会变成Lock方式，不过现在VM都基本是支持的而已。</strong></p>
+<h4 id="CAS存在的问题-ABA"><a href="#CAS存在的问题-ABA" class="headerlink" title="CAS存在的问题(ABA)"></a>CAS存在的问题(ABA)</h4><ul>
+<li>CAS操作是进行比较替换，容易出现ABA问题；如果一个变量的初始值是A，一个线程准备将A改为了B，在这期间又有其他线程将A改回了B，又将B改回A，这个时候CAS会认为中间没有发生变化，实际上是已经是不同的这就出现了ABA问题；ABA问题的解决办法：JDK引入了解决ABA问题的Automic原子类AutomicStampedReference，使用时间戳版本号来进行标记；下面会介绍</li>
+<li>在高并发的情况下会出现CAS频繁碰撞，碰撞会造成赋值失败继续重试，越多线程重试，CAS失败几率又越高，变成恶性循环，造成效率底下等问题；</li>
+</ul>
+</blockquote>
+<h3 id="基本类型解析以及使用"><a href="#基本类型解析以及使用" class="headerlink" title="基本类型解析以及使用"></a>基本类型解析以及使用</h3><blockquote>
+<p>基本类型主要有以下三种类型：AtomicInteger、AtomicLong、AtomicBoolean；用法大体上差不多，因此这里就拿AtomicInteger类来讲解。</p>
+<p>我们直接来上代码，然后在解释</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line">&gt;<span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AtomicIntegerTest</span> &#123;</span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">AtomicInteger</span> <span class="variable">TEST_INTEGER</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">test</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">  AtomicTest();</span><br><span class="line">  intTest();</span><br><span class="line">  <span class="type">CountDownLatch</span> <span class="variable">cd</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;&#125;</span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 最终打印的结果一定是：11</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">&gt;*/</span></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">AtomicTest</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">  Thread[] threads = <span class="keyword">new</span> <span class="title class_">Thread</span>[<span class="number">10</span>];</span><br><span class="line">  <span class="type">CountDownLatch</span> <span class="variable">cd</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">10</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> i;</span><br><span class="line"></span><br><span class="line">      threads[i] = <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;</span><br><span class="line">          <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">              cd.countDown();</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                  cd.await();  <span class="comment">//等待10 个线程创建成功</span></span><br><span class="line"></span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                  e.printStackTrace();</span><br><span class="line">              &#125;</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line">                  Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                  e.printStackTrace();</span><br><span class="line">              &#125;</span><br><span class="line"></span><br><span class="line">              <span class="type">int</span> <span class="variable">now</span> <span class="operator">=</span> TEST_INTEGER.incrementAndGet();</span><br><span class="line">            </span><br><span class="line">          &#125;</span><br><span class="line">      &#125;;</span><br><span class="line">      threads[i].start();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (Thread t : threads) &#123;</span><br><span class="line">      t.join();</span><br><span class="line">  &#125;</span><br><span class="line">  System.out.println(<span class="string">&quot;AtomicTest最终运行结果：&quot;</span> + TEST_INTEGER.get());</span><br><span class="line">&gt;&#125;</span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 普通int测试。最终打印的结果不确定</span></span><br><span class="line"><span class="comment">&gt;*</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">&gt;*/</span></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">intTest</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">  Thread[] threads = <span class="keyword">new</span> <span class="title class_">Thread</span>[<span class="number">10</span>];</span><br><span class="line">  <span class="type">CountDownLatch</span> <span class="variable">cd</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">10</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> i;</span><br><span class="line"></span><br><span class="line">      threads[i] = <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;</span><br><span class="line">          <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">              cd.countDown();</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">                  cd.await();  <span class="comment">//等待10 个线程创建成功</span></span><br><span class="line"></span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                  e.printStackTrace();</span><br><span class="line">              &#125;</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line">                  Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                  e.printStackTrace();</span><br><span class="line">              &#125;</span><br><span class="line">              <span class="type">int</span> <span class="variable">now</span> <span class="operator">=</span> ++test;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;;</span><br><span class="line"></span><br><span class="line">      threads[i].start();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (Thread t : threads) &#123;</span><br><span class="line">      t.join();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  System.out.println(<span class="string">&quot;intTest最终运行结果：&quot;</span> + test);</span><br><span class="line">&gt;&#125;</span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子模拟多个线程并发对<strong>AtomicInteger</strong>和<strong>普通变量</strong>进行增加的操作，对AtomicInteger对象进行增加操作，最后得到的结果一定是11，但是对普通变量int类型的修改，得到的值不确定，可以为8，也可以为9，结果不确定。这个说明AtomicInteger是线程安全的，而普通的变量不是线程安全的。</p>
+<p>AtomicInteger的主要方法如下，使用和上面使用<strong>incrementAndGet</strong>方法差不多</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="comment">//构造函数</span></span><br><span class="line">&gt;AtomicInteger()  <span class="comment">//初始值为0</span></span><br><span class="line">&gt;AtomicInteger(<span class="type">int</span> initivalValue)  <span class="comment">//初始值为initivalValue</span></span><br><span class="line"></span><br><span class="line">&gt;<span class="type">int</span> <span class="title function_">addAndGet</span><span class="params">(<span class="type">int</span> delta)</span> <span class="comment">// 当前值加上delta,然后返回最总结果</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">getAndAdd</span><span class="params">(<span class="type">int</span> delta)</span> <span class="comment">// 返回当前值，然后加上delta</span></span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">//下面俩个方法其实是一样的效果，就是当前值为expect就设置当前值为value</span></span><br><span class="line">&gt;<span class="type">boolean</span> <span class="title function_">compareAndSet</span><span class="params">(<span class="type">int</span> expect,<span class="type">int</span> value)</span></span><br><span class="line">&gt;<span class="type">boolean</span>	<span class="title function_">weakCompareAndSet</span><span class="params">(<span class="type">int</span> expect, <span class="type">int</span> update)</span></span><br><span class="line"></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">decrementAndGet</span><span class="params">()</span> <span class="comment">//相当于 --i</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">incrementAndGet</span><span class="params">()</span> <span class="comment">//相当于 ++i</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">getAndDecrement</span><span class="params">()</span> <span class="comment">//相当于 i--</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">getAndIncrement</span><span class="params">()</span> <span class="comment">//相当于 i++</span></span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">//设置当前值为newValue</span></span><br><span class="line">&gt;<span class="keyword">void</span>	<span class="title function_">set</span><span class="params">(<span class="type">int</span> newValue)</span></span><br><span class="line">&gt;<span class="type">int</span>	    <span class="title function_">getAndSet</span><span class="params">(<span class="type">int</span> newValue)</span>  <span class="comment">//得到当前值，并设置当前值为newVlaue</span></span><br><span class="line">&gt;<span class="keyword">void</span>	<span class="title function_">lazySet</span><span class="params">(<span class="type">int</span> newValue)</span> <span class="comment">//最终设置当前值为newValue，</span></span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">//下面几个方法都是返回当前值</span></span><br><span class="line">&gt;<span class="type">double</span>	<span class="title function_">doubleValue</span><span class="params">()</span></span><br><span class="line">&gt;<span class="type">float</span>	<span class="title function_">floatValue</span><span class="params">()</span></span><br><span class="line">&gt;<span class="type">long</span>	<span class="title function_">longValue</span><span class="params">()</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">intValue</span><span class="params">()</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">get</span><span class="params">()</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">//java 8新增加的方法，其中Function都要求无副作用的函数，</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">updateAndGet</span><span class="params">(IntUnaryOperator updateFunction)</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">getAndUpdate</span><span class="params">(IntUnaryOperator updateFunction)</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">getAndAccumulate</span><span class="params">(<span class="type">int</span> x, IntBinaryOperator accumulatorFunction)</span></span><br><span class="line">&gt;<span class="type">int</span>	<span class="title function_">accumulateAndGet</span><span class="params">(<span class="type">int</span> x, IntBinaryOperator accumulatorFunction)</span></span><br></pre></td></tr></table></figure>
+
+<p>下面讲解一下上面比较容易弄混的函数</p>
+<h4 id="compareAndSet-和weakCompareAndSet-对比"><a href="#compareAndSet-和weakCompareAndSet-对比" class="headerlink" title="compareAndSet 和weakCompareAndSet 对比"></a>compareAndSet 和weakCompareAndSet 对比</h4><blockquote>
+<p>主要的区别可以看看<a target="_blank" rel="noopener" href="http://www.importnew.com/27596.html">对 volatile、compareAndSet、weakCompareAndSet 的一些思考</a></p>
+</blockquote>
+<h4 id="lazySet"><a href="#lazySet" class="headerlink" title="lazySet"></a>lazySet</h4><blockquote>
+<p>为一个AtomicLong对象设置一个值，jvm会确保其他线程读取到最新值，原子类和voliatile变量也是一样的，这是由依赖于硬件的系统指令(如x86的xchg)实现的。lazySet却是无法保证这一点的方法，所以其他线程在之后的一小段时间里还是可以读到旧的值。</p>
+<p><strong>这有什么好处呢？</strong></p>
+<p><strong>性能</strong>：在多核处理器下，内存以及cpu缓存的读和写常常是顺序执行的，所以在多个cpu缓存之间同步一个内存值的代价是很昂贵的。</p>
+</blockquote>
+<p>另外俩个基本类型的原子类和AtomicInteger差不多，唯一的区别可能就是类型的不同。所以这里就不具体讲解。</p>
+</blockquote>
+<h3 id="引用类型解析以及使用"><a href="#引用类型解析以及使用" class="headerlink" title="引用类型解析以及使用"></a>引用类型解析以及使用</h3><blockquote>
+<p>引用类型主要包含以下几种：AtomicReference、AtomicStampedRerence、AtomicMarkableReference；</p>
+<p>首先讲解：AtomicReference</p>
+<p>直接上代码演示操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AtomicReferenceTest</span> &#123;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> AtomicReference&lt;String&gt; ATOMIC_REFERENCE =</span><br><span class="line">          <span class="keyword">new</span> <span class="title class_">AtomicReference</span>&lt;String&gt;(<span class="string">&quot;abc&quot;</span>);  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String []args)</span> &#123;  </span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span> ; i &lt; <span class="number">100</span> ; i++) &#123;  </span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> i;  </span><br><span class="line">      <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;  </span><br><span class="line">          <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;  </span><br><span class="line">              <span class="keyword">try</span> &#123;  </span><br><span class="line">                  Thread.sleep(Math.abs((<span class="type">int</span>)(Math.random() * <span class="number">100</span>)));  </span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;  </span><br><span class="line">                  e.printStackTrace();  </span><br><span class="line">              &#125;  </span><br><span class="line">              </span><br><span class="line">              <span class="keyword">if</span>(ATOMIC_REFERENCE.compareAndSet(<span class="string">&quot;abc&quot;</span>, <span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;abc&quot;</span>))) &#123;  </span><br><span class="line">                  System.out.println(<span class="string">&quot;我是线程：&quot;</span> + num + </span><br><span class="line">                                     <span class="string">&quot;,获得了锁进行了对象修改！&quot;</span>);  </span><br><span class="line">              &#125;  </span><br><span class="line">          &#125;  </span><br><span class="line">      &#125;.start();  </span><br><span class="line">  &#125;  </span><br><span class="line">&gt;&#125;  </span><br><span class="line">&gt;&#125;  </span><br><span class="line">&gt;<span class="comment">//这个结果应该只打印一次</span></span><br></pre></td></tr></table></figure>
+
+<p>下面讲解一下为什么会出现AtomicStampedRerence和AtomicMarkableReference；这俩个类。</p>
+<p>这就要引出CAS会出现的一个问题，上面讲解了一下什么是ABA问题，这里在来重复讲解什么是ABA问题呢，当某些流程在处理过程中是顺向的，也就是不允许重复处理的情况下，在某些情况下导致一个数据由A变成B，再中间可能经过0-N个环节后变成了A，此时A不允许再变成B了，因为此时的状态已经发生了改变，例如：银行资金里面做一批账目操作，要求资金在80-100元的人，增加20元钱，时间持续一天，也就是后台程序会不断扫描这些用户的资金是否是在这个范围，但是要求增加过的人就不能再增加了，如果增加20后，被人取出10元继续在这个范围，那么就可以无限套现出来，就是ABA问题了，类似的还有抢红包或中奖，比如每天每个人限量3个红包，中那个等级的奖的个数等等。</p>
+<p>下面一个例子是ABA问题的简单演示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&gt;<span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">/** </span></span><br><span class="line"><span class="comment">&gt;* ABA问题模拟，线程并发中，导致ABA问题，解决方案是使用|AtomicMarkableReference </span></span><br><span class="line"><span class="comment">&gt;* 请参看相应的例子：AtomicStampedReferenceTest、AtomicMarkableReferenceTest </span></span><br><span class="line"><span class="comment">&gt;* </span></span><br><span class="line"><span class="comment">&gt;*/</span>  </span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AtomicReferenceABATest</span> &#123;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> AtomicReference &lt;String&gt;ATOMIC_REFERENCE = <span class="keyword">new</span> <span class="title class_">AtomicReference</span>&lt;String&gt;(<span class="string">&quot;abc&quot;</span>);  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String []args)</span> &#123;  </span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span> ; i &lt; <span class="number">100</span> ; i++) &#123;  </span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> i;  </span><br><span class="line">      <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;  </span><br><span class="line">          <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;  </span><br><span class="line">              <span class="keyword">try</span> &#123;  </span><br><span class="line">                  Thread.sleep(Math.abs((<span class="type">int</span>)(Math.random() * <span class="number">100</span>)));  </span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;  </span><br><span class="line">                  e.printStackTrace();  </span><br><span class="line">              &#125;  </span><br><span class="line">              <span class="keyword">if</span>(ATOMIC_REFERENCE.compareAndSet(<span class="string">&quot;abc&quot;</span> , <span class="string">&quot;abc2&quot;</span>)) &#123;  </span><br><span class="line">                  System.out.println(<span class="string">&quot;我是线程：&quot;</span> + num + </span><br><span class="line">                           <span class="string">&quot;,我获得了锁进行了对象修改！&quot;</span>);  </span><br><span class="line">              &#125;  </span><br><span class="line">          &#125;  </span><br><span class="line">      &#125;.start();  </span><br><span class="line">  &#125;  </span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;  </span><br><span class="line">      <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;  </span><br><span class="line">          <span class="keyword">while</span>(!ATOMIC_REFERENCE.compareAndSet(<span class="string">&quot;abc2&quot;</span>, <span class="string">&quot;abc&quot;</span>));  </span><br><span class="line">          System.out.println(<span class="string">&quot;已经改为原始值！&quot;</span>);  </span><br><span class="line">      &#125;  </span><br><span class="line">  &#125;.start();  </span><br><span class="line">&gt;&#125;  </span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码中和原来的例子，唯一的区别就是最后增加了一个线程让他将数据修改为原来的值，并一直尝试修改，直到修改成功为止。</p>
+<p><strong>此时我们得到的结果是:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;我是线程：41,我获得了锁进行了对象修改！</span><br><span class="line">&gt;已经改为原始值！</span><br><span class="line">&gt;我是线程：85,我获得了锁进行了对象修改！</span><br></pre></td></tr></table></figure>
+
+<p>当然你的线程编号多半和我不一样,但是最后结果都会差不多，可以发现，有两个线程修改了这个字符串，我们是想那一堆将abc改成abc2的线程仅有一个成功，即使其他线程在他们运行时将引用值修改为abc，也不能再修改。</p>
+<p>下面来讲解如何来解决这个问题，此时我们需要使用的方式就不是简单的compareAndSet操作，因为它仅仅是考虑到物理上的并发，而不是在业务逻辑上去控制顺序，此时我们需要借鉴数据库的事务序列号的一些思想来解决，假如每个对象修改的次数可以记住，修改前先对比下次数是否一致再修改，那么这个问题就简单了，AtomicStampedReference类正是提供这一功能的，其实它仅仅是在AtomicReference类的再一次包装，里面增加了一层引用和计数器，其实是否为计数器完全由自己控制，大多数我们是让他自增的，你也可以按照自己的方式来标示版本号，</p>
+<p>此时我们通过类来AtomicStampedReference解决这个问题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="keyword">import</span> java.util.concurrent.atomic.AtomicStampedReference;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AtomicStampedReferenceTest</span> &#123;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> AtomicStampedReference &lt;String&gt;ATOMIC_REFERENCE = </span><br><span class="line">     <span class="keyword">new</span> <span class="title class_">AtomicStampedReference</span>&lt;String&gt;(<span class="string">&quot;abc&quot;</span> , <span class="number">0</span>);  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String []args)</span> &#123;  </span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span> ; i &lt; <span class="number">100</span> ; i++) &#123;  </span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> i;  </span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">stamp</span> <span class="operator">=</span> ATOMIC_REFERENCE.getStamp();  </span><br><span class="line">      <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;  </span><br><span class="line">          <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;  </span><br><span class="line">              <span class="keyword">try</span> &#123;  </span><br><span class="line">                  Thread.sleep(Math.abs((<span class="type">int</span>)(Math.random() * <span class="number">100</span>)));  </span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;  </span><br><span class="line">                  e.printStackTrace();  </span><br><span class="line">              &#125;  </span><br><span class="line">              <span class="keyword">if</span>(ATOMIC_REFERENCE.compareAndSet(<span class="string">&quot;abc&quot;</span> , <span class="string">&quot;abc2&quot;</span> ,</span><br><span class="line">              			stamp , stamp + <span class="number">1</span>)) &#123;  </span><br><span class="line">                  System.out.println(<span class="string">&quot;我是线程：&quot;</span> + num + </span><br><span class="line">                  			<span class="string">&quot;,我获得了锁进行了对象修改！&quot;</span>);  </span><br><span class="line">              &#125;  </span><br><span class="line">          &#125;  </span><br><span class="line">      &#125;.start();  </span><br><span class="line">  &#125;  </span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;  </span><br><span class="line">      <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;  </span><br><span class="line">          <span class="type">int</span> <span class="variable">stamp</span> <span class="operator">=</span> ATOMIC_REFERENCE.getStamp();  </span><br><span class="line">          <span class="keyword">while</span>(!ATOMIC_REFERENCE.compareAndSet(<span class="string">&quot;abc2&quot;</span>, <span class="string">&quot;abc&quot;</span> , </span><br><span class="line">          			stamp , stamp + <span class="number">1</span>));  </span><br><span class="line">          System.out.println(<span class="string">&quot;已经改回为原始值！&quot;</span>);  </span><br><span class="line">      &#125;  </span><br><span class="line">  &#125;.start();  </span><br><span class="line">&gt;&#125;  </span><br><span class="line">&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时再运行程序看到的结果就是我们想要的了，发现将abc修改为abc2的线程仅有一个被访问，虽然被修改回了原始值，但是其他线程也不会再将abc改为abc2。因为我们在修改引用对象时，会首先检测版本号是不是相同的，也就是当前<strong>stamp</strong>是不是和给定的相同，如果不同即使引用对象相同也不修改。这样就避免了ABA问题。</p>
+<p><strong>AtomicMarkableReference</strong>和<strong>AtomicStampedReference</strong>功能差不多，有点区别的是：它描述更加简单的是与否的关系，通常ABA问题只有两种状态，而<strong>AtomicStampedReference</strong>是多种状态，那么为什么还要有<strong>AtomicMarkableReference</strong>呢，因为它在处理是与否上面更加具有可读性，而<strong>AtomicStampedReference</strong>过于随意定义状态，并不便于阅读大量的是和否的关系，它可以被认为是一个计数器或状态列表等信息，java提倡通过类名知道其意义，所以这个类的存在也是必要的，它的定义就是将数据变换为true|false如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> AtomicMarkableReference &lt;String&gt;ATOMIC_MARKABLE_REFERENCE = </span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">AtomicMarkableReference</span>&lt;String&gt;(<span class="string">&quot;abc&quot;</span> , <span class="literal">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p>操作时使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;ATOMIC_MARKABLE_REFERENCE.compareAndSet(&quot;abc&quot;, &quot;abc2&quot;, false, true);</span><br></pre></td></tr></table></figure>
+
+
+
+
+</blockquote>
+<h3 id="数组类型解析以及使用"><a href="#数组类型解析以及使用" class="headerlink" title="数组类型解析以及使用"></a>数组类型解析以及使用</h3><blockquote>
+<p>数组原子类型主要有这几个类：AtomicIntegerArray、AtomicLongArray、AtomicReferenceArray</p>
+<p>下面是AtomicIntegerArray的一个测试例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="keyword">import</span> java.util.concurrent.atomic.AtomicIntegerArray;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AtomicIntegerArrayTest</span> &#123;  </span><br><span class="line"></span><br><span class="line">&gt;<span class="comment">/** </span></span><br><span class="line"><span class="comment">   * 常见的方法列表 </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#addAndGet(int, int) 执行加法，第一个参数为数组的下标，第二个参数为增加的数量，返回增加后的结果 </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#compareAndSet(int, int, int) 对比修改，参数1：数组下标，参数2：原始值，参数3，修改目标值，修改成功返回true否则false </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#decrementAndGet(int) 参数为数组下标，将数组对应数字减少1，返回减少后的数据 </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#incrementAndGet(int) 参数为数组下标，将数组对应数字增加1，返回增加后的数据 </span></span><br><span class="line"><span class="comment">   *  </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#getAndAdd(int, int) 和addAndGet类似，区别是返回值是变化前的数据 </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#getAndDecrement(int) 和decrementAndGet类似，区别是返回变化前的数据 </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#getAndIncrement(int) 和incrementAndGet类似，区别是返回变化前的数据 </span></span><br><span class="line"><span class="comment">   * <span class="doctag">@see</span> AtomicIntegerArray#getAndSet(int, int) 将对应下标的数字设置为指定值，第二个参数为设置的值，返回是变化前的数据 </span></span><br><span class="line"><span class="comment">&gt;*/</span>  </span><br><span class="line">&gt;<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">AtomicIntegerArray</span> <span class="variable">ATOMIC_INTEGER_ARRAY</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicIntegerArray</span>(<span class="keyword">new</span> <span class="title class_">int</span>[]&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>&#125;);  </span><br><span class="line"></span><br><span class="line">&gt;<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String []args)</span> <span class="keyword">throws</span> InterruptedException &#123;  </span><br><span class="line">  Thread []threads = <span class="keyword">new</span> <span class="title class_">Thread</span>[<span class="number">100</span>];  </span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span> ; i &lt; <span class="number">100</span> ; i++) &#123;  </span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> i % <span class="number">10</span>;  </span><br><span class="line">      <span class="keyword">final</span> <span class="type">int</span> <span class="variable">threadNum</span> <span class="operator">=</span> i;  </span><br><span class="line">      threads[i] = <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;  </span><br><span class="line">          <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;  </span><br><span class="line">              <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> ATOMIC_INTEGER_ARRAY.addAndGet(index, index + <span class="number">1</span>);  </span><br><span class="line">              System.out.println(<span class="string">&quot;线程编号为：&quot;</span> + </span><br><span class="line">                                 threadNum + <span class="string">&quot; , 对应的原始值为：&quot;</span> + </span><br><span class="line">                                  (index + <span class="number">1</span>) + <span class="string">&quot;，增加后的结果为：&quot;</span> + result);  </span><br><span class="line">          &#125;  </span><br><span class="line">      &#125;;  </span><br><span class="line">      threads[i].start();  </span><br><span class="line">  &#125;  </span><br><span class="line">  <span class="keyword">for</span>(Thread thread : threads) &#123;  </span><br><span class="line">      thread.join();  </span><br><span class="line">  &#125;  </span><br><span class="line">  System.out.println(<span class="string">&quot;=========================&gt;\n执行已经完成，结果列表：&quot;</span>);  </span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span> ; i &lt; ATOMIC_INTEGER_ARRAY.length() ; i++) &#123;  </span><br><span class="line">      System.out.println(ATOMIC_INTEGER_ARRAY.get(i));  </span><br><span class="line">  &#125;  </span><br><span class="line">&gt;&#125;  </span><br><span class="line">&gt;&#125; </span><br></pre></td></tr></table></figure>
+
+<p>计算结果说明：100个线程并发，每10个线程会被并发修改数组中的一个元素，也就是数组中的每个元素会被10个线程并发修改访问，每次增加原始值的大小，此时运算完的结果看最后输出的敲好为原始值的11倍数，和我们预期的一致，如果不是线程安全那么这个值什么都有可能。</p>
+<p>而相应的类：<strong>AtomicLongArray</strong>其实和<strong>AtomicIntegerArray</strong>操作方法类似，最大区别就是它操作的数据类型是long；而AtomicRerenceArray也是这样,只是他操作的是对象，没有了自增和自减这些操作。</p>
+</blockquote>
+<h3 id="属性原子修改器-Updater-解析以及使用"><a href="#属性原子修改器-Updater-解析以及使用" class="headerlink" title="属性原子修改器(Updater)解析以及使用"></a>属性原子修改器(Updater)解析以及使用</h3><blockquote>
+<p>Atomic系列是为你定义好的一些对象，你可以使用，但是如果是别人已经在使用的对象会原先的代码需要修改为Atomic系列，此时若全部修改类型到对应的对象相信很麻烦，因为牵涉的代码会很多，此时java提供一个外部的Updater可以对对象的属性本身的修改提供类似Atomic的操作，也就是它对这些普通的属性的操作是并发下安全的，分别由：<strong>AtomicIntegerFieldUpdater、AtomicLongFieldUpdater、AtomicReferenceUpdater</strong>，这样操作后，系统会更加灵活，也就是可能那些类的属性只是在某些情况下需要控制并发，很多时候不需要，但是他们的使用通常有以下几个限制：</p>
+<p><strong>限制1：</strong>操作的目标<strong>不能是static</strong>类型，前面说到unsafe的已经可以猜测到它提取的是非static类型的属性偏移量，如果是static类型在获取时如果没有使用对应的方法是会报错的，而这个Updater并没有使用对应的方法。</p>
+<p><strong>限制2：</strong>操作的目标<strong>不能是final</strong>类型的，因为final根本没法修改。</p>
+<p><strong>限制3：必须是volatile</strong>类型的数据，也就是数据本身是读一致的。</p>
+<p><strong>限制4：</strong>属性必须对当前的<strong>Updater所在的区域是可见的</strong>，也就是<strong>private</strong>如果不是当前类肯定是不可见的，<strong>protected</strong>如果不存在父子关系也是不可见的，<strong>default</strong>如果不是在同一个<strong>package</strong>下也是不可见的。</p>
+<p><strong>实现方式：</strong>通过反射找到属性，对属性进行操作，但是并不是设置accessable，所以必须是可见的属性才能操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&gt;import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;  </span><br><span class="line"></span><br><span class="line">&gt;public class AtomicIntegerFieldUpdaterTest &#123;  </span><br><span class="line"></span><br><span class="line">&gt;static class A &#123;  </span><br><span class="line">  volatile int intValue = 100;  </span><br><span class="line">&gt;&#125;  </span><br><span class="line"></span><br><span class="line">&gt;/** </span><br><span class="line">   * 可以直接访问对应的变量，进行修改和处理 </span><br><span class="line">   * 条件：要在可访问的区域内，如果是private或挎包访问default类型以及非父亲类的protected均无法访问到 </span><br><span class="line">   * 其次访问对象不能是static类型的变量（因为在计算属性的偏移量的时候无法计算），也不能是final类型的变量（因为根本无法修改），必须是普通的成员变量 </span><br><span class="line">   *  </span><br><span class="line">   * 方法（说明上和AtomicInteger几乎一致，唯一的区别是第一个参数需要传入对象的引用） </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#addAndGet(Object, int) </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#compareAndSet(Object, int, int) </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#decrementAndGet(Object) </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#incrementAndGet(Object) </span><br><span class="line">   *  </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#getAndAdd(Object, int) </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#getAndDecrement(Object) </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#getAndIncrement(Object) </span><br><span class="line">   * @see AtomicIntegerFieldUpdater#getAndSet(Object, int) </span><br><span class="line">&gt;*/  </span><br><span class="line">&gt;public final static AtomicIntegerFieldUpdater &lt;A&gt;ATOMIC_INTEGER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(A.class, &quot;intValue&quot;);  </span><br><span class="line"></span><br><span class="line">&gt;public static void main(String []args) &#123;  </span><br><span class="line">  final A a = new A();  </span><br><span class="line">  for(int i = 0 ; i &lt; 100 ; i++) &#123;  </span><br><span class="line">      final int num = i;  </span><br><span class="line">      new Thread() &#123;  </span><br><span class="line">          public void run() &#123;  </span><br><span class="line">              if(ATOMIC_INTEGER_UPDATER.compareAndSet(a, 100, 120)) &#123;  </span><br><span class="line">                  System.out.println(&quot;我是线程：&quot; + num + </span><br><span class="line">                  				&quot; 我对对应的值做了修改！&quot;);  </span><br><span class="line">              &#125;  </span><br><span class="line">          &#125;  </span><br><span class="line">      &#125;.start();  </span><br><span class="line">  &#125;  </span><br><span class="line">&gt;&#125;  </span><br><span class="line">&gt;&#125;  </span><br></pre></td></tr></table></figure>
+
+<p>此时你会发现只有一个线程可以对这个数据进行修改，其他的方法如上面描述一样，实现的功能和AtomicInteger类似。</p>
+<p>而<strong>AtomicLongFieldUpdater</strong>其实也是这样，区别在于它所操作的数据是long类型。</p>
+<p><strong>AtomicReferenceFieldUpdater</strong>方法较少，主要是<strong>compareAndSet</strong>以及<strong>getAndSet</strong>两个方法的使用，它的定义比数字类型的多一个参数如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;<span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">A</span> &#123;  </span><br><span class="line">&gt;<span class="keyword">volatile</span> <span class="type">String</span> <span class="variable">stringValue</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;  </span><br><span class="line">&gt;&#125;  </span><br><span class="line"></span><br><span class="line">&gt;AtomicReferenceFieldUpdater &lt;A ,String&gt;ATOMIC_REFERENCE_FIELD_UPDATER =    AtomicReferenceFieldUpdater.newUpdater(A.class, String.class, <span class="string">&quot;stringValue&quot;</span>);  </span><br></pre></td></tr></table></figure>
+
+
+</blockquote>
+<h3 id="Java-8新增加的LongAdder等类的解析以及使用"><a href="#Java-8新增加的LongAdder等类的解析以及使用" class="headerlink" title="Java 8新增加的LongAdder等类的解析以及使用"></a>Java 8新增加的LongAdder等类的解析以及使用</h3><blockquote>
+<p>DoubleAccumulator、LongAccumulator、DoubleAdder、LongAdder是JDK1.8新增的部分，是对AtomicLong等类的改进。</p>
+<p>在CAS介绍那一节已经介绍了CAS存在的问题，前面解决了ABA问题，单丝还有一个问题没解决，就是在高并发的情况下会出现CAS频繁碰撞，碰撞会造成赋值失败继续重试，越多线程重试，CAS失败几率又越高，变成恶性循环，造成效率底下等问题；</p>
+<p>为了解决AutomicInteger等原子操作类在高并发下的性能问题，JDK8添加了LongAdder和DoubleAdder高并发增强原子类，其基本思想就是对于多个线程对同一个变量操作不相互排斥，而是保存每个线程对变量的修改，在读取变量的时候进行汇总，这样就不会造成线程间的互斥和重试，极大提高想并发性能；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&gt;//主要API</span><br><span class="line"></span><br><span class="line">&gt;//构造函数</span><br><span class="line">&gt;LongAdder()</span><br><span class="line">&gt;//创建初始和为零的新加法器。</span><br><span class="line"></span><br><span class="line">&gt;//方法摘要</span><br><span class="line">&gt;void    add(long x)</span><br><span class="line">&gt;//添加给定的值。</span><br><span class="line">&gt;void    decrement()</span><br><span class="line">&gt;//相当于add(-1)。</span><br><span class="line">&gt;double  doubleValue()</span><br><span class="line">&gt;//在扩展原始转换之后返回sum()as double。</span><br><span class="line">&gt;float   floatValue()</span><br><span class="line">&gt;//在扩展原始转换之后返回sum()as float。</span><br><span class="line">&gt;void    increment()</span><br><span class="line">&gt;//相当于add(1)。</span><br><span class="line">&gt;int intValue()</span><br><span class="line">&gt;//返回sum()作为int一个基本收缩转换之后。</span><br><span class="line">&gt;long    longValue()</span><br><span class="line">&gt;//相当于sum()。</span><br><span class="line">&gt;void    reset()</span><br><span class="line">&gt;//重置将总和保持为零的变量。</span><br><span class="line">&gt;long    sum()</span><br><span class="line">&gt;//返回当前的总和。</span><br><span class="line">&gt;long    sumThenReset()</span><br><span class="line">&gt;//等同于sum()后面的效果reset()。</span><br><span class="line">&gt;String  toString()</span><br><span class="line">&gt;//返回。的字符串表示形式sum()。</span><br></pre></td></tr></table></figure>
+
+<p><strong>实现原理：</strong></p>
+<p>LongAdder继承了Striped64类，来实现累加功能的,它是实现高并发累加的工具类； </p>
+<ul>
+<li>Striped64的设计核心思路就是通过内部的分散计算来避免竞争。 </li>
+<li>Striped64内部包含一个base和一个Cell[] cells数组，又叫hash表。 </li>
+<li>没有竞争的情况下，要累加的数通过cas累加到base上；如果有竞争的话，会将要累加的数累加到Cells数组中的某个cell元素里面。所以整个Striped64的值为sum&#x3D;base+∑[0~n]cells。</li>
+</ul>
+<p>LongAdder这样的处理方式是有坏处的，分段操作必然带来空间上的浪费，可以空间换时间；</p>
+<p>AtomicInteger和LongAdder的速度关系是： 低并发时LongAdder和AtomicLong性能差不多，高并发时LongAdder更高效</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -2164,7 +2283,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-count">195</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2220,7 +2339,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:55</span>
+    <span title="站点阅读时长">20:39</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
