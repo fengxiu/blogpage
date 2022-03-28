@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">96</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">98</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">195</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">196</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,139 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/527f2873.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/527f2873.html" class="post-title-link" itemprop="url">sql的几种连接</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-28 17:38:33" itemprop="dateCreated datePublished" datetime="2019-03-28T17:38:33+00:00">2019-03-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/527f2873.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/527f2873.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/527f2873.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/527f2873.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在Mysql中连接主要有内连接和外连接，本篇文章主要讲解这俩种连接。<br>表的定义和数据如下</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> student(</span><br><span class="line">  id <span class="type">int</span> auto_increment <span class="keyword">primary</span> key,</span><br><span class="line">  stuname <span class="type">varchar</span>(<span class="number">128</span>) <span class="keyword">not</span> <span class="keyword">null</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> student <span class="keyword">value</span> (<span class="number">1</span>,&quot;张三&quot;);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> student <span class="keyword">value</span> (<span class="number">2</span>,&quot;李四&quot;);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> student <span class="keyword">value</span> (<span class="number">3</span>,&quot;王wu&quot;);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> student <span class="keyword">value</span> (<span class="number">4</span>,&quot;任六&quot;);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> student <span class="keyword">value</span> (<span class="number">5</span>,&quot;赵七&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> course(</span><br><span class="line">  id <span class="type">int</span> auto_increment <span class="keyword">primary</span> key ,</span><br><span class="line">  course_name <span class="type">varchar</span>(<span class="number">128</span>),</span><br><span class="line">   stuid <span class="type">int</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">insert</span>  <span class="keyword">into</span> course <span class="keyword">value</span>( <span class="number">1</span>,&quot;python编程&quot;,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">insert</span>  <span class="keyword">into</span> course <span class="keyword">value</span> (<span class="number">2</span>,&quot;sql编程&quot;,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">insert</span>  <span class="keyword">into</span> course <span class="keyword">value</span> (<span class="number">3</span>,&quot;java编程&quot;,<span class="number">3</span>);</span><br><span class="line"><span class="keyword">insert</span>  <span class="keyword">into</span> course <span class="keyword">value</span> (<span class="number">4</span>,&quot;php编程&quot;,<span class="number">4</span>);</span><br><span class="line"><span class="keyword">insert</span>  <span class="keyword">into</span> course <span class="keyword">value</span>  (<span class="number">5</span>,&quot;test编程&quot;,<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+<!-- more  -->
+<h2 id="内连接"><a href="#内连接" class="headerlink" title="内连接"></a>内连接</h2><p>内连接就是讲俩个表中都存在的数据显示来，下面俩个sql语句的作用是一样的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> course <span class="keyword">inner</span> <span class="keyword">join</span> student <span class="keyword">on</span> course.stuid<span class="operator">=</span>student.id;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> course,student <span class="keyword">where</span> course.stuid<span class="operator">=</span>student.id;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/Xnip2019-03-28_20-24-55.jpg" alt="Xnip2019-03-28_20-24-55"></p>
+<h2 id="外连接"><a href="#外连接" class="headerlink" title="外连接"></a>外连接</h2><h3 id="左连接"><a href="#左连接" class="headerlink" title="左连接"></a>左连接</h3><p>是以左表为基准，将a.stuid &#x3D; b.stuid的数据进行连接，然后将左表没有的对应项显示，右表的列为NULL</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span><span class="keyword">from</span> course <span class="keyword">as</span> a <span class="keyword">left</span> <span class="keyword">join</span> student <span class="keyword">as</span> b <span class="keyword">on</span> a.stuid<span class="operator">=</span>b.id;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/Xnip2019-03-28_20-27-01.jpg" alt="Xnip2019-03-28_20-27-01"></p>
+<h3 id="右连接"><a href="#右连接" class="headerlink" title="右连接"></a>右连接</h3><p>是以右表为基准，将a.stuid &#x3D; b.stuid的数据进行连接，然以将右表没有的对应项显示，左表的列为NULL</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span><span class="keyword">from</span> course <span class="keyword">as</span> a <span class="keyword">right</span> <span class="keyword">join</span> student <span class="keyword">as</span> b <span class="keyword">on</span> a.stuid<span class="operator">=</span>b.id;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/Xnip2019-03-28_20-28-30.jpg" alt="Xnip2019-03-28_20-28-30"></p>
+<h3 id="全连接"><a href="#全连接" class="headerlink" title="全连接"></a>全连接</h3><p>完整外部联接返回左表和右表中的所有行。当某行在另一个表中没有匹配行时，则另一个表的选择列表列包含空值。如果表之间有匹配行，则整个结果集行包含基表的数据值。<br>相当于一个笛卡尔乘积。在mysql中是不支持的。</p>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><h3 id="自然连接"><a href="#自然连接" class="headerlink" title="自然连接"></a>自然连接</h3><p>自然连接(Natural join)是一种特殊的等值连接，要求两个关系表中进行比较的属性组必须是名称相同的属性组，并且在结果中把重复的属性列去掉（即：留下名称相同的属性组中的其中一组）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/dd6beb0a.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +360,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -354,7 +487,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -486,7 +619,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -617,7 +750,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -748,7 +881,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -880,7 +1013,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1015,7 +1148,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1152,7 +1285,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1419,7 +1552,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
+                <time title="修改时间：2022-03-28 06:54:03" itemprop="dateModified" datetime="2022-03-28T06:54:03+00:00">2022-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1511,144 +1644,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/df9a61f7.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/df9a61f7.html" class="post-title-link" itemprop="url">索引</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-21 12:23:00" itemprop="dateCreated datePublished" datetime="2019-03-21T12:23:00+00:00">2019-03-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-24 07:38:35" itemprop="dateModified" datetime="2022-03-24T07:38:35+00:00">2022-03-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/df9a61f7.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/df9a61f7.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/df9a61f7.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/df9a61f7.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ol>
-<li>索引基础</li>
-<li>索引主要类型</li>
-<li>索引优化</li>
-<li>InnoDB和MyISAM数据分布对比</li>
-</ol>
-<h2 id="1-索引基础"><a href="#1-索引基础" class="headerlink" title="1. 索引基础"></a>1. 索引基础</h2><ul>
-<li><p>索引，又叫key（键）</p>
-</li>
-<li><p>在mysql中，存储引擎先在索引中找到检索的内容，然后根据索引结果找到对应的<code>数据行</code></p>
-</li>
-<li><p>索引可以包含一个或多个列的值，如果索引包含多个列，那么<code>列的顺序十分重要</code>，因为mysql只能高效的使用索引的<code>最左前缀列</code>，<code>最左前缀列</code>就是<code>KEY(id, name, sex)</code>，<code>id</code>在<code>id、name、sex</code>里面是写在左边的，这就叫最左前缀</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/df9a61f7.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1720,7 +1715,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1733,7 +1728,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">96</span>
+        <span class="site-state-item-count">98</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
