@@ -129,17 +129,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">100</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">55</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">57</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">197</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">198</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,145 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/5319940a.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/5319940a.html" class="post-title-link" itemprop="url">GC日志详解2之Parallel GC</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-18 11:45:15" itemprop="dateCreated datePublished" datetime="2019-04-18T11:45:15+00:00">2019-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/GC/" itemprop="url" rel="index"><span itemprop="name">GC</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/5319940a.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/5319940a.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/5319940a.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/5319940a.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前面写了一篇文章<a href="/posts/f857a2aa/">GC日志详解1之serial</a>已经详细介绍了Serial和Serial Old搭配使用时输出日志的解析。这篇文章将详细介绍Parallel Scavenge 和 Parallel Old搭配使用时输出日志的解析。</p>
+<p>Parallel Scavenge在年轻代使用，采用<strong>标记-复制</strong>的方法来进行垃圾回收，而Paralle Old是在老年代进行回收，采用的是<strong>标记-整理</strong>的方法来进行垃圾回收。俩个垃圾回收器都会暂停所用应用程序的线程，也就是STW现象。叫做Parallel是因为，这俩个垃圾回收器都会使用多线程来进行垃圾的回收，通过这种方式，GC执行的时间也因此减少。</p>
+<p>GC在执行的时候，线程的数量是可以配置的。通过参数<code>XX:ParallelGCThreads=NNN</code>来进行配置，如果没有配置，默认的收集线程数等于机器的核心数。</p>
+<p>如果你的目标是提高系统的吞吐量，并且运行应用的机器是多核机器，特别适用于这种搭配。能够提高吞吐量的原因是这种搭配能够更高效的使用系统资源：</p>
+<ul>
+<li>在GC执行的过程中，所有核心都在并行清理垃圾，从而缩短暂停时间</li>
+<li>在GC回收周期之间，也就是在应用执行的过程中，收集者都没有消耗任何资源。（这点我还没搞懂）</li>
+</ul>
+<p>另一方面，由于GC收集器的所有阶段都必须在没有任何中断的情况下发生，因此这组收集器仍然容易受到长时间暂停的影响，在此期间应用程序线程将被停止。因此，如果延迟是您的主要目标，您可以选择我在上一篇文章里面提到的后俩种搭配。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/5319940a.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/3374b24f.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +366,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -354,7 +493,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -485,7 +624,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -613,7 +752,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -744,7 +883,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -867,7 +1006,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -995,7 +1134,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1224,7 +1363,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1349,7 +1488,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1472,163 +1611,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/52bb366.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/52bb366.html" class="post-title-link" itemprop="url">腾讯TEG面经：java实习岗</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-04-02 10:49:22" itemprop="dateCreated datePublished" datetime="2019-04-02T10:49:22+00:00">2019-04-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/52bb366.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/52bb366.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/52bb366.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/52bb366.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>下面记录的是我面腾讯TEG事业群的经历</p>
-<h2 id="腾讯一面-2019年03月13日"><a href="#腾讯一面-2019年03月13日" class="headerlink" title="腾讯一面 2019年03月13日"></a>腾讯一面 2019年03月13日</h2><ol>
-<li><p><strong>自我介绍</strong>：我主要的是介绍我的项目，因为是很突然的接到电话，当时也没准备自我介绍，就直接将简历上面的项目介绍了一遍。但是自我的感觉介绍不是太好，因为我自己都觉得讲的不是很清楚。所以如果你要参加面试前，最好先写一个简单的自我介绍，如果是项目介绍，最好先介绍下背景，然后在介绍整个项目。这样面试官相对好理解写。不过最好不要把项目介绍的太仔细，要留下一些点让面试官自己来提问。这个度需要自己把握，。</p>
-<!--  more  --></li>
-<li><p><strong>tcp三次握手</strong>：就是简单的问了一下这个问题，面试官没有问为什么需要三次握手。可能是我在回答这个问题的时候讲了自己遇到的一个”connection by peer reset“异常，然后描述了一下自己是怎么解决这个问题的。</p>
-</li>
-<li><p><strong>java 垃圾回</strong>：这个几乎只要是面java的都会问，所以需要好好整理</p>
-</li>
-<li><p><strong>java中的锁</strong>：这个主要问的是Synchronize和lock的区别，以及怎么的选择。</p>
-</li>
-<li><p><strong>限流</strong>：我主要说了一个根据访问的量来进行限流，后面面试官说可以通过信号量来限流。</p>
-</li>
-<li><p><strong>raft</strong>：这个主要是考分布式相关的问题，然后我说只记得一点，把自己记得的讲了出来。</p>
-</li>
-<li><p><strong>mapreduce</strong>：这个也是在问分布式相关的问题，但是还是忘记了，然后把自己记得的讲了出来。</p>
-</li>
-</ol>
-<p>后面就是面试官问我还有什么想问他的，问了一下具体部门，他们是做中间件和大数据相关的组。</p>
-<h3 id="一面总结"><a href="#一面总结" class="headerlink" title="一面总结"></a>一面总结</h3><ol>
-<li><p>面试官主要对我的一个项目比较感兴趣，主要也在问我这个项目。不过其中有一些点没有讲的很好，比如我在项目中用到了负载均衡，但是我没有仔细的看过负载均衡实现的方法,就简单的回答了一下。所以你写在简历上的项目一点要仔细的整理。</p>
-</li>
-<li><p>以前自己看过很多的论文，但是都没有仔细整理，这次面试也凸显出来，所以自己看过的知识点一定要好好整理。知道不代表懂。</p>
-</li>
-<li><p>尽量不要紧张，因为这是我第一次面大公司所以比较紧张。不过这个也没有什么好办法，尽量多面点就不会紧张。</p>
-</li>
-<li><p>和面试管尽量不要保持他问你答的状态，最好是处于一种聊天的状态。这次面试前面就是因为他问我搭所以比较紧张，在面试一会之后就转入了一种在聊天的状态，紧张感也就没有了。</p>
-</li>
-</ol>
-<h2 id="腾讯二面-2019年03月27日"><a href="#腾讯二面-2019年03月27日" class="headerlink" title="腾讯二面 2019年03月27日"></a>腾讯二面 2019年03月27日</h2><ol>
-<li><p><strong>项目介绍</strong>:和上面一样</p>
-</li>
-<li><p><strong>自定义协议</strong>：如和自定义协议，也是项目中的一个问题，我当时回答的是：协议定义是非常难的一个问题，要考虑很多的方面，比如完整性和尽量减少跟数据无关的协议头的长度。然后我只是简单的将自己在项目中使用了自定义协议，主要是因为我发现在这个项目里面数据传输几乎都是一样的，所以就自定义了一个协议，但是这个自定义的协议非常的粗糙。如果不是比赛的话，我不会这样做，因为要提升性能才这样做的。但是在真正的生产环境中要考虑适配和兼容性这些问题，最好还是使用通用性协议</p>
-</li>
-<li><p><strong>线程，线程是如何调度，Java线程是如何调度</strong></p>
-</li>
-<li><p><strong>你觉得你项目有什么难点</strong></p>
-</li>
-<li><p><strong>快速排序</strong>：这个问题当时没回答好，因为我吧快排和希尔排序弄混，所以就和面试官分别介绍了这俩个排序，然后总结了一下为什么快排相对来说比较好。主要胜在平均性能。</p>
-</li>
-</ol>
-<h3 id="二面总结"><a href="#二面总结" class="headerlink" title="二面总结"></a>二面总结</h3><p>其实问题不是太难，但是自己在回答的过程中思路不是太清晰，所以自我感觉回答的不是太好。另外一些基础的问题没有弄好。所以下来需要整理。</p>
-<p>这个面试完了之后，也是在周五下午，进行了最后一轮的HR面试。至此我的腾讯实习面试之路走完。另外我的二面其实在前一周也可以结束，但是因为自己手机调整成了静音，没有接到电话，所以空等了一周，拖到了这周面试。所以在面试过程中手机千万不要调成静音。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1700,20 +1682,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">197</span>
+          <span class="site-state-item-count">198</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">57</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1756,7 +1738,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:44</span>
+    <span title="站点阅读时长">20:46</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

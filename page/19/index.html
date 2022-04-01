@@ -129,17 +129,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">100</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">55</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">57</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">197</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">198</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,229 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/400f00a6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/400f00a6.html" class="post-title-link" itemprop="url">深入分析ThreadLocal</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-09-12 10:28:00" itemprop="dateCreated datePublished" datetime="2018-09-12T10:28:00+00:00">2018-09-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/juc/thread/" itemprop="url" rel="index"><span itemprop="name">thread</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/400f00a6.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/400f00a6.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/400f00a6.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/400f00a6.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ol>
+<li>ThreadLocal是什么</li>
+<li>如何使用ThreadLocal</li>
+<li>ThreadLocal源码分析</li>
+<li>总结</li>
+</ol>
+<h3 id="ThreadLocal-是什么"><a href="#ThreadLocal-是什么" class="headerlink" title="ThreadLocal 是什么"></a>ThreadLocal 是什么</h3><p>首先我们要明白一点，线程同步主要是为了完成线程间数据共享和同步，保持数据的完整性。而ThreadLocal正如他的名字一样是线程的本地变量，也就是线程所私有的。因此他和线程同步无关，（因为不存在线程之间共享变量的问题，就不需要使用同步机制）。ThreadLocal虽然提供了一种解决多线程环境下成员变量的问题，但是它并不是解决多线程共享变量的问题。那么ThreadLocal到底是什么呢？</p>
+<!-- more --->
+<h4 id="API是这样介绍它的："><a href="#API是这样介绍它的：" class="headerlink" title="API是这样介绍它的："></a>API是这样介绍它的：</h4><p><strong>This class provides thread-local variables. These variables differ from their normal counterparts in that each thread that accesses one (via its {@code get} or {@code set} method) has its own, independently initialized copy of the variable. {@code ThreadLocal} instances are typically private static fields in classes that wish to associate state with a thread (e.g.,a user ID or Transaction ID).</strong></p>
+<h4 id="中文翻译"><a href="#中文翻译" class="headerlink" title="中文翻译"></a>中文翻译</h4><p>该类提供了线程局部 (thread-local) 变量。这些变量不同于它们的普通对应物，因为访问某个变量（通过其<code>get</code> 或 <code>set</code>方法）的每个线程都有自己的局部变量，它独立于变量的初始化副本。<code>ThreadLocal</code>实例通常是类中的 private static 字段，它们希望将状态与某一个线程（例如，用户 ID 或事务 ID）相关联。正如这句话所说，spring 中的事务就使用了ThreadLocal来保证同一个线程中的所有操作使用的是同一个数据库连接。</p>
+<p>所以ThreadLocal与线程同步机制不同，线程同步机制是多个线程共享同一个变量，而ThreadLocal是为每一个线程创建一个单独的变量副本，故而每个线程都可以独立地改变自己所拥有的变量副本，而不会影响其他线程所对应的副本。可以说ThreadLocal为多线程环境下变量问题提供了另外一种解决思路。</p>
+<h3 id="如何使用ThreadLocal"><a href="#如何使用ThreadLocal" class="headerlink" title="如何使用ThreadLocal"></a>如何使用ThreadLocal</h3><p>简单案例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SeqCount</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;Integer&gt; seqCount = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;Integer&gt;()&#123;</span><br><span class="line">        <span class="comment">// 实现initialValue()</span></span><br><span class="line">        <span class="keyword">public</span> Integer <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">nextSeq</span><span class="params">()</span>&#123;</span><br><span class="line">        seqCount.set(seqCount.get() + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> seqCount.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">SeqCount</span> <span class="variable">seqCount</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SeqCount</span>();</span><br><span class="line"></span><br><span class="line">        <span class="type">SeqThread</span> <span class="variable">thread1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SeqThread</span>(seqCount);</span><br><span class="line">        <span class="type">SeqThread</span> <span class="variable">thread2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SeqThread</span>(seqCount);</span><br><span class="line">        <span class="type">SeqThread</span> <span class="variable">thread3</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SeqThread</span>(seqCount);</span><br><span class="line">        <span class="type">SeqThread</span> <span class="variable">thread4</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SeqThread</span>(seqCount);</span><br><span class="line"></span><br><span class="line">        thread1.start();</span><br><span class="line">        thread2.start();</span><br><span class="line">        thread3.start();</span><br><span class="line">        thread4.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">SeqThread</span> <span class="keyword">extends</span> <span class="title class_">Thread</span>&#123;</span><br><span class="line">        <span class="keyword">private</span> SeqCount seqCount;</span><br><span class="line"></span><br><span class="line">        SeqThread(SeqCount seqCount)&#123;</span><br><span class="line">            <span class="built_in">this</span>.seqCount = seqCount;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span> ; i &lt; <span class="number">3</span> ; i++)&#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() </span><br><span class="line">                                   + <span class="string">&quot; seqCount :&quot;</span> + seqCount.nextSeq());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Thread-1 seqCount :1</span><br><span class="line">Thread-0 seqCount :1</span><br><span class="line">Thread-2 seqCount :1</span><br><span class="line">Thread-3 seqCount :1</span><br><span class="line">Thread-1 seqCount :2</span><br><span class="line">Thread-0 seqCount :2</span><br><span class="line">Thread-2 seqCount :2</span><br><span class="line">Thread-3 seqCount :2</span><br><span class="line">Thread-1 seqCount :3</span><br><span class="line">Thread-0 seqCount :3</span><br><span class="line">Thread-2 seqCount :3</span><br><span class="line">Thread-3 seqCount :3</span><br></pre></td></tr></table></figure>
+
+<p>从运行结果可以看出，ThreadLocal确实是可以达到线程隔离机制，确保变量的安全性。</p>
+<p><strong>不过这里要注意一个问题，不要使用对象的引用来设置ThreadLocal的初始值，这样会导致线程共享此对象</strong></p>
+<p>就像下面这样写</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">A</span> <span class="variable">a</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">A</span>();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;A&gt; seqCount = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;A&gt;()&#123;</span><br><span class="line">   <span class="comment">// 实现initialValue()</span></span><br><span class="line">   <span class="keyword">public</span> A <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> a;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;</span><br><span class="line">   <span class="comment">// ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体过程请参考：<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/ee8c9dccc953">对ThreadLocal实现原理的一点思考</a></p>
+<p>总结一般使用ThreadLocal的方式是：</p>
+<ol>
+<li>设置ThreadLocal对象为静态内部私有属性</li>
+<li>使用initalValue方法进行初始化值的时候，不要使用引用对象，这样会造成线程间共享此对象，从而达不到线程私有变量的的效果。</li>
+</ol>
+<p>具体代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> statis ThreadLocal&lt;T&gt; objectName = <span class="keyword">new</span>  <span class="title class_">ThreadLocal</span>()&#123;</span><br><span class="line">   <span class="keyword">private</span> T <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">   		<span class="comment">//下面写法肯定有问题，主要是告诉你要声明一个对</span></span><br><span class="line">   		<span class="comment">//象，而不是返回对象的引用</span></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">T</span>() ;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ThreadLocal源码解析"><a href="#ThreadLocal源码解析" class="headerlink" title="ThreadLocal源码解析"></a>ThreadLocal源码解析</h3><p>ThreadLocal定义了四个方法：</p>
+<ul>
+<li>get()：返回当前线程对应的ThreadLocal中的值。</li>
+<li>initialValue()：用于初始化当前线程对应的ThreadLocal的“初始值”。</li>
+<li>remove()：删除当前线程对应的ThreadLocal值。</li>
+<li>set(T value)：设置当前线程对应的ThreadLocal中的值。</li>
+</ul>
+<p>除了这四个方法，ThreadLocal内部还有一个静态内部类ThreadLocalMap，该内部类才是实现线程隔离机制的关键，get()、set()、remove()都是基于该内部类操作。ThreadLocalMap提供了一种用键值对方式存储每一个线程的变量副本的方法，key为当前ThreadLocal对象，value则是对应线程的变量副本。</p>
+<p>对于ThreadLocal需要注意的有两点：</p>
+<ol>
+<li>ThreadLocal实例本身是不存储值，它只是提供了一个在当前线程中找到副本值得key。</li>
+<li>是ThreadLocal包含在Thread中，而不是Thread包含在ThreadLocal中，有些小伙伴会弄错他们的关系。</li>
+</ol>
+<p>下图是Thread、ThreadLocal、ThreadLocalMap的关系</p>
+<p><img src="/images/pasted-301.png" alt="upload successful"></p>
+<p>ThreadLocal虽然解决了这个多线程变量的复杂问题，但是它的源码实现却是比较简单的。ThreadLocalMap是实现ThreadLocal的关键，我们先从它入手。</p>
+<h4 id="ThreadLocalMap"><a href="#ThreadLocalMap" class="headerlink" title="ThreadLocalMap"></a>ThreadLocalMap</h4><p>ThreadLocalMap其内部利用Entry来实现key-value的存储，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Entry</span> <span class="keyword">extends</span> <span class="title class_">WeakReference</span>&lt;ThreadLocal&lt;?&gt;&gt; &#123;</span><br><span class="line">    <span class="comment">/** The value associated with this ThreadLocal. */</span></span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        <span class="built_in">super</span>(k);</span><br><span class="line">        value = v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面代码中可以看出Entry的key就是ThreadLocal，而value就是值。同时，Entry也继承WeakReference，所以说Entry所对应key（ThreadLocal实例）的引用为一个弱引用（关于弱引用这里就不多说了，感兴趣的可以关注这篇博客：<a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/java/j-jtp11225/">Java 理论与实践: 用弱引用堵住内存泄漏</a>）</p>
+<p>ThreadLocalMap的源码稍微多了点，我们就看两个最核心的方法getEntry()、set(ThreadLocal&gt; key, Object value)方法。</p>
+<p> <strong>set(ThreadLocal&lt;?&gt; key, Object value)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">set</span><span class="params">(ThreadLocal&lt;?&gt; key, Object value)</span> &#123;</span><br><span class="line">    ThreadLocal.ThreadLocalMap.Entry[] tab = table;</span><br><span class="line">    <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> tab.length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据 ThreadLocal 的散列值，查找对应元素在数组中的位置</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 采用“线性探测法”，寻找合适位置</span></span><br><span class="line">    <span class="keyword">for</span> (ThreadLocal.ThreadLocalMap.<span class="type">Entry</span> <span class="variable">e</span> <span class="operator">=</span> tab[i];</span><br><span class="line">         e != <span class="literal">null</span>;</span><br><span class="line">         e = tab[i = nextIndex(i, len)]) &#123;</span><br><span class="line"></span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line">        <span class="comment">// 传进来的ThreadLocal和k是相同的，</span></span><br><span class="line">        <span class="comment">// 直接覆盖</span></span><br><span class="line">        <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//e != null, 但key == null，说明value没有被回收</span></span><br><span class="line">        <span class="comment">// 但是对应的ThreadLocal对象已经被回收了</span></span><br><span class="line">        <span class="keyword">if</span> (k == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 用新元素替换陈旧的元素</span></span><br><span class="line">            replaceStaleEntry(key, value, i);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ThreadLocal对应的key实例不存在也没有陈旧元素,新建一个</span></span><br><span class="line">    tab[i] = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>.ThreadLocalMap.Entry(key, value);</span><br><span class="line">    <span class="type">int</span> <span class="variable">sz</span> <span class="operator">=</span> ++size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// cleanSomeSlots 清楚陈旧的Entry（key == null）</span></span><br><span class="line">    <span class="comment">// 如果没有清理陈旧的 Entry 并且数组中的元素大于了阈值，则进行 rehash</span></span><br><span class="line">    <span class="keyword">if</span> (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)</span><br><span class="line">        rehash();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 计算下一个索引，这里实现比较简单，如果index大于数组长度，</span></span><br><span class="line"><span class="comment">// 则设置索引长度为0</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">nextIndex</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> len)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> ((i + <span class="number">1</span> &lt; len) ? i + <span class="number">1</span> : <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个set()操作和我们在集合了解的put()方式有点儿不一样，虽然他们都是key-value结构，不同在于他们解决散列冲突的方式不同。集合Map的put()采用的是拉链法，而ThreadLocalMap的set()则是采用开放定址法（具体请参考<a target="_blank" rel="noopener" href="http://www.nowamagic.net/academy/detail/3008015">散列冲突处理系列博客</a>）。掌握了开放地址法该方法就一目了然了。</p>
+<p>set()操作除了存储元素外，还有一个很重要的作用，就是replaceStaleEntry()和cleanSomeSlots()，这两个方法可以清除掉key &#x3D;&#x3D; null 的实例，防止内存泄漏。</p>
+<p>在set()方法中还有一个变量很重要：threadLocalHashCode，定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">threadLocalHashCode</span> <span class="operator">=</span> nextHashCode();</span><br></pre></td></tr></table></figure>
+
+<p>从名字上面我们可以看出threadLocalHashCode应该是ThreadLocal的散列值，定义为final，表示ThreadLocal一旦创建其散列值就已经确定了，生成过程则是调用nextHashCode()：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">AtomicInteger</span> <span class="variable">nextHashCode</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">HASH_INCREMENT</span> <span class="operator">=</span> <span class="number">0x61c88647</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">nextHashCode</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> nextHashCode.getAndAdd(HASH_INCREMENT);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>nextHashCode表示分配下一个ThreadLocal实例的threadLocalHashCode的值，HASH_INCREMENT则表示分配两个ThradLocal实例的threadLocalHashCode的增量，从nextHashCode就可以看出他们的定义。</p>
+<p><strong>getEntry()</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Entry <span class="title function_">getEntry</span><span class="params">(ThreadLocal&lt;?&gt; key)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> key.threadLocalHashCode &amp; (table.length - <span class="number">1</span>);</span><br><span class="line">    <span class="type">Entry</span> <span class="variable">e</span> <span class="operator">=</span> table[i];</span><br><span class="line">    <span class="keyword">if</span> (e != <span class="literal">null</span> &amp;&amp; e.get() == key)</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> getEntryAfterMiss(key, i, e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于采用了开放定址法，所以当前key的散列值和元素在数组的索引并不是完全对应的，首先取一个探测数（key的散列值），如果所对应的key就是我们所要找的元素，则返回，否则调用getEntryAfterMiss()，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Entry <span class="title function_">getEntryAfterMiss</span><span class="params">(ThreadLocal&lt;?&gt; key, <span class="type">int</span> i, Entry e)</span> &#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> tab.length;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (e != <span class="literal">null</span>) &#123;</span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line">        <span class="keyword">if</span> (k == key)</span><br><span class="line">            <span class="keyword">return</span> e;</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="literal">null</span>)</span><br><span class="line">            <span class="comment">// 清除到下一个槽位之间的过时的元素，</span></span><br><span class="line">            <span class="comment">// 也就是ThreadLocal被回收。</span></span><br><span class="line">            expungeStaleEntry(i);</span><br><span class="line">        <span class="type">else</span></span><br><span class="line">            <span class="variable">i</span> <span class="operator">=</span> nextIndex(i, len);</span><br><span class="line">        e = tab[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里有一个重要的地方，当key &#x3D;&#x3D; null时，调用了expungeStaleEntry()方法，该方法用于处理key &#x3D;&#x3D; null，有利于GC回收，能够有效地避免内存泄漏。</p>
+<p>下面我们开始分析ThreadLocal中常用到的四个函数</p>
+<h3 id="initialValue"><a href="#initialValue" class="headerlink" title="initialValue()"></a>initialValue()</h3><p>初始化ThreadLocal中存储的对象，并返回这个初始值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> T <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该方法定义为protected级别且返回为null，很明显是要子类实现它的，所以我们在使用ThreadLocal的时候一般都应该覆盖该方法。该方法不能显示调用，只有在第一次调用get()或者set()方法时才会被执行，并且仅执行1次。</p>
+<h3 id="get"><a href="#get" class="headerlink" title="get()"></a>get()</h3><p>返回当前线程所对应的线程变量</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> T <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="comment">// 获取当前线程</span></span><br><span class="line">   <span class="type">Thread</span> <span class="variable">t</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 获取当前线程对应的ThreadLocalMap</span></span><br><span class="line">   <span class="type">ThreadLocalMap</span> <span class="variable">map</span> <span class="operator">=</span> getMap(t);</span><br><span class="line">   <span class="keyword">if</span> (map != <span class="literal">null</span>) &#123;</span><br><span class="line">       <span class="comment">// 从当前线程的ThreadLocalMap获取相对应的Entry</span></span><br><span class="line">       ThreadLocalMap.<span class="type">Entry</span> <span class="variable">e</span> <span class="operator">=</span> map.getEntry(<span class="built_in">this</span>);</span><br><span class="line">       <span class="comment">// 不为空则返回目标值</span></span><br><span class="line">       <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123;   </span><br><span class="line">           <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">           <span class="type">T</span> <span class="variable">result</span> <span class="operator">=</span> (T)e.value;</span><br><span class="line">           <span class="keyword">return</span> result;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">    <span class="comment">// 如果上面没有获取到对应值或者ThreadLocalMap没有被初始化，则调用下面函数进行初始化</span></span><br><span class="line">   <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 从线程中获取对应的ThreadLocalMap，</span></span><br><span class="line"><span class="comment">// 其中threadLocals是Thread中的属性，</span></span><br><span class="line"><span class="comment">// 用于存放线程对应的ThreadLocalMap</span></span><br><span class="line">ThreadLocalMap <span class="title function_">getMap</span><span class="params">(Thread t)</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化ThreadLocal的初始值</span></span><br><span class="line"><span class="comment">// 或者初始化ThreadLocalMap</span></span><br><span class="line"><span class="keyword">private</span> T <span class="title function_">setInitialValue</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 初始化ThreadLocal的初始值</span></span><br><span class="line">    <span class="type">T</span> <span class="variable">value</span> <span class="operator">=</span> initialValue();</span><br><span class="line">    <span class="type">Thread</span> <span class="variable">t</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line">    <span class="comment">// 获取线程对应的ThreadLocalMap</span></span><br><span class="line">    <span class="type">ThreadLocalMap</span> <span class="variable">map</span> <span class="operator">=</span> getMap(t);</span><br><span class="line">    <span class="comment">// 设置键值对或者出汗时花ThreadLocaMap</span></span><br><span class="line">    <span class="keyword">if</span> (map != <span class="literal">null</span>)</span><br><span class="line">        map.set(<span class="built_in">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 创建线程对应的ThreadLocalMap</span></span><br><span class="line"><span class="comment">// 并设置第一个键值对</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">createMap</span><span class="params">(Thread t, T firstValue)</span> &#123;</span><br><span class="line">    t.threadLocals = <span class="keyword">new</span> <span class="title class_">ThreadLocalMap</span>(<span class="built_in">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面流程比较清晰，首先通过当前线程获取所当前线程对应的成员变量ThreadLocalMap，然后通过ThreadLocalMap获取ThreadLocal的Entry，最后通过所获取的Entry获取目标值result。</p>
+<p>不过这里需要注意的一点是，ThreadLocalMap是被保存在Thread中，会在第一次使用ThreadLocal的时候进行初始化。从而保证每一个线程的ThreadLocalMap都会不一样。从而保证了TheadLocal对象根据线程的不同而不同，变成线程的私有变量。</p>
+<h3 id="set-T-value"><a href="#set-T-value" class="headerlink" title="set(T value)"></a>set(T value)</h3><p>设置当前线程对应的ThreadLocal的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">set</span><span class="params">(T value)</span> &#123;</span><br><span class="line">   <span class="type">Thread</span> <span class="variable">t</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line">   <span class="type">ThreadLocalMap</span> <span class="variable">map</span> <span class="operator">=</span> getMap(t);</span><br><span class="line">   <span class="keyword">if</span> (map != <span class="literal">null</span>)</span><br><span class="line">       map.set(<span class="built_in">this</span>, value);</span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">       createMap(t, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>获取当前线程所对应的ThreadLocalMap，如果不为空，则调用ThreadLocalMap的set()方法，key就是当前ThreadLocal，如果不存在，则调用createMap()方法新建一个。</p>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><p>删除ThreadLocal中对应的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">remove</span><span class="params">()</span> &#123;</span><br><span class="line"><span class="type">ThreadLocalMap</span> <span class="variable">m</span> <span class="operator">=</span>  getMap(Thread.currentThread());</span><br><span class="line"><span class="keyword">if</span> (m != <span class="literal">null</span>)</span><br><span class="line">   m.remove(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该方法的目的是减少内存的占用。当然，我们不需要显示调用该方法，因为一个线程结束后，它所对应的局部变量就会被垃圾回收。不过最好在每一个使用完ThreadLocal，确定不再需要之后，就调用这个函数，防止内存泄漏。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>ThreadLocal 不是用于解决共享变量的问题的，也不是为了协调线程同步而存在，而是为了方便每个线程处理自己的状态而引入的一个机制。这点至关重要。</li>
+<li>每个Thread内部都有一个ThreadLocal.ThreadLocalMap类型的成员变量，该成员变量用来存储实际的ThreadLocal变量副本。</li>
+<li>ThreadLocal并不是为线程保存对象的副本，它仅仅只起到一个索引的作用。它的主要木得视为每一个线程隔离一个类的实例，这个实例的作用范围仅限于线程内部。</li>
+</ul>
+<p>这里有一个使用ThreadLocal的案例，可以好好看看，写的很好</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/1becdc376f5d">透彻理解Spring事务设计思想之手写实现</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
+<li><a target="_blank" rel="noopener" href="http://blog.xiaohansong.com/2016/08/06/ThreadLocal-memory-leak/">深入分析 ThreadLocal 内存泄漏问题</a></li>
+<li><a target="_blank" rel="noopener" href="http://cmsblogs.com/?p=2442">【死磕Java并发】—–深入分析ThreadLocal</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/d4c4bc29.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +450,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -364,7 +587,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -503,7 +726,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -638,7 +861,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -772,7 +995,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -912,7 +1135,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1052,7 +1275,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1189,7 +1412,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1326,7 +1549,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
+                <time title="修改时间：2022-04-01 11:03:04" itemprop="dateModified" datetime="2022-04-01T11:03:04+00:00">2022-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1428,147 +1651,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/876c7808.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/876c7808.html" class="post-title-link" itemprop="url"> java多线程系列 03 线程等待与唤醒，线程休眠</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-07-13 11:08:00" itemprop="dateCreated datePublished" datetime="2018-07-13T11:08:00+00:00">2018-07-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 09:12:05" itemprop="dateModified" datetime="2022-03-29T09:12:05+00:00">2022-03-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/thread/" itemprop="url" rel="index"><span itemprop="name">thread</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/876c7808.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/876c7808.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/876c7808.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/876c7808.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>9.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="java多线程系列-03-线程等待与唤醒，线程休眠"><a href="#java多线程系列-03-线程等待与唤醒，线程休眠" class="headerlink" title="java多线程系列 03 线程等待与唤醒，线程休眠"></a>java多线程系列 03 线程等待与唤醒，线程休眠</h1><h3 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h3><blockquote>
-<ol>
-<li>wait(), notify(), notifyAll()等方法介绍</li>
-<li>wait()和notify()示例</li>
-<li>wait(long timeout)和notify()示例</li>
-<li>wait() 和 notifyAll()</li>
-<li>为什么notify(), wait()等函数定义在Object中，而不是Thread中</li>
-<li>sleep()介绍与使用</li>
-<li>sleep() 与 wait()的比较</li>
-</ol>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/876c7808.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1640,20 +1722,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">197</span>
+          <span class="site-state-item-count">198</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">57</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1696,7 +1778,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:44</span>
+    <span title="站点阅读时长">20:46</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
