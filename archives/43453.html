@@ -304,6 +304,8 @@
       
         <p>InnoDB是mysql数据库中最常用的存储引擎，对其底层进行研究有助于理解常见的一些数据库优化思路。本篇文章介绍一条记录是如何存储在磁盘上。</p>
 <p>我们平时都是以记录为单位向表中插入数据的，这些记录在磁盘上的存放形式也被称为行格式或者记录格式。InnoDB存储引擎到现在为止设计了4种不同类型的行格式，<br>分别是COMPACT、REDUNDANT、DYNAMI、COMPRESSED。其中REDUNDANT是最早使用的数据格式，现在基本上不怎么使用。目前使用较多的是其它三种格式，这三种格式基本相似，只在处理变长字段上有不同。下文将首先介绍COMPACT格式，然后在以此对比来说明另外俩种格式。</p>
+<span id="more"></span>
+
 <h2 id="COMPACT行格式"><a href="#COMPACT行格式" class="headerlink" title="COMPACT行格式"></a>COMPACT行格式</h2><p>定义一张表，方便后面举例说明</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> record_format_demo(</span><br><span class="line">cl <span class="type">VARCHAR</span>(<span class="number">10</span>), </span><br><span class="line">c2 <span class="type">VARCHAR</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>, </span><br><span class="line">c3 <span class="type">CHAR</span>(<span class="number">10</span>) , </span><br><span class="line">c4 <span class="type">VARCHAR</span>(<span class="number">10</span>) </span><br><span class="line">) CHARSET<span class="operator">=</span>ascii ROW_FORMAT<span class="operator">=</span>COMPACT</span><br></pre></td></tr></table></figure>
 

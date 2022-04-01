@@ -24,14 +24,8 @@
     <updated>2022-04-01T14:25:39.000Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;p&gt;InnoDB是mysql数据库中最常用的存储引擎，对其底层进行研究有助于理解常见的一些数据库优化思路。本篇文章介绍一条记录是如何存储在磁盘上。&lt;/p&gt;
-&lt;p&gt;我们平时都是以记录为单位向表中插入数据的，这些记录在磁盘上的存放形式也被称为行格式或者记录格式。InnoDB存储引擎</summary>
-        
-      
+&lt;p&gt;我们平时都是以记录为单位向表中插入数据的，这些记录在磁盘上的存放形式也被称为行格式或者记录格式。InnoDB存储引擎到现在为止设计了4种不同类型的行格式，&lt;br&gt;分别是COMPACT、REDUNDANT、DYNAMI、COMPRESSED。其中REDUNDANT是最早使用的数据格式，现在基本上不怎么使用。目前使用较多的是其它三种格式，这三种格式基本相似，只在处理变长字段上有不同。下文将首先介绍COMPACT格式，然后在以此对比来说明另外俩种格式。&lt;/p&gt;</summary>
     
     
     
@@ -54,13 +48,11 @@
     <updated>2022-03-28T19:19:51.000Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;本文翻译自&lt;a href=&quot;https://queue.acm.org/detail.cfm?id=1394128&quot;&gt;Base: An Acid</summary>
-        
-      
+    <summary type="html">&lt;p&gt;本文翻译自&lt;a href=&quot;https://queue.acm.org/detail.cfm?id=1394128&quot;&gt;Base: An Acid Alternative&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;在分区数据库中，用一致性换取可用性可以显著提高可伸缩性。&lt;/p&gt;
+&lt;p&gt;Web应用程序在过去十年中越来越流行。无论您是为终端用户还是为应用程序开发人员（服务）构建应用程序，您最希望的是您的应用程序将获得广泛采用，并且随着广泛采用，将带来事务性增长。如果应用程序依赖持久性，那么数据存储可能会成为瓶颈。&lt;/p&gt;
+&lt;p&gt;有两种策略可以扩展任何应用程序。第一个，也是迄今为止最简单的，是垂直扩展：将应用程序移动到更大的计算机上。垂直缩放对数据的效果相当好，但有几个限制。最明显的限制是超出了最大系统的容量。垂直扩展也很昂贵，因为增加事务处理能力通常需要购买下一个更大的系统。垂直扩展通常会造成供应商锁定，进一步增加成本。&lt;/p&gt;
+&lt;p&gt;水平缩放提供了更大的灵活性，但也相当复杂。水平数据缩放可以沿两个方向执行。功能扩展涉及按功能对数据进行分组，并将功能组分布在数据库中。将功能区域内的数据跨多个数据库拆分，或进行切分，即第二种策略。下图解释了水平数据缩放策略。&lt;/p&gt;</summary>
     
     
     
@@ -174,7 +166,7 @@
     <link href="http://fengxiu.club/archives/undefined.html"/>
     <id>http://fengxiu.club/archives/undefined.html</id>
     <published>2022-03-10T14:39:08.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;p&gt;本篇文章记录对@Import注解学习的整个过程。首先文章会介绍@Import注解的使用，接着分析下spring是如何处理@Import注解，最后通过@EnableAsync来举例说明该类型注解实现的原理。&lt;/p&gt;
@@ -214,7 +206,7 @@
     <link href="http://fengxiu.club/archives/22104.html"/>
     <id>http://fengxiu.club/archives/22104.html</id>
     <published>2021-11-11T06:46:00.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring类型转换整理&quot;&gt;&lt;a href=&quot;#Spring类型转换整理&quot; class=&quot;headerlink&quot; title=&quot;Spring类型转换整理&quot;&gt;&lt;/a&gt;Spring类型转换整理&lt;/h1&gt;&lt;!-- 
@@ -256,7 +248,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f7de8aa8.html"/>
     <id>http://fengxiu.club/archives/f7de8aa8.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.583Z</updated>
+    <updated>2022-04-01T11:06:22.140Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;外观模式&quot;&gt;&lt;a href=&quot;#外观模式&quot; class=&quot;headerlink&quot; title=&quot;外观模式&quot;&gt;&lt;/a&gt;外观模式&lt;/h1&gt;&lt;p&gt;外观模式是一种结构型设计模式， 能为程序库、 框架或其他复杂类提供一个简单的接口。&lt;/p&gt;
@@ -275,7 +267,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f5c535ea.html"/>
     <id>http://fengxiu.club/archives/f5c535ea.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.583Z</updated>
+    <updated>2022-04-01T11:06:22.140Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;适配器模式&quot;&gt;&lt;a href=&quot;#适配器模式&quot; class=&quot;headerlink&quot; title=&quot;适配器模式&quot;&gt;&lt;/a&gt;适配器模式&lt;/h1&gt;&lt;p&gt;适配器模式是一种结构型设计模式， 它能使接口不兼容的对象能够相互合作。&lt;/p&gt;
@@ -295,7 +287,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/b4c41cf9.html"/>
     <id>http://fengxiu.club/archives/b4c41cf9.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;linux-查看文件命令&quot;&gt;&lt;a href=&quot;#linux-查看文件命令&quot; class=&quot;headerlink&quot; title=&quot;linux 查看文件命令&quot;&gt;&lt;/a&gt;linux 查看文件命令&lt;/h1&gt;&lt;p&gt;当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。&lt;/p&gt;
@@ -331,7 +323,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/76d29d45.html"/>
     <id>http://fengxiu.club/archives/76d29d45.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hiberate-Validator使用教程之自定义约束&quot;&gt;&lt;a href=&quot;#Hiberate-Validator使用教程之自定义约束&quot; class=&quot;headerlink&quot; title=&quot;Hiberate Validator使用教程之自定义约束&quot;&gt;&lt;/a&gt;Hiberate Validator使用教程之自定义约束&lt;/h1&gt;&lt;!-- 
@@ -361,7 +353,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/afb2f833.html"/>
     <id>http://fengxiu.club/archives/afb2f833.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven冲突解决流程&quot;&gt;&lt;a href=&quot;#maven冲突解决流程&quot; class=&quot;headerlink&quot; title=&quot;maven冲突解决流程&quot;&gt;&lt;/a&gt;maven冲突解决流程&lt;/h1&gt;&lt;!-- 
@@ -386,7 +378,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d2073860.html"/>
     <id>http://fengxiu.club/archives/d2073860.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven依赖机制简介&quot;&gt;&lt;a href=&quot;#maven依赖机制简介&quot; class=&quot;headerlink&quot; title=&quot;maven依赖机制简介&quot;&gt;&lt;/a&gt;maven依赖机制简介&lt;/h1&gt;&lt;p&gt;本文主要是对maven官方文档&lt;a href=&quot;https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#introduction-to-the-dependency-mechanism&quot;&gt;Introduction to the Dependency Mechanism&lt;/a&gt;翻译与整理。其中加上了自己的一些理解。&lt;/p&gt;
@@ -406,7 +398,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d1a2b8ab.html"/>
     <id>http://fengxiu.club/archives/d1a2b8ab.html</id>
     <published>2020-11-11T06:46:00.000Z</published>
-    <updated>2022-04-01T11:03:04.571Z</updated>
+    <updated>2022-04-01T11:06:22.128Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring注解-Autoired和-Resource区别对比&quot;&gt;&lt;a href=&quot;#Spring注解-Autoired和-Resource区别对比&quot; class=&quot;headerlink&quot; title=&quot;Spring注解@Autoired和@Resource区别对比&quot;&gt;&lt;/a&gt;Spring注解@Autoired和@Resource区别对比&lt;/h1&gt;&lt;!-- 
@@ -436,7 +428,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/236c7534.html"/>
     <id>http://fengxiu.club/archives/236c7534.html</id>
     <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;URL详解&quot;&gt;&lt;a href=&quot;#URL详解&quot; class=&quot;headerlink&quot; title=&quot;URL详解&quot;&gt;&lt;/a&gt;URL详解&lt;/h1&gt;&lt;!-- 
@@ -466,7 +458,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/fc06a9d1.html"/>
     <id>http://fengxiu.club/archives/fc06a9d1.html</id>
     <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hibernate-Validator-学习与使用&quot;&gt;&lt;a href=&quot;#Hibernate-Validator-学习与使用&quot; class=&quot;headerlink&quot; title=&quot;Hibernate Validator 学习与使用&quot;&gt;&lt;/a&gt;Hibernate Validator 学习与使用&lt;/h1&gt;&lt;!-- 
@@ -506,7 +498,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/a61a4fcc.html"/>
     <id>http://fengxiu.club/archives/a61a4fcc.html</id>
     <published>2020-09-13T17:22:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring-Validation教程&quot;&gt;&lt;a href=&quot;#Spring-Validation教程&quot; class=&quot;headerlink&quot; title=&quot;Spring Validation教程&quot;&gt;&lt;/a&gt;Spring Validation教程&lt;/h1&gt;&lt;!-- 
@@ -540,7 +532,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/7e5ec6ca.html"/>
     <id>http://fengxiu.club/archives/7e5ec6ca.html</id>
     <published>2020-09-13T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;如何从Jar包中加载class&quot;&gt;&lt;a href=&quot;#如何从Jar包中加载class&quot; class=&quot;headerlink&quot; title=&quot;如何从Jar包中加载class&quot;&gt;&lt;/a&gt;如何从Jar包中加载class&lt;/h1&gt;&lt;!--  
@@ -567,7 +559,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/bb156b86.html"/>
     <id>http://fengxiu.club/archives/bb156b86.html</id>
     <published>2020-09-13T10:09:53.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;MapStruct使用教程一&quot;&gt;&lt;a href=&quot;#MapStruct使用教程一&quot; class=&quot;headerlink&quot; title=&quot;MapStruct使用教程一&quot;&gt;&lt;/a&gt;MapStruct使用教程一&lt;/h1&gt;&lt;!-- 
@@ -605,7 +597,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/8095452f.html"/>
     <id>http://fengxiu.club/archives/8095452f.html</id>
     <published>2020-09-13T01:08:00.000Z</published>
-    <updated>2022-04-01T11:03:04.575Z</updated>
+    <updated>2022-04-01T11:06:22.132Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;MapStruct使用教程二&quot;&gt;&lt;a href=&quot;#MapStruct使用教程二&quot; class=&quot;headerlink&quot; title=&quot;MapStruct使用教程二&quot;&gt;&lt;/a&gt;MapStruct使用教程二&lt;/h1&gt;&lt;!--  
