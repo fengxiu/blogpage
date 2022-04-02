@@ -298,6 +298,8 @@
       
         <p>在一些业务场景中，对于数据的强一致性并不是严格要求。比如用户购买商品时增加用户的积分，对于用户来说，重要的是下单成功，至于增加积分相对不是非常重要，在一段时间内保证用户的积分增加成功即可。对于这类场景，可以使用最终一致性的方案，带来的好处是可以增加应用的可用性以及qps。</p>
 <p>本文介绍实现最终一致性的俩种方案，本地事务表和事务消息，俩种方案的核心思想都是将一个大事务拆分长一系列的小事务，通过重试机制保证一致性。</p>
+<span id="more"></span>
+
 <h2 id="本地事务表"><a href="#本地事务表" class="headerlink" title="本地事务表"></a>本地事务表</h2><p>核心思想来自于<a target="_blank" rel="noopener" href="https://fengxiu.tech/archives/6735.html">本地事务表 (An Acid Alternative)</a>，具体流程如下图</p>
 <p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220402140817.png" alt="本地事务表"></p>
 <ol>
