@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">103</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">198</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">199</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -300,6 +300,147 @@
             </div>
           <!--/noindex-->
         
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/61416.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/61416.html" class="post-title-link" itemprop="url">分布式事务之本地事务表和事务消息</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-31 16:12:28" itemprop="dateCreated datePublished" datetime="2022-03-31T16:12:28+00:00">2022-03-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/61416.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/61416.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/61416.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/61416.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在一些业务场景中，对于数据的强一致性并不是严格要求。比如用户购买商品时增加用户的积分，对于用户来说，重要的是下单成功，至于增加积分相对不是非常重要，在一段时间内保证用户的积分增加成功即可。对于这类场景，可以使用最终一致性的方案，带来的好处是可以增加应用的可用性以及qps。</p>
+<p>本文介绍实现最终一致性的俩种方案，本地事务表和事务消息，俩种方案的核心思想都是将一个大事务拆分长一系列的小事务，通过重试机制保证一致性。</p>
+<h2 id="本地事务表"><a href="#本地事务表" class="headerlink" title="本地事务表"></a>本地事务表</h2><p>核心思想来自于<a target="_blank" rel="noopener" href="https://fengxiu.tech/archives/6735.html">本地事务表 (An Acid Alternative)</a>，具体流程如下图</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220402140817.png" alt="本地事务表"></p>
+<ol>
+<li>利用本地事务能力，将业务操作和存储消息放在一个事务中，保证业务操作成功的同时消息也被存储。</li>
+<li>发送消息，如果发送成功则更新本地数据库中的消息是已发送状态。</li>
+<li>定时任务重新发送为发送成功的消息，保证消息一定能够发送成功。</li>
+<li>消息服务器转发消息到下游，同时利用消息服务器的本地存储以及重试机制，保证消息能够被下游消费。</li>
+<li>下游服务监听并消费消息，为解决消息的重复投递，下游服务需要具备幂等的能力。</li>
+</ol>
+<p>解释下，上面为什么没有把发送消息和业务操作放在同一个事务中。假设放在一个事务中，如果发送消息失败，事务进行回滚，这种情况没有问题。但是如果是发送消息超时导致的失败，同时消息又发送出去，回滚事务，会出现不一致的情况。因此可以得到的是发送消息和业务操作放在一个事务中不合适。而通过定时任务监听未发送成功的消息，补偿进行重新发送，可以弥补消息未发送成功的情况。</p>
+<p>通过上面的介绍可以看出，本地事务表适用于可异步执行的业务，且后续操作无需回滚的业务。</p>
+<h2 id="事务消息"><a href="#事务消息" class="headerlink" title="事务消息"></a>事务消息</h2><p>基于本地消息的最终一致性方案通过引入本地消息表和轮询与重试机制的形式保障最终一致性，但是对业务侵入很大，因为每个上游业务都需要新增一张消息表，针对这个问题，产生了独立消息服务的最终一致性方案。这种方案需要消息服务器具备事务消息的能力。下图是RocketMQ事务消息的基本流程</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220402144118.png" alt="事务消息流程"></p>
+<ol>
+<li>事务发起方首先发送半事务消息(half 消息)到MQ。</li>
+<li>在发送半事务消息成功后执行本地事务。</li>
+<li>根据本地事务执行结果返回commit或者是rollback。</li>
+<li>如果消息是rollback，MQ将删除半事务消息不进行下发，如果是commit消息，MQ 将会把这个消息发送给 consumer 端。</li>
+<li>如果执行本地事务过程中，执行端挂掉，或者超时，MQ将会不停的询问其同组的其它producer来获取状态。</li>
+<li>Consumer端的消费成功机制有MQ保证。</li>
+</ol>
+<p>具体的实现方案可以参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904099993878536">基于RocketMQ分布式事务 - 完整示例</a> 和 <a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/29548.htm?spm=a2c4g.11186623.0.0.218c7060urBnHH#concept-2047089">收发事务消息</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本地事务表和事务消息俩种方案的核心思想基本一致，都是利用消息的重试机制，来达到最终一致性。只是如何确保本地事务执行成功后，发送消息的方式不同。</p>
+<p>上面一直说的是下游业务方能够执行成功的情形，对于执行不成功的情况，可以通过发送通知到对应的人员，进行手动处理，相对来说这种情况出现的几率比较小，如果大量出现，则很大情况是业务逻辑出了问题，需要检查下业务代码。对于Rocketmq，如果达到最大重试次数都没有消费成功，则会把消息放置到死信队列，具体可以参考<a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/87277.html">死信队列</a>，可以监控死信队列来发现异常情形。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hosaos/article/details/108644527">最终一致性之本地消息表、消息事务</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/95608046">分布式事务系列一：BASE，一种ACID的替代方案（eBay分布式事务解决方案）</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040321750">分布式事务最经典的七种解决方案</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.infoq.cn/article/2018/08/rocketmq-4.3-release">RocketMQ 4.3 正式发布，支持分布式事务</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903896851169287">调研 | 5种分布式事务解决方案优缺点对比</a></li>
+</ol>
+
       
     </div>
 
@@ -848,7 +989,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -992,7 +1133,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1142,7 +1283,7 @@ https://juejin.im/post/6844903940484513806
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1267,7 +1408,7 @@ https://juejin.im/post/6844903940484513806
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1358,148 +1499,6 @@ https://juejin.im/post/6844903940484513806
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/b4c41cf9.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/b4c41cf9.html" class="post-title-link" itemprop="url">inux 查看文件命令</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-28 10:09:53" itemprop="dateCreated datePublished" datetime="2021-07-28T10:09:53+00:00">2021-07-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/b4c41cf9.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/b4c41cf9.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/b4c41cf9.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/b4c41cf9.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="linux-查看文件命令"><a href="#linux-查看文件命令" class="headerlink" title="linux 查看文件命令"></a>linux 查看文件命令</h1><p>当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。</p>
-<ol>
-<li>tail</li>
-<li>cat</li>
-<li>more</li>
-</ol>
-<h2 id="tail命令"><a href="#tail命令" class="headerlink" title="tail命令"></a>tail命令</h2><p>ltail命令用途是依照要求将指定的文件的最后部分输出到标准设备，通常是终端，通俗讲来，就是把某个文件的最后几行显示到终端上，假设该文件有更新，tail会自己主动刷新，确保你看到最新的文件内容。</p>
-<h3 id="tail命令语法"><a href="#tail命令语法" class="headerlink" title="tail命令语法"></a>tail命令语法</h3><p>tail [ -f ] [ -c Number | -n Number | -m Number | -b Number | -k Number ]  [-r]  [ File ]</p>
-<p>参数解释：</p>
-<ol>
-<li>-f 该参数用于监视File文件动态增长。</li>
-<li>-c Number 从 Number 字节位置读取指定文件</li>
-<li>-n Number 从 Number 行位置读取指定文件。</li>
-<li>-m Number 从 Number 多字节字符位置读取指定文件，比方你的文件假设包括中文字，假设指定-c参数，可能导致截断，但使用-m则会避免该问题。</li>
-<li>-b Number 从 Number 表示的512字节块位置读取指定文件。</li>
-<li>-k Number 从 Number 表示的1KB块位置读取指定文件。</li>
-<li>-r 这个会似的按照现实内容相反的顺序现实，具体见下面例子 </li>
-<li>File 指定操作的目标文件名称</li>
-</ol>
-<p>上述命令中，都涉及到number，假设不指定，默认显示10行。Number前面可使用正负号，表示该偏移从顶部还是从尾部开始计算。这个具体看下面例子。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/b4c41cf9.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1571,7 +1570,7 @@ https://juejin.im/post/6844903940484513806
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">198</span>
+          <span class="site-state-item-count">199</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1584,7 +1583,7 @@ https://juejin.im/post/6844903940484513806
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1627,7 +1626,7 @@ https://juejin.im/post/6844903940484513806
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:46</span>
+    <span title="站点阅读时长">20:47</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

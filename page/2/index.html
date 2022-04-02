@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">103</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">198</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">199</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,148 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/b4c41cf9.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/b4c41cf9.html" class="post-title-link" itemprop="url">inux 查看文件命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-28 10:09:53" itemprop="dateCreated datePublished" datetime="2021-07-28T10:09:53+00:00">2021-07-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/b4c41cf9.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/b4c41cf9.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/b4c41cf9.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/b4c41cf9.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="linux-查看文件命令"><a href="#linux-查看文件命令" class="headerlink" title="linux 查看文件命令"></a>linux 查看文件命令</h1><p>当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。</p>
+<ol>
+<li>tail</li>
+<li>cat</li>
+<li>more</li>
+</ol>
+<h2 id="tail命令"><a href="#tail命令" class="headerlink" title="tail命令"></a>tail命令</h2><p>ltail命令用途是依照要求将指定的文件的最后部分输出到标准设备，通常是终端，通俗讲来，就是把某个文件的最后几行显示到终端上，假设该文件有更新，tail会自己主动刷新，确保你看到最新的文件内容。</p>
+<h3 id="tail命令语法"><a href="#tail命令语法" class="headerlink" title="tail命令语法"></a>tail命令语法</h3><p>tail [ -f ] [ -c Number | -n Number | -m Number | -b Number | -k Number ]  [-r]  [ File ]</p>
+<p>参数解释：</p>
+<ol>
+<li>-f 该参数用于监视File文件动态增长。</li>
+<li>-c Number 从 Number 字节位置读取指定文件</li>
+<li>-n Number 从 Number 行位置读取指定文件。</li>
+<li>-m Number 从 Number 多字节字符位置读取指定文件，比方你的文件假设包括中文字，假设指定-c参数，可能导致截断，但使用-m则会避免该问题。</li>
+<li>-b Number 从 Number 表示的512字节块位置读取指定文件。</li>
+<li>-k Number 从 Number 表示的1KB块位置读取指定文件。</li>
+<li>-r 这个会似的按照现实内容相反的顺序现实，具体见下面例子 </li>
+<li>File 指定操作的目标文件名称</li>
+</ol>
+<p>上述命令中，都涉及到number，假设不指定，默认显示10行。Number前面可使用正负号，表示该偏移从顶部还是从尾部开始计算。这个具体看下面例子。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/b4c41cf9.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/76d29d45.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +369,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -365,7 +507,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -498,7 +640,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -626,7 +768,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -766,7 +908,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -904,7 +1046,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1052,7 +1194,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1194,7 +1336,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1329,7 +1471,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
+                <time title="修改时间：2022-04-02 07:03:01" itemprop="dateModified" datetime="2022-04-02T07:03:01+00:00">2022-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1440,140 +1582,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/8095452f.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/8095452f.html" class="post-title-link" itemprop="url">MapStruct使用教程二</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-13 01:08:00" itemprop="dateCreated datePublished" datetime="2020-09-13T01:08:00+00:00">2020-09-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-01 11:06:22" itemprop="dateModified" datetime="2022-04-01T11:06:22+00:00">2022-04-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">教程</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/8095452f.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/8095452f.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/8095452f.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/8095452f.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>912</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MapStruct使用教程二"><a href="#MapStruct使用教程二" class="headerlink" title="MapStruct使用教程二"></a>MapStruct使用教程二</h1><!--  
-1. 数据类型转换
-2. 转换集合类型
-3. 复用配置
- -->
-
-<p> 上一篇文章已经见过定义mapper和检索mapper等内容，这一节继续探索MapStruct的使用，主要有以下三个部分，数据类型转换，重复使用Mapping配置，高级技巧内容。</p>
-<h2 id="数据类型转换"><a href="#数据类型转换" class="headerlink" title="数据类型转换"></a>数据类型转换</h2><p> source和target对象在进行属性映射时，并不一定总是类型相同的，比如int类型映射成Long类型。或者不通的类型之间映射。下面将介绍MapStruct是如何处理数据类型转换的。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/8095452f.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1645,7 +1653,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">198</span>
+          <span class="site-state-item-count">199</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1658,7 +1666,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1701,7 +1709,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:46</span>
+    <span title="站点阅读时长">20:47</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
