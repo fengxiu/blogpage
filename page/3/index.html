@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">103</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">105</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">199</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">200</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,152 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/bb156b86.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/bb156b86.html" class="post-title-link" itemprop="url">MapStruct使用教程一</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-13 10:09:53" itemprop="dateCreated datePublished" datetime="2020-09-13T10:09:53+00:00">2020-09-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">教程</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/bb156b86.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/bb156b86.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/bb156b86.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/bb156b86.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="MapStruct使用教程一"><a href="#MapStruct使用教程一" class="headerlink" title="MapStruct使用教程一"></a>MapStruct使用教程一</h1><!-- 
+    1. 是什么
+    2. 相对于其它框架的优点
+    3. 简单使用
+       1. maven配置
+       2. 简单demo
+       3. 和lombok一起使用
+       4. 定义mapper
+       5. 获取mapper
+ -->
+<p>在日常开发中，我们会定义多种不通的Javabean，比如DTO（Data Transfer Object：数据传输对象），DO（Data Object：数据库映射对象，与数据库一一映射），VO（View Object：显示层对象，通常是 Web 向模板渲染引擎层传输的对象）等等这些对象。在这些对象与对象之间转换通常是调对象的set和get方法进行复制，这种转换通常也是很无聊的操作，因此就需要有一个专门的工具来解决Javabean之间的转换问题，让我们从这种无聊的转换操作中解放出来。</p>
+<p>MapStruct就是这样一个属性映射工具，用于解决上述对象之间转换问题。<a target="_blank" rel="noopener" href="https://mapstruct.org/">MapStruct官网</a>。官网给出的MapStruct定义：MapStruct是一个Java注释处理器，用于生成类型安全的bean映射类。</p>
+<p>我们要做的就是定义一个映射器接口，声明任何必需的映射方法。在编译的过程中，MapStruct会生成此接口的实现。该实现使用纯java方法调用的源对象和目标对象之间的映射。对比手写这些映射方法，MapStruct通过自动生成代码完成繁琐和手写容易出错的代码逻辑从而节省编码时间。遵循配置方法上的约定，MapStruct使用合理的默认值，但在配置或实现特殊行为时不加理会。</p>
+<p>与动态映射框架相比，MapStruct具有以下优点：</p>
+<ol>
+<li>速度快：使用普通的方法代替反射</li>
+<li>编译时类型安全性 : 只能映射彼此的对象和属性，不会将商品实体意外映射到用户DTO等</li>
+<li>在build时期有明确的错误报告，主要有下面俩种<ol>
+<li>映射不完整，目标对象中有些属性没有被映射</li>
+<li>映射不正确，找不到一个合适的映射方法或者类型转换方法
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/bb156b86.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/8095452f.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +373,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -361,7 +507,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -498,7 +644,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -615,7 +761,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -756,7 +902,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -871,7 +1017,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -994,7 +1140,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1117,7 +1263,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1250,7 +1396,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1320,138 +1466,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/8551d0c1.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/837ff6d6.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/837ff6d6.html" class="post-title-link" itemprop="url">译|Java Thread Primitive Deprecation</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-07-28 15:36:15" itemprop="dateCreated datePublished" datetime="2019-07-28T15:36:15+00:00">2019-07-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/thread/" itemprop="url" rel="index"><span itemprop="name">thread</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/837ff6d6.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/837ff6d6.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/837ff6d6.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/837ff6d6.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html">原文</a></p>
-<h2 id="为何废弃-Thread-stop"><a href="#为何废弃-Thread-stop" class="headerlink" title="为何废弃 Thread.stop"></a>为何废弃 Thread.stop</h2><p>因为它本质上是不安全的。stop线程将导致释放其持有的全部monitor（ThreadDeath异常在栈中传播时，monitor被解锁），若在当前线程中，这些monitor保护的对象处于不一致状态，则stop后这种不一致状态对其他线程可见。我们视为这种不一致状态的对象被“损坏”，当线程操作“损坏”对象时，可能发生任意（无法预测）行为，它们可能非常微妙且难以检测，也可能抛出这些异常。与其他非检查异常不同，ThreadDeath悄悄杀死线程，用户无法收到任何警告，用户可能到几个小时，或几天会才能发现问题。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/837ff6d6.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1542,7 +1556,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">199</span>
+          <span class="site-state-item-count">200</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1555,7 +1569,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">103</span>
+        <span class="site-state-item-count">105</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1598,7 +1612,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:47</span>
+    <span title="站点阅读时长">20:49</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

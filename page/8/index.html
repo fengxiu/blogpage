@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">103</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">105</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">199</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">200</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,141 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/3f56c103.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/3f56c103.html" class="post-title-link" itemprop="url">深入分析Java IO 的工作机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-23 05:22:00" itemprop="dateCreated datePublished" datetime="2019-03-23T05:22:00+00:00">2019-03-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/IO/" itemprop="url" rel="index"><span itemprop="name">IO</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/3f56c103.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/3f56c103.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/3f56c103.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/3f56c103.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="IO类库的基本架构"><a href="#IO类库的基本架构" class="headerlink" title="IO类库的基本架构"></a>IO类库的基本架构</h2><p>I&#x2F;O 问题是任何编程语言都无法回避的问题，可以说 I&#x2F;O 问题是整个人机交互的核心问题，因为 I&#x2F;O 是机器获取和交换信息的主要渠道。在当今这个数据大爆炸时代，I&#x2F;O 问题尤其突出，很容易成为一个性能瓶颈。正因如此，所以 Java 在 I&#x2F;O 上也一直在做持续的优化，如从 1.4 开始引入了 NIO，提升了 I&#x2F;O 的性能。关于 NIO 我们将在后面详细介绍。</p>
+<p>Java 的 I&#x2F;O 操作类在包 java.io 下，大概有将近 80 个类，但是这些类大概可以分成四组，分别是：</p>
+<ol>
+<li>基于字节操作的 I&#x2F;O 接口：InputStream 和 OutputStream</li>
+<li>基于字符操作的 I&#x2F;O 接口：Writer 和 Reader</li>
+<li>基于磁盘操作的 I&#x2F;O 接口：File</li>
+<li>基于网络操作的 I&#x2F;O 接口：Socket</li>
+</ol>
+<p>前两组主要是根据传输数据的数据格式，后两组主要是根据传输数据的方式，虽然 Socket 类并不在 java.io 包下，但是仍然把它们划分在一起，因为 I&#x2F;O 的核心问题要么是数据格式影响 I&#x2F;O 操作，要么是传输方式影响 I&#x2F;O 操作，也就是将什么样的数据写到什么地方的问题，I&#x2F;O 只是人与机器或者机器与机器交互的手段，除了在它们能够完成这个交互功能外，我们关注的就是如何提高它的运行效率了，而数据格式和传输方式是影响效率最关键的因素了。后面的分析也是基于这两个因素来展开的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/3f56c103.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/aeafbee0.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +362,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -364,7 +499,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -631,7 +766,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -758,7 +893,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -896,7 +1031,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1028,7 +1163,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1263,7 +1398,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1442,7 +1577,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1575,7 +1710,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
+                <time title="修改时间：2022-04-07 10:00:30" itemprop="dateModified" datetime="2022-04-07T10:00:30+00:00">2022-04-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1675,243 +1810,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/18178dca.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/18178dca.html" class="post-title-link" itemprop="url">java线程系列 JUC锁 07 ReentrantReadWriteLock</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-19 03:46:00" itemprop="dateCreated datePublished" datetime="2019-03-19T03:46:00+00:00">2019-03-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-02 08:59:53" itemprop="dateModified" datetime="2022-04-02T08:59:53+00:00">2022-04-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/lock/" itemprop="url" rel="index"><span itemprop="name">lock</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/18178dca.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/18178dca.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/18178dca.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/18178dca.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>14k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="ReentrantReadWriteLock-简介"><a href="#ReentrantReadWriteLock-简介" class="headerlink" title="ReentrantReadWriteLock 简介"></a>ReentrantReadWriteLock 简介</h2><p>在前面我们已经分析过JUC中的独占锁：ReentrantLock。本篇文章将对JUC的读写锁ReentrantReadWriteLock进行介绍。</p>
-<p>类如如下：</p>
-<p><img src="/images/pasted-300.png" alt="upload successful"></p>
-<p>从上图可以看出ReentrantReadWriteLock实现了ReadWriteLock接口，而这个接口从名字就可以看出是读写锁。它维护了一对相关连的锁：读锁和写锁。作用如下</p>
-<ul>
-<li>读锁：用于只读操作，不会修改共享数据。是共享锁，能够同时被多个线程锁获取。</li>
-<li>写锁：用于写入操作，是独占锁，只能被一个线程锁获取。</li>
-</ul>
-<p>而这个接口提供了俩个抽象函数，获取读锁的readLock()函数和获取写锁的writeLock()函数。</p>
-<p>ReentrantReadWriteLock中包含：Sync对象，读锁ReadLock和写锁WriteLock。</p>
-<p>读锁ReadLock和写锁WriteLock都实现了Lock接口。读锁ReadLock和写锁WriteLock中也都分别包含了相同的Sync对象，里面所有的功能实现也都是靠这个对象。它们的Sync对象和ReentrantReadWriteLock的Sync对象是一样，就是通过sync，读锁和写锁实现了对同一个对象的访问。</p>
-<p>和ReentrantLock一样，Sync也是一个继承于AQS的抽象类。Sync也包括公平锁FairSync和非公平锁NonfairSync。在创建读写锁时可以选择其中俩个其中一个，默认是NonfairSync。</p>
-<!-- more  -->
-
-<h3 id="公平读写锁源码分析"><a href="#公平读写锁源码分析" class="headerlink" title="公平读写锁源码分析"></a>公平读写锁源码分析</h3><p>这里我们先对公平锁方式实现的读写锁进行源码分析，首先把后面要用到的属性在这里写出来，方便后买源码的理解：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 内部使用的读锁</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantReadWriteLock.ReadLock readerLock;</span><br><span class="line"><span class="comment">// 内部使用的写锁</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantReadWriteLock.WriteLock writerLock;</span><br><span class="line"><span class="comment">// 读锁和写锁共同使用的锁类型，可以是公平锁和非公平锁</span></span><br><span class="line"><span class="keyword">final</span> Sync sync;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>这里先看看构造函数和如何获取读锁和写锁</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">ReentrantReadWriteLock</span><span class="params">(<span class="type">boolean</span> fair)</span> &#123;</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> <span class="title class_">FairSync</span>() : <span class="keyword">new</span> <span class="title class_">NonfairSync</span>();</span><br><span class="line">    readerLock = <span class="keyword">new</span> <span class="title class_">ReadLock</span>(<span class="built_in">this</span>);</span><br><span class="line">    writerLock = <span class="keyword">new</span> <span class="title class_">WriteLock</span>(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ReentrantReadWriteLock.WriteLock <span class="title function_">writeLock</span><span class="params">()</span> &#123; <span class="keyword">return</span> writerLock; &#125;</span><br><span class="line"><span class="keyword">public</span> ReentrantReadWriteLock.ReadLock  <span class="title function_">readLock</span><span class="params">()</span>  &#123; <span class="keyword">return</span> readerLock; &#125;</span><br></pre></td></tr></table></figure>
-
-<p>从上面可以看出，在创建ReentrantReadWriteLock对象时就会根据是否选择公平锁来创建一个sync锁对象。然后分别创建响应的读锁和写锁。后面获取和使用的读写锁都是在构造函数中创建出来的。</p>
-<p>下面开始首先对读锁的获取和释放进行分析。</p>
-<h3 id="读锁的获取（公平锁篇）"><a href="#读锁的获取（公平锁篇）" class="headerlink" title="读锁的获取（公平锁篇）"></a>读锁的获取（公平锁篇）</h3><p>读锁也就是共享锁，获取锁的源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ReadLock 类中</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 获取共享锁</span></span><br><span class="line">    sync.acquireShared(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//AQS 类中</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">acquireShared</span><span class="params">(<span class="type">int</span> arg)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>从上面可以看出，这里调用的是AQS类中的acquireShared来获取锁。参数和ReentrantLock一样，表示获取锁的数量，1表示当前获取一把共享锁。锁的状态也会加1.</p>
-<p>acquireShared()首先会通过tryAcquireShared()来尝试获取锁。尝试成功的话，直接返回。尝试失败的话，则通过doAcquireShared()来获取锁。doAcquireShared()会获取到锁才返回。</p>
-<h4 id="tryAcquireShared"><a href="#tryAcquireShared" class="headerlink" title="tryAcquireShared"></a>tryAcquireShared</h4><p>尝试获取共享锁，此函数定义在Sync类中，源码如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">tryAcquireShared</span><span class="params">(<span class="type">int</span> unused)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">Thread</span> <span class="variable">current</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line">    <span class="comment">// 获取锁的状态</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> getState();</span><br><span class="line">    <span class="comment">// 如果锁被独占锁获取并且获取独占锁的线程不是当前线程，</span></span><br><span class="line">    <span class="comment">// 直接返回-1 达标获取锁失败</span></span><br><span class="line">    <span class="keyword">if</span> (exclusiveCount(c) != <span class="number">0</span> &amp;&amp;</span><br><span class="line">        getExclusiveOwnerThread() != current)</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 获取读锁的共享计数</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">r</span> <span class="operator">=</span> sharedCount(c);</span><br><span class="line">    <span class="comment">// 判断不需要阻塞，并且已经获取读锁的数量小于MAX_COUNT</span></span><br><span class="line">    <span class="comment">// 则通过CAS函数更新读锁的状态，将读锁的共享计数加1</span></span><br><span class="line">    <span class="keyword">if</span> (!readerShouldBlock() &amp;&amp;</span><br><span class="line">        r &lt; MAX_COUNT &amp;&amp;</span><br><span class="line">        compareAndSetState(c, c + SHARED_UNIT)) &#123;</span><br><span class="line">        <span class="comment">// 第一次获取读锁</span></span><br><span class="line">        <span class="keyword">if</span> (r == <span class="number">0</span>) &#123;</span><br><span class="line">            firstReader = current;</span><br><span class="line">            firstReaderHoldCount = <span class="number">1</span>;</span><br><span class="line">          </span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (firstReader == current) &#123;</span><br><span class="line">              <span class="comment">// 如果当前获取锁的线程是第一个获取读锁的线程</span></span><br><span class="line">            firstReaderHoldCount++;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// HoldCounter是用来统计该线程获取“读取锁”的次数。</span></span><br><span class="line">            <span class="type">HoldCounter</span> <span class="variable">rh</span> <span class="operator">=</span> cachedHoldCounter;</span><br><span class="line">            <span class="keyword">if</span> (rh == <span class="literal">null</span> || rh.tid != getThreadId(current))</span><br><span class="line">                cachedHoldCounter = rh = readHolds.get();</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (rh.count == <span class="number">0</span>)</span><br><span class="line">                readHolds.set(rh);</span><br><span class="line">             <span class="comment">// 将该线程获取“读取锁”的次数+1。</span></span><br><span class="line">            rh.count++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果获取读锁失败，则通过下面函数来进行获取读锁</span></span><br><span class="line">    <span class="keyword">return</span> fullTryAcquireShared(current);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面流程比较清晰，但是有很多地点你可能看不明白，先跳过，看完后面所有的分析，你就会明白。先总结上面的流程。</p>
-<ol>
-<li>判断当前锁是否是独占锁，如果是并且独占锁的线程和当前获取锁的线程不相同，则直接返回-1，获取读锁失败。</li>
-<li>如果当前线程不应该被阻塞，并且已获取读锁的数量小于最大值，则尝试使用CAS更改读锁的状态值。如果操作成功，进行下一步，操作失败进入最后一步。</li>
-<li>这一步主要设置每一个线程获取读锁的数量，主要分为三类来讨论：<ol>
-<li>如果是第一个线程来获取读锁，则设置firstReader为当前线程和当前线程拥有的读锁数量为1.</li>
-<li>如果不是，则判断当前线程和firstReader线程是否一样，如果一样，则当前线程获取读锁的数量加1</li>
-<li>以上都不是，则通过HoldCounter来对当前线程获取读锁的数量加1，而HoldCounter是一个ThreadLocal对象。保证每个线程都有一个不一样的HoldCounter变量。下面会详细解释</li>
-</ol>
-</li>
-<li>如果上面没有成功获取到读锁，但也没有返回。则通过fullTryAcquireShared来获取锁</li>
-</ol>
-<p>下面对上面每一步使用到的函数进行详细的解释。</p>
-<h4 id="计算读锁和写锁已被获取的数量"><a href="#计算读锁和写锁已被获取的数量" class="headerlink" title="计算读锁和写锁已被获取的数量"></a>计算读锁和写锁已被获取的数量</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">SHARED_SHIFT</span>   <span class="operator">=</span> <span class="number">16</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">SHARED_UNIT</span>    <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; SHARED_SHIFT);</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_COUNT</span>      <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; SHARED_SHIFT) - <span class="number">1</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">EXCLUSIVE_MASK</span> <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; SHARED_SHIFT) - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回共享锁的数量</span></span><br><span class="line"><span class="keyword">static</span> <span class="type">int</span> <span class="title function_">sharedCount</span><span class="params">(<span class="type">int</span> c)</span>    &#123; <span class="keyword">return</span> c &gt;&gt;&gt; SHARED_SHIFT; &#125;</span><br><span class="line"><span class="comment">// 返回独占说的数量</span></span><br><span class="line"><span class="keyword">static</span> <span class="type">int</span> <span class="title function_">exclusiveCount</span><span class="params">(<span class="type">int</span> c)</span> &#123; <span class="keyword">return</span> c &amp; EXCLUSIVE_MASK; &#125;</span><br></pre></td></tr></table></figure>
-
-<p>从上面可以看出，读锁使用state的高16位来表示数量，而写锁则使用低16位来表示数量。然后通过后面的俩个函数来分别计算对应的数量。</p>
-<h4 id="readerShouldBlock"><a href="#readerShouldBlock" class="headerlink" title="readerShouldBlock"></a>readerShouldBlock</h4><p>判断当前获取读锁的线程是否应该阻塞，源码在FairSync中，源码如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">readerShouldBlock</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> hasQueuedPredecessors();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>代码比较简单，就是判断当前线程是否是队列中的第一个节点，如果是，则不需要阻塞，不是则需要阻塞。具体的和前面ReentrantLock中的一样，这里具体分析。</p>
-<h4 id="HoldCounter"><a href="#HoldCounter" class="headerlink" title="HoldCounter"></a>HoldCounter</h4><p>计算每个线程获取读锁的数量，这里HoldCounter是ThreaLocal类型的变量，如果不了解这个对象，可以看这篇文章<a target="_blank" rel="noopener" href="http://fengxiutianya.top/posts/400f00a6/">深入分析ThreadLocal</a>，在分析这个之前，首先看一些定义在Sync类中的属性：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计数器对象，用于记录每个线程保持读锁的数量</span></span><br><span class="line"><span class="comment">// 这个对象被记录在ThreadLocal中，缓存在cachedHoldCounter</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">HoldCounter</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">final</span> <span class="type">long</span> <span class="variable">tid</span> <span class="operator">=</span> getThreadId(Thread.currentThread());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定的ThreadLocal对象，设置初始化方法</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalHoldCounter</span></span><br><span class="line">   			 <span class="keyword">extends</span> <span class="title class_">ThreadLocal</span>&lt;HoldCounter&gt; &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> HoldCounter <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">HoldCounter</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 记录当前线程获取读锁的数量，在构造器中初始化，当保持的读锁数量为空的时候删除</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> ThreadLocalHoldCounter readHolds;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用于记录上一个线程成功获取读锁的数量</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> HoldCounter cachedHoldCounter;</span><br><span class="line"><span class="comment">// 下面来个一个是记录第一个获取读锁的线程和获取读锁的数量</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="type">Thread</span> <span class="variable">firstReader</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="type">int</span> firstReaderHoldCount;</span><br></pre></td></tr></table></figure>
-
-<p>下面可以解释tryAcquireShared中的如下代码段</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一次获取读锁</span></span><br><span class="line"><span class="keyword">if</span> (r == <span class="number">0</span>) &#123;</span><br><span class="line">    firstReader = current;</span><br><span class="line">    firstReaderHoldCount = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (firstReader == current) &#123;</span><br><span class="line">    <span class="comment">// 如果当前获取锁的线程是第一个获取读锁的线程</span></span><br><span class="line">    firstReaderHoldCount++;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// HoldCounter是用来统计该线程获取“读取锁”的次数。</span></span><br><span class="line">    <span class="type">HoldCounter</span> <span class="variable">rh</span> <span class="operator">=</span> cachedHoldCounter;</span><br><span class="line">    <span class="keyword">if</span> (rh == <span class="literal">null</span> || rh.tid != getThreadId(current))</span><br><span class="line">        cachedHoldCounter = rh = readHolds.get();</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (rh.count == <span class="number">0</span>)</span><br><span class="line">        readHolds.set(rh);</span><br><span class="line">    <span class="comment">// 将该线程获取“读取锁”的次数+1。</span></span><br><span class="line">    rh.count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>首先判断是否是第一个线程获取读锁，如果是，则设置firstReader和firstReaderHoldCount值吗，可以加快后续此线程的获取读锁和记录读锁的数量。</li>
-<li>判断线程是否是firstReader，如果是直接使用firstReaderHoldCount进行累加，可以加快获取的速度。</li>
-<li>前面俩个都不是，则获取cachedHoldCounter，判断这个变量中保存的线程id是否和当前线程对应的id相同，如果是，则判断当前读锁的数量是否为0，如果为0，则调用<code> readHolds.set(rh)</code>初始化这个对象然后在原有的读锁数量上加1。</li>
-<li>不是则通过readHold获取当前线程对应的HoldCounter，并缓存在cachedHoldCounter中，加速下一次的操作，接着读锁数量加1。</li>
-</ol>
-<h4 id="fullTryAcquireShared"><a href="#fullTryAcquireShared" class="headerlink" title="fullTryAcquireShared"></a>fullTryAcquireShared</h4><p>这个是tryAcquireShared的最后一步，也就是前面没有获取到共享锁，才会走到这一步，源码如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">int</span> <span class="title function_">fullTryAcquireShared</span><span class="params">(Thread current)</span> &#123;</span><br><span class="line">    <span class="comment">// 下面这部分代码和tryAcquireShared有一部分是重复的。</span></span><br><span class="line">    <span class="comment">// 但是tryAcquireShared只是先尝试获取，但是如果出现竞争则获取</span></span><br><span class="line">    <span class="comment">// 不到共享锁，即前面那部分加快锁的获取。下面这部分通过</span></span><br><span class="line">    <span class="comment">// 循环尝试，保证如果可以获取读锁，则一定获取到</span></span><br><span class="line">    <span class="type">HoldCounter</span> <span class="variable">rh</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="comment">// 获取锁的状态</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> getState();</span><br><span class="line">        <span class="comment">// 如果是独占锁，并且获取锁的线程不是current线程；则返回-1。</span></span><br><span class="line">        <span class="keyword">if</span> (exclusiveCount(c) != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getExclusiveOwnerThread() != current)</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            </span><br><span class="line">         <span class="comment">// 如果需要阻塞等待。</span></span><br><span class="line">        <span class="comment">// 当需要阻塞等待的线程是第1个获取锁的线程的话，则继续往下执行。</span></span><br><span class="line">        <span class="comment">// 当需要阻塞等待的线程获取锁的次数为0时，则返回-1。</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (readerShouldBlock()) &#123;</span><br><span class="line">           <span class="comment">// 确保不是有一次获取读锁</span></span><br><span class="line">            <span class="keyword">if</span> (firstReader == current) &#123;</span><br><span class="line">                <span class="comment">//忽略</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 获取当前线程获取读锁的数量，如果为0，则调用</span></span><br><span class="line">                <span class="comment">// ThreadLocal.remove删除这个ThreadLocal</span></span><br><span class="line">                <span class="keyword">if</span> (rh == <span class="literal">null</span>) &#123;</span><br><span class="line">                    rh = cachedHoldCounter;</span><br><span class="line">                    <span class="keyword">if</span> (rh == <span class="literal">null</span> || rh.tid != getThreadId(current)) &#123;</span><br><span class="line">                        rh = readHolds.get();</span><br><span class="line">                        <span class="keyword">if</span> (rh.count == <span class="number">0</span>)</span><br><span class="line">                            readHolds.remove();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 如果当前线程获取读锁的计数=0,则返回-1。</span></span><br><span class="line">                <span class="comment">// 表示还没有获取过读锁，不在这里进行获取，</span></span><br><span class="line">                <span class="comment">// 则需要阻塞获取读锁的进程</span></span><br><span class="line">                <span class="keyword">if</span> (rh.count == <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 则获取读取锁的共享统计数；</span></span><br><span class="line">        <span class="comment">// 如果共享统计数超过MAX_COUNT，则抛出异常。</span></span><br><span class="line">        <span class="keyword">if</span> (sharedCount(c) == MAX_COUNT)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Maximum lock count exceeded&quot;</span>);</span><br><span class="line">        <span class="comment">// 将线程的读取锁次数加1</span></span><br><span class="line">        <span class="comment">// 这一步和上面一样，就不具体解释</span></span><br><span class="line">        <span class="comment">// 放在这里主要是因为CAS失败，如果失败，进入下一次循环</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(c, c + SHARED_UNIT)) &#123;       </span><br><span class="line">            <span class="keyword">if</span> (sharedCount(c) == <span class="number">0</span>) &#123;</span><br><span class="line">                firstReader = current;</span><br><span class="line">                firstReaderHoldCount = <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (firstReader == current) &#123;</span><br><span class="line">                firstReaderHoldCount++;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (rh == <span class="literal">null</span>)</span><br><span class="line">                    rh = cachedHoldCounter;</span><br><span class="line">                <span class="keyword">if</span> (rh == <span class="literal">null</span> || rh.tid != getThreadId(current))</span><br><span class="line">                    rh = readHolds.get();</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (rh.count == <span class="number">0</span>)</span><br><span class="line">                    readHolds.set(rh);</span><br><span class="line">                rh.count++;</span><br><span class="line">                cachedHoldCounter = rh; <span class="comment">// cache for release</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>fullTryAcquireShared()会根据是否需要阻塞等待，读取锁的共享计数是否超过限制进行处理。如果不需要阻塞等待，并且锁的共享计数没有超过限制，则通过CAS尝试获取锁，并返回1。</p>
-<p>至此tryAcquireShared已经解析完成，这里做一个总结：tryAcquireShared将代码分成俩个大部分，首先通过尝试获取锁，如果获取成功直接返回。这是为了加快获取锁。如果没有获取成功，说明CAS失败，则进入fullTryAcquireShared函数进行获取，这里会循环知道CAS交换成功。当然我只是说了一个精简的过程。具体的可以看上面。其他异常情况我也没有总结。</p>
-<h4 id="doAcquireShared"><a href="#doAcquireShared" class="headerlink" title="doAcquireShared"></a><strong>doAcquireShared</strong></h4><p>源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doAcquireShared</span><span class="params">(<span class="type">int</span> arg)</span> &#123;</span><br><span class="line">    <span class="comment">// 创建当前线程对应的节点，并将该线程添加到CLH队列中。</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> addWaiter(Node.SHARED);</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">failed</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">interrupted</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="comment">// 获取前继节点</span></span><br><span class="line">            <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">p</span> <span class="operator">=</span> node.predecessor();</span><br><span class="line">            <span class="comment">// 如果当前节点是头结点，尝试获取锁</span></span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">r</span> <span class="operator">=</span> tryAcquireShared(arg);</span><br><span class="line">                <span class="comment">// 获取成功设置节点为可传播状态，</span></span><br><span class="line">                <span class="comment">// 然后释放后继获取读锁的节点</span></span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="literal">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="literal">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果当前线程不是CLH队列的表头，</span></span><br><span class="line">            <span class="comment">// 则通过shouldParkAfterFailedAcquire()判断是否需要等待，</span></span><br><span class="line">            <span class="comment">// 需要的话，则通过parkAndCheckInterrupt()进行阻塞等待。</span></span><br><span class="line">            <span class="comment">// 若阻塞等待过程中，线程被中断过，则设置interrupted为true。</span></span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">// 上面出现异常，则取消当前节点</span></span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>doAcquireShared()的作用是获取共享锁，流程如下</p>
-<ol>
-<li>创建线程对应的CLH队列的节点，然后将该节点添加到CLH队列中。CLH队列是管理获取锁的等待线程的队列。</li>
-<li>获取前继节点，判断当前节点是否是表头，如果当前线程是CLH队列的表头，则尝试获取共享锁；如果获取成功，则释放后继等待获取获取共享锁的线程。然后判断是否中断过，如果产生过中断，则调动中断函数产生一次中断。</li>
-<li>上一步没有成功获取锁，需要通过shouldParkAfterFailedAcquire()判断是否阻塞等待，需要阻塞，则通过parkAndCheckInterrupt()进行阻塞等待。</li>
-</ol>
-<p>doAcquireShared()会通过for循环，不断的进行上面的操作；目的就是获取共享锁。需要注意的是：doAcquireShared()在每一次尝试获取锁时，是通过tryAcquireShared()来执行的！</p>
-<p>其实和前面获取独占锁的流程差不多，只不过这里会有一个释放后继获取共享锁的节点。这一步放到下面讲解共享锁的释放中来说。</p>
-<h3 id="读锁的释放-公平锁"><a href="#读锁的释放-公平锁" class="headerlink" title="读锁的释放(公平锁)"></a>读锁的释放(公平锁)</h3><p>释放锁是调用下面的函数，源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">    sync.releaseShared(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">releaseShared</span><span class="params">(<span class="type">int</span> arg)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (tryReleaseShared(arg)) &#123;</span><br><span class="line">        doReleaseShared();</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的过程比较简单，先通过tryReleaseShared释放共享锁，尝试失败则直接返回；如果释放成功，则通过doReleaseShared()去释放共享锁并唤醒后继节点。</p>
-<h4 id="tryReleaseShared"><a href="#tryReleaseShared" class="headerlink" title="tryReleaseShared"></a>tryReleaseShared</h4><p>tryReleaseShared()定义在ReentrantReadWriteLock中，源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">tryReleaseShared</span><span class="params">(<span class="type">int</span> unused)</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取当前线程，即释放共享锁的线程。</span></span><br><span class="line">    <span class="type">Thread</span> <span class="variable">current</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 如果想要释放锁的线程(current)是第1个获取锁(firstReader)的线程，</span></span><br><span class="line">    <span class="comment">// 并且第1个获取锁的线程获取锁的次数=1，则设置firstReader为null；</span></span><br><span class="line">    <span class="comment">// 否则，将第1个获取锁的线程的获取次数-1。</span></span><br><span class="line">    <span class="keyword">if</span> (firstReader == current) &#123;</span><br><span class="line">        <span class="keyword">if</span> (firstReaderHoldCount == <span class="number">1</span>)</span><br><span class="line">            firstReader = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            firstReaderHoldCount--;</span><br><span class="line">    <span class="comment">// 获取rh对象，并更新当前线程获取锁的信息。</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="type">HoldCounter</span> <span class="variable">rh</span> <span class="operator">=</span> cachedHoldCounter;</span><br><span class="line">        <span class="keyword">if</span> (rh == <span class="literal">null</span> || rh.tid != current.getId())</span><br><span class="line">            rh = readHolds.get();</span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> rh.count;</span><br><span class="line">        <span class="keyword">if</span> (count &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">            readHolds.remove();</span><br><span class="line">            <span class="keyword">if</span> (count &lt;= <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">throw</span> unmatchedUnlockException();</span><br><span class="line">        &#125;</span><br><span class="line">        --rh.count;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="comment">// 获取锁的状态</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> getState();</span><br><span class="line">        <span class="comment">// 将锁的获取次数-1。</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">nextc</span> <span class="operator">=</span> c - SHARED_UNIT;</span><br><span class="line">        <span class="comment">// 通过CAS更新锁的状态。通过判断锁的状态是否为0来判断锁是否可以释放。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(c, nextc))</span><br><span class="line">            <span class="type">return</span> <span class="variable">nextc</span> <span class="operator">=</span>= <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的注释比较清晰，这里就不具体讲流程，下面来看<strong>doReleaseShared</strong></p>
-<h4 id="doReleaseShared"><a href="#doReleaseShared" class="headerlink" title="doReleaseShared"></a><strong>doReleaseShared</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doReleaseShared</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="comment">// 获取CLH队列的头节点</span></span><br><span class="line">        <span class="type">Node</span> <span class="variable">h</span> <span class="operator">=</span> head;</span><br><span class="line">       </span><br><span class="line">        <span class="comment">// 如果头节点不为null，并且头节点不等于tail节点。</span></span><br><span class="line">        <span class="keyword">if</span> (h != <span class="literal">null</span> &amp;&amp; h != tail) &#123;</span><br><span class="line">            <span class="comment">// 获取头节点对应的线程的状态</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">ws</span> <span class="operator">=</span> h.waitStatus;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 如果头节点对应的线程是SIGNAL状态，</span></span><br><span class="line">            <span class="comment">// 则意味着头节点的下一个节点所对应的线程需要被unpark唤醒。</span></span><br><span class="line">            <span class="keyword">if</span> (ws == Node.SIGNAL) &#123;</span><br><span class="line">                <span class="comment">// 设置头节点对应的线程状态为空状态。失败的话，则继续循环。</span></span><br><span class="line">                <span class="keyword">if</span> (!compareAndSetWaitStatus(h, Node.SIGNAL, <span class="number">0</span>))</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                <span class="comment">// 唤醒头节点的下一个节点所对应的线程。</span></span><br><span class="line">                unparkSuccessor(h);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果头节点对应的线程的状态值是0，</span></span><br><span class="line">            <span class="comment">// 则设置头结点的状态为PROPAGATE状态，等待有线程来获取锁才会结束循环。</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (ws == <span class="number">0</span> &amp;&amp;</span><br><span class="line">                     !compareAndSetWaitStatus(h, <span class="number">0</span>, Node.PROPAGATE))</span><br><span class="line">                <span class="keyword">continue</span>;                <span class="comment">// loop on failed CAS</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果头节点没有改变，则继续循环。否则，退出循环。</span></span><br><span class="line">        <span class="keyword">if</span> (h == head)                   <span class="comment">// loop if head changed</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>doReleaseShared()会释放共享锁：流程如下：</p>
-<ol>
-<li>判断队列是否为空，如果为空则继续循环。</li>
-<li>如果不为空，则判断头结点是否为SIGNAL状态吗，如果是，则设置状态为0，然后唤醒后继获取锁的节点可以是独占或者共享锁。如果唤醒成功，头结点会改变，这一在最后一步就会推出这个循环</li>
-<li>如果头结点状态为0，则设置状态为PROPAGATE，然后继续循环。</li>
-<li>如果头结点发生改变，则继续循环。</li>
-</ol>
-<p>主要流程如上，但是为什么要一直循环这是我不明白的地点。</p>
-<h3 id="公平共享锁和非公平共享锁"><a href="#公平共享锁和非公平共享锁" class="headerlink" title="公平共享锁和非公平共享锁"></a><strong>公平共享锁和非公平共享锁</strong></h3><p>和互斥锁ReentrantLock一样，ReadLock也分为公平锁和非公平锁。</p>
-<p>公平锁和非公平锁的区别，体现在判断是否需要阻塞的函数readerShouldBlock()的不同。<br>公平锁的readerShouldBlock()的源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">readerShouldBlock</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> hasQueuedPredecessors();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在公平共享锁中，如果在当前线程的前面有其他线程在等待获取共享锁，则返回true；否则，返回false。<br>非公平锁的readerShouldBlock()的源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">readerShouldBlock</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> apparentlyFirstQueuedIsExclusive();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">apparentlyFirstQueuedIsExclusive</span><span class="params">()</span> &#123;</span><br><span class="line">    Node h, s;</span><br><span class="line">    <span class="keyword">return</span> (h = head) != <span class="literal">null</span> &amp;&amp;</span><br><span class="line">        (s = h.next)  != <span class="literal">null</span> &amp;&amp;</span><br><span class="line">        !s.isShared()         &amp;&amp;</span><br><span class="line">        s.thread != <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在非公平共享锁中，它会无视当前线程的前面是否有其他线程在等待获取共享锁。只要该非公平共享锁对应的线程不为null，则返回true。也就是当前锁的类型是共享锁，并且还没有释放。</p>
-<h3 id="写锁"><a href="#写锁" class="headerlink" title="写锁"></a>写锁</h3><p>写锁的获取和ReentrantLock中独占锁的获取是一样的，这里就不在单独说明。</p>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> JUC.locks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.Getter;</span><br><span class="line"><span class="keyword">import</span> lombok.Setter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReadWriteLock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantReadWriteLock;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**************************************</span></span><br><span class="line"><span class="comment"> *      Author : zhangke</span></span><br><span class="line"><span class="comment"> *      Date   : 2018/4/18 22:13</span></span><br><span class="line"><span class="comment"> *      Desc   : 读写锁</span></span><br><span class="line"><span class="comment"> ***************************************/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ReadWriteLockTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// 创建账户</span></span><br><span class="line">        <span class="type">MyCount</span> <span class="variable">myCount</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyCount</span>(<span class="string">&quot;4238920615242830&quot;</span>, <span class="number">10000</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建用户，并指定账户</span></span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&quot;Tommy&quot;</span>, myCount);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 分别启动3个“读取账户金钱”的线程 和 3个“设置账户金钱”的线程</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">            user.getCash();</span><br><span class="line">            user.setCash((i + <span class="number">1</span>) * <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> String name;            <span class="comment">//用户名</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> MyCount myCount;        <span class="comment">//所要操作的账户</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> ReadWriteLock myLock;   <span class="comment">//执行操作所需的锁对象</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">User</span><span class="params">(String name, MyCount myCount)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.name = name;</span><br><span class="line">            <span class="built_in">this</span>.myCount = myCount;</span><br><span class="line">            <span class="built_in">this</span>.myLock = <span class="keyword">new</span> <span class="title class_">ReentrantReadWriteLock</span>();</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">getCash</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    myLock.readLock().lock();</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() + <span class="string">&quot; getCash start&quot;</span>);</span><br><span class="line">                    myCount.getCash();</span><br><span class="line">                    Thread.sleep(<span class="number">1</span>);</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() + <span class="string">&quot; getCash end&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line"></span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    myLock.readLock().unlock();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;).start();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCash</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> cash)</span> &#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">100</span>);</span><br><span class="line">                    myLock.writeLock().lock();</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() </span><br><span class="line">                                       + <span class="string">&quot; setCash start&quot;</span>);</span><br><span class="line">                    myCount.setCash(cash);</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() </span><br><span class="line">                                       + <span class="string">&quot; setCash end&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line"></span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    myLock.writeLock().unlock();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">MyCount</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Getter</span></span><br><span class="line">        <span class="meta">@Setter</span></span><br><span class="line">        <span class="keyword">private</span> String id; <span class="comment">//账户id</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="type">int</span> cash; <span class="comment">//现金</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">MyCount</span><span class="params">(String id, <span class="type">int</span> cash)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.id = id;</span><br><span class="line">            <span class="built_in">this</span>.cash = cash;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getCash</span><span class="params">()</span> &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; getCash&quot;</span> +</span><br><span class="line">                               <span class="string">&quot; cash= &quot;</span> + cash);</span><br><span class="line">            <span class="keyword">return</span> cash;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCash</span><span class="params">(<span class="type">int</span> cash)</span> &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; setCash&quot;</span> +</span><br><span class="line">                               <span class="string">&quot; cash= &quot;</span> + cash);</span><br><span class="line">            <span class="built_in">this</span>.cash = cash;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>运行结果：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Thread-0 getCash start</span><br><span class="line">Thread-0 getCash cash= 10000</span><br><span class="line">Thread-0 getCash end</span><br><span class="line">Thread-2 getCash start</span><br><span class="line">Thread-2 getCash cash= 10000</span><br><span class="line">Thread-4 getCash start</span><br><span class="line">Thread-4 getCash cash= 10000</span><br><span class="line">Thread-2 getCash end</span><br><span class="line">Thread-4 getCash end</span><br><span class="line">Thread-5 setCash start</span><br><span class="line">Thread-5 setCash cash= 3000</span><br><span class="line">Thread-5 setCash end</span><br><span class="line">Thread-3 setCash start</span><br><span class="line">Thread-3 setCash cash= 2000</span><br><span class="line">Thread-3 setCash end</span><br><span class="line">Thread-1 setCash start</span><br><span class="line">Thread-1 setCash cash= 1000</span><br><span class="line">Thread-1 setCash end</span><br></pre></td></tr></table></figure>
-
-<p>从上面可以观察到读锁是可以共享，也就是读锁的打印的语句不一定是start-end连着的。但是写锁一定是。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3505809.html">Java多线程系列–“JUC锁”08之 共享锁和ReentrantReadWriteLock</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1983,7 +1881,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">199</span>
+          <span class="site-state-item-count">200</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1996,7 +1894,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">103</span>
+        <span class="site-state-item-count">105</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2039,7 +1937,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">20:47</span>
+    <span title="站点阅读时长">20:49</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
