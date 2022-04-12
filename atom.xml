@@ -6,7 +6,7 @@
   <link href="http://fengxiu.club/atom.xml" rel="self"/>
   
   <link href="http://fengxiu.club/"/>
-  <updated>2022-04-07T14:55:45.000Z</updated>
+  <updated>2022-04-11T14:04:42.000Z</updated>
   <id>http://fengxiu.club/</id>
   
   <author>
@@ -15,6 +15,91 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Mysql是如何执行查询</title>
+    <link href="http://fengxiu.club/archives/63372.html"/>
+    <id>http://fengxiu.club/archives/63372.html</id>
+    <published>2022-04-11T14:04:42.000Z</published>
+    <updated>2022-04-11T14:04:42.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;本篇文章会按照以下思路来对mysql查询的原理进行讲解，首先讲解mysql是如何在单表上执行查询，在此基础上，讲解多表查询的原理，也就是join时，mysql是如何执行查询的，最后讲解mysql是如何计算查询的成本。&lt;/p&gt;
+&lt;p&gt;为了方便讲解定义一张表，具体定义如下&lt;/p</summary>
+        
+      
+    
+    
+    
+    <category term="数据库" scheme="http://fengxiu.club/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="mysql" scheme="http://fengxiu.club/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/"/>
+    
+    <category term="读书笔记" scheme="http://fengxiu.club/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="索引" scheme="http://fengxiu.club/tags/%E7%B4%A2%E5%BC%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Innodb索引深入研究</title>
+    <link href="http://fengxiu.club/archives/27224.html"/>
+    <id>http://fengxiu.club/archives/27224.html</id>
+    <published>2022-04-08T11:03:28.000Z</published>
+    <updated>2022-04-08T11:03:28.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;之前对索引这块有所了解，也按照一些索引优化实践对表进行过优化，但都是一知半解，不清楚为什么要这么做。本篇文章会对Innodb索引是怎么存储以及怎么使用的进行深入的研究，从而理解索引优化的原理，最后会对索引的使用进行总结。&lt;/p&gt;
+&lt;h2 id=&quot;索引存储结构&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="数据库" scheme="http://fengxiu.club/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    <category term="mysql" scheme="http://fengxiu.club/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/"/>
+    
+    <category term="读书笔记" scheme="http://fengxiu.club/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="innodb" scheme="http://fengxiu.club/tags/innodb/"/>
+    
+    <category term="索引" scheme="http://fengxiu.club/tags/%E7%B4%A2%E5%BC%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>虚拟IP和路由漂移</title>
+    <link href="http://fengxiu.club/archives/65008.html"/>
+    <id>http://fengxiu.club/archives/65008.html</id>
+    <published>2022-04-07T14:55:45.000Z</published>
+    <updated>2022-04-07T14:55:45.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近在研究网络相关内容，看到虚拟IP相关的内容，之前对这块有一些了解，但都是比较片面的认知，于是花了几天的时间，整理了相关的内容，本篇文章也是对自己整理内容的总结。&lt;/p&gt;
+&lt;h2 id=&quot;什么是虚拟ip&quot;&gt;&lt;a href=&quot;#什么是虚拟ip&quot; class=&quot;headerlink&quot; title=&quot;什么是虚拟ip&quot;&gt;&lt;/a&gt;什么是虚拟ip&lt;/h2&gt;&lt;p&gt; 按照维基百科上面的介绍，虚拟IP（Vrtual IP Address，vip）是一种不与特定计算机或者特定计算机网卡相对应的IP地址。所有发往这个IP地址的数据包最后都会经过真实的网卡到达目的主机的目的进程。主要是用来网络地址转换，网络容错和可移动性。&lt;/p&gt;
+&lt;p&gt;这种定义确实准确的定义了什么是虚拟IP，不过看完之后还是摸不着头脑。下面通过一个例子来介绍VIP。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="网络" scheme="http://fengxiu.club/categories/%E7%BD%91%E7%BB%9C/"/>
+    
+    
+    <category term="虚拟ip" scheme="http://fengxiu.club/tags/%E8%99%9A%E6%8B%9Fip/"/>
+    
+    <category term="高可用" scheme="http://fengxiu.club/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>虚拟IP和路由漂移</title>
@@ -213,7 +298,7 @@
     <link href="http://fengxiu.club/archives/undefined.html"/>
     <id>http://fengxiu.club/archives/undefined.html</id>
     <published>2022-03-10T14:39:08.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
+    <updated>2022-04-12T02:44:20.843Z</updated>
     
     
     <summary type="html">&lt;p&gt;本篇文章记录对@Import注解学习的整个过程。首先文章会介绍@Import注解的使用，接着分析下spring是如何处理@Import注解，最后通过@EnableAsync来举例说明该类型注解实现的原理。&lt;/p&gt;
@@ -253,7 +338,7 @@
     <link href="http://fengxiu.club/archives/22104.html"/>
     <id>http://fengxiu.club/archives/22104.html</id>
     <published>2021-11-11T06:46:00.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
+    <updated>2022-04-12T02:44:20.843Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring类型转换整理&quot;&gt;&lt;a href=&quot;#Spring类型转换整理&quot; class=&quot;headerlink&quot; title=&quot;Spring类型转换整理&quot;&gt;&lt;/a&gt;Spring类型转换整理&lt;/h1&gt;&lt;!-- 
@@ -295,7 +380,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f7de8aa8.html"/>
     <id>http://fengxiu.club/archives/f7de8aa8.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.170Z</updated>
+    <updated>2022-04-12T02:44:20.851Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;外观模式&quot;&gt;&lt;a href=&quot;#外观模式&quot; class=&quot;headerlink&quot; title=&quot;外观模式&quot;&gt;&lt;/a&gt;外观模式&lt;/h1&gt;&lt;p&gt;外观模式是一种结构型设计模式， 能为程序库、 框架或其他复杂类提供一个简单的接口。&lt;/p&gt;
@@ -314,7 +399,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/f5c535ea.html"/>
     <id>http://fengxiu.club/archives/f5c535ea.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.170Z</updated>
+    <updated>2022-04-12T02:44:20.851Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;适配器模式&quot;&gt;&lt;a href=&quot;#适配器模式&quot; class=&quot;headerlink&quot; title=&quot;适配器模式&quot;&gt;&lt;/a&gt;适配器模式&lt;/h1&gt;&lt;p&gt;适配器模式是一种结构型设计模式， 它能使接口不兼容的对象能够相互合作。&lt;/p&gt;
@@ -334,7 +419,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/b4c41cf9.html"/>
     <id>http://fengxiu.club/archives/b4c41cf9.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
+    <updated>2022-04-12T02:44:20.843Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;linux-查看文件命令&quot;&gt;&lt;a href=&quot;#linux-查看文件命令&quot; class=&quot;headerlink&quot; title=&quot;linux 查看文件命令&quot;&gt;&lt;/a&gt;linux 查看文件命令&lt;/h1&gt;&lt;p&gt;当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。&lt;/p&gt;
@@ -370,7 +455,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/76d29d45.html"/>
     <id>http://fengxiu.club/archives/76d29d45.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
+    <updated>2022-04-12T02:44:20.843Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Hiberate-Validator使用教程之自定义约束&quot;&gt;&lt;a href=&quot;#Hiberate-Validator使用教程之自定义约束&quot; class=&quot;headerlink&quot; title=&quot;Hiberate Validator使用教程之自定义约束&quot;&gt;&lt;/a&gt;Hiberate Validator使用教程之自定义约束&lt;/h1&gt;&lt;!-- 
@@ -400,7 +485,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/afb2f833.html"/>
     <id>http://fengxiu.club/archives/afb2f833.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
+    <updated>2022-04-12T02:44:20.843Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven冲突解决流程&quot;&gt;&lt;a href=&quot;#maven冲突解决流程&quot; class=&quot;headerlink&quot; title=&quot;maven冲突解决流程&quot;&gt;&lt;/a&gt;maven冲突解决流程&lt;/h1&gt;&lt;!-- 
@@ -425,7 +510,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d2073860.html"/>
     <id>http://fengxiu.club/archives/d2073860.html</id>
     <published>2021-07-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
+    <updated>2022-04-12T02:44:20.843Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;maven依赖机制简介&quot;&gt;&lt;a href=&quot;#maven依赖机制简介&quot; class=&quot;headerlink&quot; title=&quot;maven依赖机制简介&quot;&gt;&lt;/a&gt;maven依赖机制简介&lt;/h1&gt;&lt;p&gt;本文主要是对maven官方文档&lt;a href=&quot;https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#introduction-to-the-dependency-mechanism&quot;&gt;Introduction to the Dependency Mechanism&lt;/a&gt;翻译与整理。其中加上了自己的一些理解。&lt;/p&gt;
@@ -445,7 +530,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/d1a2b8ab.html"/>
     <id>http://fengxiu.club/archives/d1a2b8ab.html</id>
     <published>2020-11-11T06:46:00.000Z</published>
-    <updated>2022-04-07T10:00:30.162Z</updated>
+    <updated>2022-04-12T02:44:20.835Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Spring注解-Autoired和-Resource区别对比&quot;&gt;&lt;a href=&quot;#Spring注解-Autoired和-Resource区别对比&quot; class=&quot;headerlink&quot; title=&quot;Spring注解@Autoired和@Resource区别对比&quot;&gt;&lt;/a&gt;Spring注解@Autoired和@Resource区别对比&lt;/h1&gt;&lt;!-- 
@@ -475,7 +560,7 @@ https://juejin.im/post/6844903940484513806
     <link href="http://fengxiu.club/archives/236c7534.html"/>
     <id>http://fengxiu.club/archives/236c7534.html</id>
     <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
+    <updated>2022-04-12T02:44:20.843Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;URL详解&quot;&gt;&lt;a href=&quot;#URL详解&quot; class=&quot;headerlink&quot; title=&quot;URL详解&quot;&gt;&lt;/a&gt;URL详解&lt;/h1&gt;&lt;!-- 
@@ -490,107 +575,6 @@ https://juejin.im/post/6844903940484513806
 &lt;p&gt;这里先简单介绍一个概念，URL（Uniform Resource Locator）中文名为统一资源定位符，有时也被俗称为网页地址。表示为互联网上的资源，如网页或者FTP地址。&lt;/p&gt;
 &lt;p&gt;URL可以分为如下几个部分&lt;/p&gt;
 &lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;protocol://host:port/path?query#fragment&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
-    <category term="java" scheme="http://fengxiu.club/categories/java/"/>
-    
-    <category term="基础" scheme="http://fengxiu.club/categories/java/%E5%9F%BA%E7%A1%80/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hibernate Validator 学习与使用</title>
-    <link href="http://fengxiu.club/archives/fc06a9d1.html"/>
-    <id>http://fengxiu.club/archives/fc06a9d1.html</id>
-    <published>2020-09-28T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;Hibernate-Validator-学习与使用&quot;&gt;&lt;a href=&quot;#Hibernate-Validator-学习与使用&quot; class=&quot;headerlink&quot; title=&quot;Hibernate Validator 学习与使用&quot;&gt;&lt;/a&gt;Hibernate Validator 学习与使用&lt;/h1&gt;&lt;!-- 
-    1.  配置
-    2.  简单的demo
-    3.  如何声明和校验约束 : 约束集成，级联约束
-    4.  自定义约束
-    5.  配置约束错误语句
-    6.  配置ValueExectuao
-    7.  配置Validator
-    8.  
- --&gt;
-&lt;p&gt;在项目，校验数据是必不可少的一步。因此如果能写出一个好的校验代码，必定能提高项目的鲁棒性。目前我做的项目大部分使用的是SpringBoot，基本上都是在控制器那一层通过注解@Valid等来校验参数，虽然经常使用，但是没有好好的进行整理。所以接下来会写几篇文章，对这一块进行整理。&lt;/p&gt;
-&lt;p&gt;大概会整理如下几个部分&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Hibernate Validator的用法，&lt;/li&gt;
-&lt;li&gt;如何在Spring中使用Hibernate Validator&lt;/li&gt;
-&lt;li&gt;介绍如何在Spring MVC中使用。&lt;/li&gt;
-&lt;li&gt;分析Spring MVC使用Validator的原理。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;本篇文章主要是对Hibernate Validator用法进行简单的介绍&lt;/p&gt;
-&lt;h2 id=&quot;Hibernate-Validator简介&quot;&gt;&lt;a href=&quot;#Hibernate-Validator简介&quot; class=&quot;headerlink&quot; title=&quot;Hibernate Validator简介&quot;&gt;&lt;/a&gt;Hibernate Validator简介&lt;/h2&gt;&lt;p&gt;验证数据是贯穿所有应用程序层（从应用层到持久层）的常见任务。通常在每一层都实现相同的验证逻辑，这是非常耗时和容易出错的。为了避免这些验证的重复，开发人员经常将验证逻辑直接绑定到域模型中，用验证代码（实际上是关于类本身的元数据）将域类弄乱。&lt;br&gt;&lt;img src=&quot;https://raw.githubusercontent.com/fengxiu/img/master/application-layers.png&quot; alt=&quot;application-layers&quot;&gt;&lt;/p&gt;
-&lt;p&gt;Jakarta Bean Validation 2.0——为Entity和方法的验证定义了一个元数据模型和API。默认的元数据源是Annotation，同时也能够通过使用XML覆盖和扩展元数据。API没有绑定到特定的应用层或者programming model.。它与web层或持久层都没有强绑定，可用于服务器端应用程序编程和客户端上应用程序。&lt;br&gt;&lt;img src=&quot;https://raw.githubusercontent.com/fengxiu/img/master/application-layers2.png&quot; alt=&quot;application-layers2&quot;&gt;&lt;/p&gt;
-&lt;p&gt;Hibernate Validator和Jakarta Bean Validation的区别：Jakarta Bean Validation是一种规范，Hibernate Validator是对个规范的一种实现。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="java" scheme="http://fengxiu.club/categories/java/"/>
-    
-    <category term="教程" scheme="http://fengxiu.club/categories/java/%E6%95%99%E7%A8%8B/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Spring Validation教程</title>
-    <link href="http://fengxiu.club/archives/a61a4fcc.html"/>
-    <id>http://fengxiu.club/archives/a61a4fcc.html</id>
-    <published>2020-09-13T17:22:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;Spring-Validation教程&quot;&gt;&lt;a href=&quot;#Spring-Validation教程&quot; class=&quot;headerlink&quot; title=&quot;Spring Validation教程&quot;&gt;&lt;/a&gt;Spring Validation教程&lt;/h1&gt;&lt;!-- 
-1. 阐述validation DataBinder的关系
-2. BeanWrapper
-3. PropertyEditorSupport  PropertyEditor 解析属性，这个符合JavaBean标准
-   core.convert 提供通用类型转换的能力和format提供UI 属性值的转换能力
-   org.springframework.beans.propertyeditors 这个包下面提供了默认的字符串转换成对象
-
-   字符串转成对象，通过java.beans.PropertyEditor接口来实现，Spring遵循了这套标准，然后进行转换。
-4. spring自身提供了一个Validator 适配器
-
-1. 通过实现Validator接口验证bean
-
---&gt;
-
-&lt;p&gt;前面已经有俩篇文章介绍了Hibernate Validator的使用，而Spring Validation就是对Hibernate Validator又一层封装，方便在Spring中使用。这里我们先介绍Spring Validation的基本用法，包含在Service层中使用和在Controller中使用。&lt;/p&gt;
-&lt;p&gt;在Spring中有俩种校验Bean的方式，一种是通过实现org.springframework.validation.Validator接口，然后在代码中调用这个类，另外一种是按照Bean Validation方式来进行校验，即通过注解的方式，这一种和前面介绍的使用Hibernate Validator来进行校验基本一致。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="java" scheme="http://fengxiu.club/categories/java/"/>
-    
-    <category term="教程" scheme="http://fengxiu.club/categories/java/%E6%95%99%E7%A8%8B/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>如何从Jar包中加载class</title>
-    <link href="http://fengxiu.club/archives/7e5ec6ca.html"/>
-    <id>http://fengxiu.club/archives/7e5ec6ca.html</id>
-    <published>2020-09-13T10:09:53.000Z</published>
-    <updated>2022-04-07T10:00:30.166Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;如何从Jar包中加载class&quot;&gt;&lt;a href=&quot;#如何从Jar包中加载class&quot; class=&quot;headerlink&quot; title=&quot;如何从Jar包中加载class&quot;&gt;&lt;/a&gt;如何从Jar包中加载class&lt;/h1&gt;&lt;!--  
-    1. 简单介绍
-    2. 说明URLClassPath 和URLClassPath.Loader之间的关系
-    3. 整个加载流程
-    4. 函数分析
---&gt;
-
-&lt;p&gt;之前在看java类加载机制的时候，就在想，JVM是如何在Jar包中找到某个具体的Class文件，如果是把Jar包解压到一个指定的文件中，那我还能理解，他是先解压然后在去解压后的文件中查找有没有具体的文件，但事实上，jvm在运行java程序时候，并没有将jar包解压。所以就比较好奇jvm是如何获取到具体的class文件。本篇文章主要对其进行探究。&lt;/p&gt;
-&lt;p&gt;这里就不在叙述类加载机制，直接定位到具体加载Class文件资源的函数，代码如下：&lt;/p&gt;</summary>
     
     
     
