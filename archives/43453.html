@@ -22,7 +22,7 @@
 
   <meta name="description" content="InnoDB是mysql数据库中最常用的存储引擎，对其底层进行研究有助于理解常见的一些数据库优化思路。本篇文章介绍一条记录是如何存储在磁盘上。 我们平时都是以记录为单位向表中插入数据的，这些记录在磁盘上的存放形式也被称为行格式或者记录格式。InnoDB存储引擎到现在为止设计了4种不同类型的行格式，分别是COMPACT、REDUNDANT、DYNAMI、COMPRESSED。其中REDUNDANT是">
 <meta property="og:type" content="article">
-<meta property="og:title" content="InnoDB行格式">
+<meta property="og:title" content="Innodb行格式">
 <meta property="og:url" content="http://fengxiu.club/archives/43453.html">
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="InnoDB是mysql数据库中最常用的存储引擎，对其底层进行研究有助于理解常见的一些数据库优化思路。本篇文章介绍一条记录是如何存储在磁盘上。 我们平时都是以记录为单位向表中插入数据的，这些记录在磁盘上的存放形式也被称为行格式或者记录格式。InnoDB存储引擎到现在为止设计了4种不同类型的行格式，分别是COMPACT、REDUNDANT、DYNAMI、COMPRESSED。其中REDUNDANT是">
@@ -35,7 +35,7 @@
 <meta property="article:modified_time" content="2022-04-01T14:25:39.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="mysql">
-<meta property="article:tag" content="InnoDB">
+<meta property="article:tag" content="Innodb">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220401145842.png">
 
@@ -52,7 +52,7 @@
   };
 </script>
 
-  <title>InnoDB行格式 | 枫秀学习日志</title>
+  <title>Innodb行格式 | 枫秀学习日志</title>
   
 
 
@@ -134,7 +134,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">105</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">104</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -144,7 +144,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">205</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">202</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -215,7 +215,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          InnoDB行格式
+          Innodb行格式
         </h1>
 
         <div class="post-meta">
@@ -234,11 +234,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                  <a href="/categories/mysql/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
                 </span>
             </span>
 
@@ -370,7 +370,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://fengxiu.club/archives/43453.html" title="InnoDB行格式">http://fengxiu.club/archives/43453.html</a>
+    <a href="http://fengxiu.club/archives/43453.html" title="Innodb行格式">http://fengxiu.club/archives/43453.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -382,7 +382,7 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/mysql/" rel="tag"># mysql</a>
-              <a href="/tags/InnoDB/" rel="tag"># InnoDB</a>
+              <a href="/tags/Innodb/" rel="tag"># Innodb</a>
           </div>
 
         
@@ -492,7 +492,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">205</span>
+          <span class="site-state-item-count">202</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -505,7 +505,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">105</span>
+        <span class="site-state-item-count">104</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -548,7 +548,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:03</span>
+    <span title="站点阅读时长">20:58</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -642,7 +642,7 @@
   var disqus_config = function() {
     this.page.url = "http://fengxiu.club/archives/43453.html";
     this.page.identifier = "archives/43453.html";
-    this.page.title = "InnoDB行格式";
+    this.page.title = "Innodb行格式";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
