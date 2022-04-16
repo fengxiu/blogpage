@@ -20,21 +20,21 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="摘要本文主要介绍了HTTP协议的演进过程，从HTTP&#x2F;0.9到目前HTTP&#x2F;2中各个版本的特点以及成因。通过对比各个版本的特点以及相关数据的支持来讲解整个HTTP协议的演进过程。此外，文中还会涉及一些相关协议概念，包括TCP&#x2F;IP、DNS、HTTPS、QUIC、SPDY等，正是这些协议与HTTP一起为我们展现了一个丰富多彩的互联网的世界。 HTTP的演进HTTP(Hy">
+  <meta name="description" content="本文主要介绍了HTTP协议的演进过程，从HTTP&#x2F;0.9到目前HTTP&#x2F;2中各个版本的特点以及成因。通过对比各个版本的特点以及相关数据的支持来讲解整个HTTP协议的演进过程。此外，文中还会涉及一些相关协议概念，包括TCP&#x2F;IP、DNS、HTTPS、QUIC、SPDY等，正是这些协议与HTTP一起为我们展现了一个丰富多彩的互联网的世界。 HTTP的演进 HTTP(Hyp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Http的演进之路之一">
 <meta property="og:url" content="http://fengxiu.club/archives/e3e09015.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="摘要本文主要介绍了HTTP协议的演进过程，从HTTP&#x2F;0.9到目前HTTP&#x2F;2中各个版本的特点以及成因。通过对比各个版本的特点以及相关数据的支持来讲解整个HTTP协议的演进过程。此外，文中还会涉及一些相关协议概念，包括TCP&#x2F;IP、DNS、HTTPS、QUIC、SPDY等，正是这些协议与HTTP一起为我们展现了一个丰富多彩的互联网的世界。 HTTP的演进HTTP(Hy">
+<meta property="og:description" content="本文主要介绍了HTTP协议的演进过程，从HTTP&#x2F;0.9到目前HTTP&#x2F;2中各个版本的特点以及成因。通过对比各个版本的特点以及相关数据的支持来讲解整个HTTP协议的演进过程。此外，文中还会涉及一些相关协议概念，包括TCP&#x2F;IP、DNS、HTTPS、QUIC、SPDY等，正是这些协议与HTTP一起为我们展现了一个丰富多彩的互联网的世界。 HTTP的演进 HTTP(Hyp">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-209.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-210.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-209.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-210.png">
 <meta property="article:published_time" content="2019-03-10T08:23:00.000Z">
-<meta property="article:modified_time" content="2022-04-16T09:59:30.153Z">
+<meta property="article:modified_time" content="2019-03-10T08:23:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="http">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/pasted-209.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-209.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/e3e09015.html">
 
@@ -141,7 +141,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">203</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">204</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -224,13 +224,6 @@
 
               <time title="创建时间：2019-03-10 08:23:00" itemprop="dateCreated datePublished" datetime="2019-03-10T08:23:00+00:00">2019-03-10</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-16 09:59:30" itemprop="dateModified" datetime="2022-04-16T09:59:30+00:00">2022-04-16</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -305,16 +298,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a><strong>摘要</strong></h2><p>本文主要介绍了HTTP协议的演进过程，从HTTP&#x2F;0.9到目前HTTP&#x2F;2中各个版本的特点以及成因。通过对比各个版本的特点以及相关数据的支持来讲解整个HTTP协议的演进过程。此外，文中还会涉及一些相关协议概念，包括TCP&#x2F;IP、DNS、HTTPS、QUIC、SPDY等，正是这些协议与HTTP一起为我们展现了一个丰富多彩的互联网的世界。</p>
-<h2 id="HTTP的演进"><a href="#HTTP的演进" class="headerlink" title="HTTP的演进"></a><strong>HTTP的演进</strong></h2><p><img src="/images/pasted-209.png" alt="upload successful"><br>HTTP(HyperText Transfer Protocol)是万维网（World Wide Web）的基础协议，它制定了浏览器与服务器之间的通讯规则，它由Berners-Lee和他的团队在1989-1991年期间开发完成，至今共经历了3个版本的演化。</p>
+        <p>本文主要介绍了HTTP协议的演进过程，从HTTP&#x2F;0.9到目前HTTP&#x2F;2中各个版本的特点以及成因。通过对比各个版本的特点以及相关数据的支持来讲解整个HTTP协议的演进过程。此外，文中还会涉及一些相关协议概念，包括TCP&#x2F;IP、DNS、HTTPS、QUIC、SPDY等，正是这些协议与HTTP一起为我们展现了一个丰富多彩的互联网的世界。</p>
+<h2 id="HTTP的演进"><a href="#HTTP的演进" class="headerlink" title="HTTP的演进"></a>HTTP的演进</h2><p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-209.png" alt="演进图"></p>
+<p>HTTP(HyperText Transfer Protocol)是万维网（World Wide Web）的基础协议，它制定了浏览器与服务器之间的通讯规则，它由Berners-Lee和他的团队在1989-1991年期间开发完成，至今共经历了3个版本的演化。</p>
 <span id="more"></span>
-<h2 id="HTTP-x2F-0-9"><a href="#HTTP-x2F-0-9" class="headerlink" title="HTTP&#x2F;0.9"></a><strong>HTTP&#x2F;0.9</strong></h2><p>HTTP问世之初并没有作为标准建立，被正式制定为标准是在1996年公布的HTTP&#x2F;1.0协议。因此，在这之前的协议被称为HTTP&#x2F;0.9<br>HTTP&#x2F;0.9协议功能极为简单，<strong>request</strong>只有一行且只有一个GET命令，命令后面跟着的是资源路径。</p>
+<h2 id="HTTP-x2F-0-9"><a href="#HTTP-x2F-0-9" class="headerlink" title="HTTP&#x2F;0.9"></a>HTTP&#x2F;0.9</h2><p>HTTP问世之初并没有作为标准建立，被正式制定为标准是在1996年公布的HTTP&#x2F;1.0协议。因此，在这之前的协议被称为HTTP&#x2F;0.9<br>HTTP&#x2F;0.9协议功能极为简单，<strong>request</strong>只有一行且只有一个GET命令，命令后面跟着的是资源路径。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /index.html</span><br></pre></td></tr></table></figure>
-<p><strong>reponse</strong>同样简单，仅包含文件内容本身。</p>
+
+<p><strong>response</strong>同样简单，仅包含文件内容本身。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;body&gt;HELLO WORLD!&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
 <p>HTTP&#x2F;0.9没有header的概念，也没有content-type的概念，仅能传递html文件。同样由于没有status code，当发生错误的时候是通过传递回一个包含错误描述的html文件来处理的。</p>
 <p><strong>此外HTTP&#x2F;0.9具有无状态性</strong>，每个请求之间是独立的，当这个请求处理完成后会释放当前连接，因此可以看到<strong>HTTP协议无状态性其实是天生的</strong>，这也就有了后面的Cookie和Session技术。</p>
-<h2 id="HTTP-x2F-1-0"><a href="#HTTP-x2F-1-0" class="headerlink" title="HTTP&#x2F;1.0"></a><strong>HTTP&#x2F;1.0</strong></h2><p>随着互联网技术的飞速发展，HTTP协议被使用的越来越广泛，协议本身的局限性已经不能满足互联网功能的多样性。因此，HTTP&#x2F;1.0于1996年问世了，其内容和功能都大大增加了。对比与HTTP&#x2F;0.9，新的版本包含了以下功能：</p>
+<h2 id="HTTP-x2F-1-0"><a href="#HTTP-x2F-1-0" class="headerlink" title="HTTP&#x2F;1.0"></a>HTTP&#x2F;1.0</h2><p>随着互联网技术的飞速发展，HTTP协议被使用的越来越广泛，协议本身的局限性已经不能满足互联网功能的多样性。因此，HTTP&#x2F;1.0于1996年问世了，其内容和功能都大大增加了。对比与HTTP&#x2F;0.9，新的版本包含了以下功能：</p>
 <ul>
 <li>在每个request的GET一行后面添加版本号</li>
 <li>在response中添加状态行并作为第一行返回给用户</li>
@@ -324,30 +320,39 @@
 <li>引入了POST和HEAD命令，丰富了浏览器与服务器的交互方式</li>
 <li>支持长连接（默认还是短连接）</li>
 </ul>
-<p>也就是自从HTTP&#x2F;1.0开始，HTTP的主要格式就定义下来，如下所示：<br><strong>请求报文包含四部分：</strong></p>
+<p>也就是自从HTTP&#x2F;1.0开始，HTTP的主要格式就定义下来，如下所示：</p>
+<p><strong>请求报文包含四部分</strong>：</p>
 <ul>
 <li>请求行：包含请求方法、URI、HTTP版本信息</li>
 <li>请求头部字段</li>
 <li>空行</li>
 <li>请求内容实体</li>
 </ul>
-<p><strong>响应报文包含四部分：</strong></p>
+<p><strong>响应报文包含四部分</strong>:</p>
 <ul>
 <li>状态行：包含HTTP版本、状态码、状态码对应的短语</li>
 <li>响应头部字段</li>
 <li>空行</li>
 <li>响应内容实体</li>
 </ul>
-<p>一个典型的的request&#x2F;response交互如下：<br><strong>request内容，这里没有body,但是要注意的是，空行不能省略</strong></p>
+<p>一个典型的的request&#x2F;response交互如下：</p>
+<p>request内容，这里没有body,但是要注意的是，空行不能省略</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/index.html</span> <span class="meta">HTTP/1.0</span></span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>NCSA_Mosaic/2.0 (Windows 3.1)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p><strong>response内容：这里的状态行没有版本，是因为，在Http1的时候默认就是http1，所以没有加上</strong></p>
+
+<p>response内容：这里的状态行没有版本，是因为，在Http1的时候默认就是http1，所以没有加上</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">200 OK</span><br><span class="line"><span class="attribute">Date</span><span class="punctuation">: </span>Tue, 15 Nov 1994 08:12:31 GMT</span><br><span class="line"><span class="attribute">Server</span><span class="punctuation">: </span>CERN/3.0 libwww/2.17</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/html</span><br><span class="line"></span><br><span class="line">&lt;HTML&gt;</span><br><span class="line">A page with an image</span><br><span class="line">  &lt;IMG src=&quot;/image.gif&quot;&gt;</span><br><span class="line">&lt;HTML&gt;</span><br></pre></td></tr></table></figure>
+
 <p>当浏览器解析html文件后，会发起第二个请求来获取图片：<br><strong>请求图片的报文</strong></p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/image.gif</span> <span class="meta">HTTP/1.0</span></span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>NCSA_Mosaic/2.0 (Windows 3.1)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p><strong>响应的报文</strong></p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">200 OK</span><br><span class="line"><span class="attribute">Date</span><span class="punctuation">: </span>Tue, 15 Nov 1994 08:12:32 GMT</span><br><span class="line"><span class="attribute">Server</span><span class="punctuation">: </span>CERN/3.0 libwww/2.17</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/gif</span><br><span class="line"></span><br><span class="line">(image content)</span><br></pre></td></tr></table></figure>
-<p>此外，在HTTP&#x2F;1.0中规定header信息必须是ASCII码，后面的数据可以是任何格式。因此，服务器在应答的时候需要告诉用户数据的格式，即Content-Type的作用。一些常见Content-Type：<br><img src="/images/pasted-210.png" alt="upload successful"><br>Content-Type的每个值包括一级类型和二级类型，之间用斜杠分开；此外还可以自定义Content-Type；还可以在Content-Type中添加参数，如下面的示例，Content-Type表示发送的是网页而编码格式是utf-8.</p>
+
+<p>此外，在HTTP&#x2F;1.0中规定header信息必须是ASCII码，后面的数据可以是任何格式。因此，服务器在应答的时候需要告诉用户数据的格式，即Content-Type的作用。一些常见Content-Type：</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-210.png"></p>
+<p>Content-Type的每个值包括一级类型和二级类型，之间用斜杠分开；此外还可以自定义Content-Type；还可以在Content-Type中添加参数，如下面的示例，Content-Type表示发送的是网页而编码格式是utf-8.</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/html; charset=utf-8</span><br></pre></td></tr></table></figure>
+
 <p>由于支持任意数据格式的发送，因此可以先把数据进行压缩再发送。HTTP&#x2F;1.0进入了Content-Encoding来表示数据的压缩方式。主要由以下三种</p>
 <ul>
 <li>Content-Encoding: gzip</li>
@@ -356,9 +361,11 @@
 </ul>
 <p>关于内容文本压缩，可以参考这篇文章：<a href="/posts/e20a716d/">Http协议中的Content-Encoding</a><br>而客户端也可以在header中添加如下信息来表明自己可以接受哪些压缩方式：</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Accept-Encoding</span><span class="punctuation">: </span>gzip, deflate</span><br></pre></td></tr></table></figure>
-<p>为了解决每次请求完一个资源后连接会断开，若再请求同一个服务器上的资源需要重新建立连接的问题，HTTP&#x2F;1.0引入了长连接的概念。众所周知，HTTP的建连成本是较高的，由于HTTP基于TCP协议之上，一个建立连接的过程需要DNS过程以及TCP的三次握手。随着网页资源的日益增多，每请求完一个资源需要重新建立的消耗越来越大，因此用一条长连接来获取多个资源就可以大大节省网页的访问时间，提升连接的效率。HTTP&#x2F;1.1在<code>request header</code>中引入如下信息来告知服务器完成一次request请求后不要关闭连接：</p>
+
+<p>为了解决每次请求完一个资源后连接会断开，若再请求同一个服务器上的资源需要重新建立连接的问题，HTTP&#x2F;1.1引入了长连接的概念。众所周知，HTTP的建连成本是较高的，由于HTTP基于TCP协议之上，一个建立连接的过程需要DNS过程以及TCP的三次握手。随着网页资源的日益增多，每请求完一个资源需要重新建立的消耗越来越大，因此用一条长连接来获取多个资源就可以大大节省网页的访问时间，提升连接的效率。HTTP&#x2F;1.1在<code>request header</code>中引入如下信息来告知服务器完成一次request请求后不要关闭连接：</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>keep-alive</span><br></pre></td></tr></table></figure>
-<p>同样，服务器端也会答复一个相同的信息表示连接仍然有效。这样，后面的请求就可以复用该条连接了，只可惜该条信息此时没有加入到标准中，而是一种自定义行为。HTTP&#x2F;1.0的<a target="_blank" rel="noopener" href="http://tools.ietf.org/html/rfc1945">RFC1945</a>这里有说明。不过在后来，只要是HTTP1.1，默认就是长连接，除非你加上”Connection:close”字段。</p>
+
+<p>同样，服务器端也会答复一个相同的信息表示连接仍然有效。这样，后面的请求就可以复用该条连接了，只可惜该条信息此时没有加入到标准中，而是一种自定义行为。HTTP&#x2F;1.0的<a target="_blank" rel="noopener" href="http://tools.ietf.org/html/rfc1945">RFC1945</a>这里有说明。不过在后来，只要是HTTP1.1，默认就是长连接，除非你加上<code>Connection:close</code>字段。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://www.zhihu.com/people/lonniez/activities">lonnieZ http的演进之路</a></li>
 </ol>
@@ -384,7 +391,7 @@
       <div class="popular-posts-title"><a href="/archives/d6ee44af.html" rel="bookmark">Http的演进之路之四</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/9568466.html" rel="bookmark">HTTP/2 简介</a></div>
+      <div class="popular-posts-title"><a href="/archives/48094.html" rel="bookmark">https详解</a></div>
     </li>
   </ul>
 
@@ -502,7 +509,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E7%9A%84%E6%BC%94%E8%BF%9B"><span class="nav-number">2.</span> <span class="nav-text">HTTP的演进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-x2F-0-9"><span class="nav-number">3.</span> <span class="nav-text">HTTP&#x2F;0.9</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-x2F-1-0"><span class="nav-number">4.</span> <span class="nav-text">HTTP&#x2F;1.0</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E7%9A%84%E6%BC%94%E8%BF%9B"><span class="nav-number">1.</span> <span class="nav-text">HTTP的演进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-x2F-0-9"><span class="nav-number">2.</span> <span class="nav-text">HTTP&#x2F;0.9</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-x2F-1-0"><span class="nav-number">3.</span> <span class="nav-text">HTTP&#x2F;1.0</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -518,7 +525,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">203</span>
+          <span class="site-state-item-count">204</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
