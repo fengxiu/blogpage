@@ -20,22 +20,22 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="深入理解TCP的TIME-WAIT什么是 Time Wait 状态？time wait 是 tcp connection 的状态之一，进入这个状态的原因只有一种：主动关闭 connection （active close）。 与其相对的是 close wait 状态，进入该状态是由于被动关闭 connection（passive close），也就是说接收到了对方的 FIN 信号（并且发出了自己的">
+  <meta name="description" content="什么是 Time Wait 状态？time wait 是 tcp connection 的状态之一，进入这个状态的原因只有一种：主动关闭 connection （active close）。 与其相对的是 close wait 状态，进入该状态是由于被动关闭 connection（passive close），也就是说接收到了对方的 FIN 信号（并且发出了自己的 ACK 信号）。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解TCP的TIME-WAIT">
 <meta property="og:url" content="http://fengxiu.club/archives/dcf09bf2.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="深入理解TCP的TIME-WAIT什么是 Time Wait 状态？time wait 是 tcp connection 的状态之一，进入这个状态的原因只有一种：主动关闭 connection （active close）。 与其相对的是 close wait 状态，进入该状态是由于被动关闭 connection（passive close），也就是说接收到了对方的 FIN 信号（并且发出了自己的">
+<meta property="og:description" content="什么是 Time Wait 状态？time wait 是 tcp connection 的状态之一，进入这个状态的原因只有一种：主动关闭 connection （active close）。 与其相对的是 close wait 状态，进入该状态是由于被动关闭 connection（passive close），也就是说接收到了对方的 FIN 信号（并且发出了自己的 ACK 信号）。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-202.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-203.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-204.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-202.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-203.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-204.png">
 <meta property="article:published_time" content="2019-03-10T08:23:00.000Z">
-<meta property="article:modified_time" content="2022-04-16T03:35:28.110Z">
+<meta property="article:modified_time" content="2019-03-10T08:23:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="tcp">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/pasted-202.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-202.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/dcf09bf2.html">
 
@@ -142,7 +142,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">204</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">203</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -225,13 +225,6 @@
 
               <time title="创建时间：2019-03-10 08:23:00" itemprop="dateCreated datePublished" datetime="2019-03-10T08:23:00+00:00">2019-03-10</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-16 03:35:28" itemprop="dateModified" datetime="2022-04-16T03:35:28+00:00">2022-04-16</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -287,7 +280,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
+              <span>1.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -306,21 +299,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="深入理解TCP的TIME-WAIT"><a href="#深入理解TCP的TIME-WAIT" class="headerlink" title="深入理解TCP的TIME-WAIT"></a>深入理解TCP的TIME-WAIT</h1><h2 id="什么是-Time-Wait-状态？"><a href="#什么是-Time-Wait-状态？" class="headerlink" title="什么是 Time Wait 状态？"></a>什么是 Time Wait 状态？</h2><p><code>time wait</code> 是 tcp connection 的状态之一，进入这个状态的原因只有一种：主动关闭 connection （active close）。</p>
+        <h2 id="什么是-Time-Wait-状态？"><a href="#什么是-Time-Wait-状态？" class="headerlink" title="什么是 Time Wait 状态？"></a>什么是 Time Wait 状态？</h2><p><code>time wait</code> 是 tcp connection 的状态之一，进入这个状态的原因只有一种：主动关闭 connection （active close）。</p>
 <p>与其相对的是 <code>close wait</code> 状态，进入该状态是由于被动关闭 connection（passive close），也就是说接收到了对方的 <code>FIN</code> 信号（并且发出了自己的 <code>ACK</code> 信号）。</p>
 <span id="more"></span>
-
 <h2 id="为什么Time-Wait-要等待2MSL"><a href="#为什么Time-Wait-要等待2MSL" class="headerlink" title="为什么Time Wait 要等待2MSL"></a>为什么Time Wait 要等待2MSL</h2><p>我在TCP协议中提到 <code>TIME-WAIT</code> 状态，超时时间占用了 2MSL ，在 Linux 上固定是 60s 。之所以这么长时间，是因为两个方面的原因。</p>
 <ol>
-<li><p>一个数据报在发送途中或者响应过程中有可能成为残余的数据报，因此必须等待足够长的时间避免新的连接会收到先前连接的残余数据报，而造成状态错误。</p>
-<p><img src="/images/pasted-202.png" alt="upload successful"></p>
-<p>由于 TIME-WAIT 超时时间过短，旧连接的 <code>SEQ=3</code> 由于 <strong>路上太眷顾路边的风景，姗姗来迟</strong> ，混入新连接中，加之 SEQ 回绕正好能够匹配上，被当做正常数据接收，造成数据混乱。</p>
-</li>
-<li><p>确保被动关闭方已经正常关闭。</p>
-<p><img src="/images/pasted-203.png" alt="upload successful"></p>
-<p>如果主动关闭方提前关闭，被动关闭方还在 LAST-ACK 苦苦等待 FIN 的 ACK 。此时对于主动关闭方来说，连接已经得到释放，其端口可以被重用了，如果重用端口建立三次握手，发出友好的 SYN ，谁知 <strong>热脸贴冷屁股</strong>，被动关闭方得不到想要的 ACK ，给出 RST 。所以等待2MSL可以使得主动方发出的ACK确认到达被动关闭的一方，并且如果中间有丢失，被动关闭方还可以在这个时间内进行重发，这就不具体讨论了。</p>
-</li>
+<li>一个数据报在发送途中或者响应过程中有可能成为残余的数据报，因此必须等待足够长的时间避免新的连接会收到先前连接的残余数据报，而造成状态错误。</li>
 </ol>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-202.png"></p>
+<p>   由于 TIME-WAIT 超时时间过短，旧连接的 <code>SEQ=3</code> 由于 <strong>路上太眷顾路边的风景，姗姗来迟</strong> ，混入新连接中，加之 SEQ 回绕正好能够匹配上，被当做正常数据接收，造成数据混乱。</p>
+<ol start="2">
+<li>确保被动关闭方已经正常关闭。</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-203.png"></p>
+<p>   如果主动关闭方提前关闭，被动关闭方还在 LAST-ACK 苦苦等待 FIN 的 ACK 。此时对于主动关闭方来说，连接已经得到释放，其端口可以被重用了，如果重用端口建立三次握手，发出友好的 SYN ，谁知 <strong>热脸贴冷屁股</strong>，被动关闭方得不到想要的 ACK ，给出 RST 。所以等待2MSL可以使得主动方发出的ACK确认到达被动关闭的一方，并且如果中间有丢失，被动关闭方还可以在这个时间内进行重发，这就不具体讨论了。</p>
 <h2 id="TIME-WAIT危害"><a href="#TIME-WAIT危害" class="headerlink" title="TIME-WAIT危害"></a>TIME-WAIT危害</h2><p>主动关闭方进入 TIME-WAIT 状态后，无论对方是否收到 ACK ，都需要苦苦等待 60s 。这期间完全是 <strong>占着茅坑不拉屎</strong> ，不仅占用内存（系统维护连接耗用的内存），耗用CPU，更为重要的是，宝贵的端口被占用，端口枯竭后，新连接的建立就成了问题。之所以端口 <strong>宝贵</strong> ，是因为在 IPv4 中，一个端口占用2个字节，端口最高65535。</p>
 <h4 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h4><p>TCP协议推出了一个扩展 <a target="_blank" rel="noopener" href="http://tools.ietf.org/html/rfc1323">RFC 1323 TCP Extensions for High Performance</a> ，在 TCP Header 中可以添加2个4字节的时间戳字段，第一个是发送方的时间戳，第二个是接受方的时间戳。</p>
 <p>基于这个扩展，Linux 上可以通过开启 <code>net.ipv4.tcp_tw_reuse</code> 和 <code>net.ipv4.tcp_tw_recycle</code> 来减少 TIME-WAIT 的时间，复用端口，减缓端口资源的紧张。</p>
@@ -329,9 +321,9 @@
 <li><p>防止残余报文混入新连接。得益于时间戳的存在，残余的TCP报文由于时间戳过旧，直接被抛弃。</p>
 </li>
 <li><p>即使被动关闭方还处于 LAST-ACK 状态，主动关闭方 <strong>reuse</strong> TIME-WAIT连接，发起三次握手。当被动关闭方收到三次握手的 SYN ，得益于时间戳的存在，并不是回应一个 RST ，而是回应 FIN+ACK，而此时主动关闭方正在 SYN-SENT 状态，对于突如其来的 FIN+ACK，直接回应一个 RST ，被动关闭方接受到这个 RST 后，连接就关闭被回收了。当主动关闭方再次发起 SYN 时，就可以三次握手建立正常的连接。</p>
-<p><img src="/images/pasted-204.png" alt="upload successful"></p>
 </li>
 </ol>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-204.png"></p>
 <p>而对于 <strong>server （被动发起方）主动关闭连接</strong> 的情况，开启 <code>net.ipv4.tcp_tw_recyle</code> 来应对 TIME-WAIT 连接过多的情况。开启 recyle 后，系统便会记录来自每台主机的每个连接的分组时间戳。对于新来的连接，如果发现 SYN 包中带的时间戳比之前记录来自同一主机的同一连接的分组所携带的时间戳要比之前记录的时间戳新，则接受复用 TIME-WAIT 连接，否则抛弃。</p>
 <p>但是开启 <code>net.ipv4.tcp_tw_recyle</code> 有一个比较大的问题，虽然在同一个主机中，发出TCP包的时间戳是可以保证单调递增，但是 TCP包经过路由 NAT 转换的时候，并不会更新这个时间戳，因为路由是工作在IP层的嘛。所以如果在 client 和 server 中经过路由 NAT 转换的时候，对于 server 来说源IP是一样的，但是时间戳是由路由后面不同的主机生成的，后发包的时间戳就不一定比先发包的时间戳大，很容易造成 <strong>误杀</strong> ，终止了新连接的创建。</p>
 <p>最后的结论是：</p>
@@ -356,13 +348,13 @@
       <div class="popular-posts-title"><a href="/archives/b56667c1.html" rel="bookmark">TCP保活机制</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/20ef80bb.html" rel="bookmark">TCP流量控制、拥塞控制</a></div>
-    </li>
-    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/8207bbe3.html" rel="bookmark">TCP的粘包问题</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/f8c819ed.html" rel="bookmark">TCP简介</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/20ef80bb.html" rel="bookmark">TCP可靠性保障之重传、流量控制和拥塞控制</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/1fc2fe8.html" rel="bookmark">TCP连接管理</a></div>
@@ -483,7 +475,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3TCP%E7%9A%84TIME-WAIT"><span class="nav-number">1.</span> <span class="nav-text">深入理解TCP的TIME-WAIT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Time-Wait-%E7%8A%B6%E6%80%81%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">什么是 Time Wait 状态？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88Time-Wait-%E8%A6%81%E7%AD%89%E5%BE%852MSL"><span class="nav-number">1.2.</span> <span class="nav-text">为什么Time Wait 要等待2MSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TIME-WAIT%E5%8D%B1%E5%AE%B3"><span class="nav-number">1.3.</span> <span class="nav-text">TIME-WAIT危害</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">解决</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.4.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Time-Wait-%E7%8A%B6%E6%80%81%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">什么是 Time Wait 状态？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88Time-Wait-%E8%A6%81%E7%AD%89%E5%BE%852MSL"><span class="nav-number">2.</span> <span class="nav-text">为什么Time Wait 要等待2MSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TIME-WAIT%E5%8D%B1%E5%AE%B3"><span class="nav-number">3.</span> <span class="nav-text">TIME-WAIT危害</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3"><span class="nav-number">3.0.1.</span> <span class="nav-text">解决</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -499,7 +491,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">204</span>
+          <span class="site-state-item-count">203</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -555,7 +547,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:05</span>
+    <span title="站点阅读时长">21:07</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
