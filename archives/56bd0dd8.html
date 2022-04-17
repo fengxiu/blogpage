@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="JVM内存区域包括计数器、Java虚拟机栈、本地方法栈、堆、方法区。本文主要是介绍各个内存区域的作用和特性，同时分别阐述各个区域发生内存溢出的可能性和异常类型。">
+  <meta name="description" content="本文主要介绍JVM各个内存区域的作用和特性，同时分别阐述各个区域发生内存溢出的可能性和异常类型。 JVM内存区域Java虚拟机执行Java程序的过程中，会把所管理的内存划分为若干个不同的数据区域。这些内存区域各有各的用途，以及创建和销毁时间。有的区域随着虚拟机进程的启动而存在，有的区域伴随着线程的启动和结束而创建和销毁。 JVM内存区域也成为Java运行时数据区域。其中包括:程序计数器、虚拟机栈、">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JVM 内存区域简介">
+<meta property="og:title" content="JVM内存区域简介">
 <meta property="og:url" content="http://fengxiu.club/archives/56bd0dd8.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="JVM内存区域包括计数器、Java虚拟机栈、本地方法栈、堆、方法区。本文主要是介绍各个内存区域的作用和特性，同时分别阐述各个区域发生内存溢出的可能性和异常类型。">
+<meta property="og:description" content="本文主要介绍JVM各个内存区域的作用和特性，同时分别阐述各个区域发生内存溢出的可能性和异常类型。 JVM内存区域Java虚拟机执行Java程序的过程中，会把所管理的内存划分为若干个不同的数据区域。这些内存区域各有各的用途，以及创建和销毁时间。有的区域随着虚拟机进程的启动而存在，有的区域伴随着线程的启动和结束而创建和销毁。 JVM内存区域也成为Java运行时数据区域。其中包括:程序计数器、虚拟机栈、">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-282.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-283.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-334.png">
 <meta property="article:published_time" content="2019-03-23T08:01:51.000Z">
-<meta property="article:modified_time" content="2022-04-16T13:26:54.053Z">
+<meta property="article:modified_time" content="2019-03-23T08:01:51.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="内存模型">
 <meta name="twitter:card" content="summary">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>JVM 内存区域简介 | 枫秀学习日志</title>
+  <title>JVM内存区域简介 | 枫秀学习日志</title>
   
 
 
@@ -137,12 +137,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">56</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">55</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">204</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">206</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -213,7 +213,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          JVM 内存区域简介
+          JVM内存区域简介
         </h1>
 
         <div class="post-meta">
@@ -225,13 +225,6 @@
 
               <time title="创建时间：2019-03-23 08:01:51" itemprop="dateCreated datePublished" datetime="2019-03-23T08:01:51+00:00">2019-03-23</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-16 13:26:54" itemprop="dateModified" datetime="2022-04-16T13:26:54+00:00">2022-04-16</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -243,10 +236,6 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/%E5%86%85%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">内存</span></a>
                 </span>
             </span>
 
@@ -291,7 +280,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.7k</span>
+              <span>9.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -310,17 +299,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>JVM内存区域包括计数器、Java虚拟机栈、本地方法栈、堆、方法区。本文主要是介绍各个内存区域的作用和特性，同时分别阐述各个区域发生内存溢出的可能性和异常类型。</p>
-<span id="more"></span>
-
+        <p>本文主要介绍JVM各个内存区域的作用和特性，同时分别阐述各个区域发生内存溢出的可能性和异常类型。</p>
 <h2 id="JVM内存区域"><a href="#JVM内存区域" class="headerlink" title="JVM内存区域"></a>JVM内存区域</h2><p>Java虚拟机执行Java程序的过程中，会把所管理的内存划分为若干个不同的数据区域。这些内存区域各有各的用途，以及创建和销毁时间。有的区域随着虚拟机进程的启动而存在，有的区域伴随着线程的启动和结束而创建和销毁。</p>
 <p>JVM内存区域也成为Java运行时数据区域。其中包括:程序计数器、虚拟机栈、本地方法栈、堆和方法区。</p>
 <p><img src="/images/pasted-282.png" alt="upload successful"></p>
 <p>上图中，方法区和堆是线程共享，虚拟机栈、程序计数器和本地方法栈是线程私有。大概的结构如下图：</p>
 <p><img src="/images/pasted-283.png" alt="upload successful"></p>
-<p>下面分别介绍每部分的是用来做什么的</p>
-<h3 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h3><p>程序计数器是一块较小的内存空间，它的作用可以看做是当前线程所执行的字节码行号的指示器。字节码解释器在工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。这个内存区域是线程私有的内存。</p>
-<p>线程执行java方法时，这个区域记录横在执行的的虚拟机字节码指令地址，如果正在执行Native方法，计数器为空。此内存区域是唯一一个java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
+<p>下面对每部分进行详细的介绍</p>
+<span id="more"></span>
+<h3 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h3><p>程序计数器是一块较小的内存空间，它的作用可以看做是当前线程所执行的字节码行号的指示器。字节码解释器在工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。这块内存区域是线程私有的内存。</p>
+<p>线程执行java方法时，记录其正在执行的虚拟机字节码指令地址，如果正在执行Native方法，计数器为空。此内存区域是唯一一个java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
 <h3 id="Java虚拟机栈"><a href="#Java虚拟机栈" class="headerlink" title="Java虚拟机栈"></a>Java虚拟机栈</h3><p>线程私有内存空间，它的生命周期与线程相同。虚拟机栈描述的是<strong>Java方法执行</strong>的内存模型；每个方法在执行的同时都会创建一个栈帧用于存储局部变量表、操作数栈、动态链接和方法出口等消息。每个方法的调用直至执行完成，都对应一个栈帧在虚拟机栈中入栈和出栈的过程。</p>
 <p>这里简介一下虚拟机栈中的四中组成元素的功能：</p>
 <ol>
@@ -340,9 +328,9 @@
 <p>如果在堆中没有内存完成实例分配，并且堆也无法再扩展时，将会抛出OutOfMemoryError异常。</p>
 <h3 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h3><p>方法区是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译后的代码等数据。如果方法区无法申请到足够的内存空间，就会抛出 <code>OutOfMemoryError</code> 异常。</p>
 <h4 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h4><p>运行时常量池是方法区的一部分。Class文件除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后，进入方法区的运行时常量池中存放。</p>
-<p>JVM 规范对 class 文件结构有着严格的规范，必须符合此规范的 class 文件才会被 JVM 认可和装载。运行时常量池 中保存着一些class文件中描述的符号引用，同时还会将这些符号引用所翻译出来的直接引用存储在运行时常量池 中。<br>运行时常量池相对于 class 常量池一大特征就是其具有动态性，Java规范并不要求常量只能在编译才能产生，也就是说运行时常量池中的内容并不全部来自 class 常量池，class 常量池并非运行时常量池的唯一数据输入口；在运行时可以通过代码生成常量并将其放入运行时常量池中，这种特性被开发人员利用比较多的便是String类的intern()方法。<br>同方法区一样，当运行时常量池无法申请到新的内存时，将抛出 OutOfMemoryError 异常。</p>
+<p>JVM 规范对class文件结构有着严格的规范，必须符合此规范的class文件才会被JVM认可和装载。运行时常量池中保存着一些class文件中描述的符号引用，同时还会将这些符号引用所翻译出来的直接引用存储在运行时常量池中。<br>运行时常量池相对于class常量池一大特征就是其具有动态性，Java规范并不要求常量只能在编译才能产生，也就是说运行时常量池中的内容并不全部来自 class 常量池，class 常量池并非运行时常量池的唯一数据输入口；在运行时可以通过代码生成常量并将其放入运行时常量池中，这种特性被开发人员利用比较多的便是String类的intern()方法。<br>同方法区一样，当运行时常量池无法申请到新的内存时，将抛出 OutOfMemoryError 异常。</p>
 <h3 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h3><p>这里补充一点，直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常出现。</p>
-<p>在JDK1.4中新加入了NIO类，引入了一种基于通道(Channel)和缓冲区（buffer）的I&#x2F;O方式，他可以使用Native函数库直接分配堆外内存，然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用进行操作。这样能在一些场景中显著提高性能，因为避免了在Java堆和Native堆中来回复制数据。具体的可以参考这篇文章<a target="_blank" rel="noopener" href="https://taolove.top/2019/01/14/nio/JAVA%20NIO%E4%B9%8B%E6%B5%85%E8%B0%88%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E5%8E%9F%E7%90%86%E4%B8%8EDirectBuffer/">直接内存</a></p>
+<p>在JDK1.4中新加入了NIO类，引入了一种基于通道(Channel)和缓冲区（buffer）的I&#x2F;O方式，他可以使用Native函数库直接分配堆外内存，然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用进行操作。这样能在一些场景中显著提高性能，避免了在Java堆和Native堆中来回复制数据。</p>
 <h2 id="常见内存溢出异常"><a href="#常见内存溢出异常" class="headerlink" title="常见内存溢出异常"></a>常见内存溢出异常</h2><p>从上面可以看出，除了程序计数器外，Java虚拟机的其他运行区域都有可能发生OutOfMemoryError的异常。下面会分别给出例子。</p>
 <h3 id="java堆溢出"><a href="#java堆溢出" class="headerlink" title="java堆溢出"></a>java堆溢出</h3><p><code>Java</code>堆能够存储对象实例。通过不断地创建对象，并保证<code>GC Roots</code>到对象有可达路径来避免垃圾回收机制清除这些对象。 当对象数量到达最大堆的容量限制时就会产生<code>OutOfMemoryError</code>异常。</p>
 <p>设置<code>JVM</code>启动参数：<code>-Xms20M</code>设置堆的<strong>最小内存</strong>为<code>20M</code>，<code>-Xmx20M</code>设置堆的<strong>最大内存</strong>和<strong>最小内存</strong>一样，这样可以防止<code>Java</code>堆在内存不足时<strong>自动扩容</strong>。 <code>-XX:+HeapDumpOnOutOfMemoryError</code>参数可以让虚拟机在出现内存溢出异常时<code>Dump</code>出<strong>内存堆</strong>运行时快照。</p>
@@ -435,6 +423,12 @@
   <div class="popular-posts-header">相关文章推荐</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/51727.html" rel="bookmark">JVM内存区域之虚拟机栈</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/51728.html" rel="bookmark">JVM内存区域之逃逸分析</a></div>
+    </li>
+    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/499b414.html" rel="bookmark">Java内存模型简介与Voliate关键字</a></div>
     </li>
   </ul>
@@ -448,7 +442,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://fengxiu.club/archives/56bd0dd8.html" title="JVM 内存区域简介">http://fengxiu.club/archives/56bd0dd8.html</a>
+    <a href="http://fengxiu.club/archives/56bd0dd8.html" title="JVM内存区域简介">http://fengxiu.club/archives/56bd0dd8.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -569,14 +563,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">204</span>
+          <span class="site-state-item-count">206</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">56</span>
+        <span class="site-state-item-count">55</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -719,7 +713,7 @@
   var disqus_config = function() {
     this.page.url = "http://fengxiu.club/archives/56bd0dd8.html";
     this.page.identifier = "archives/56bd0dd8.html";
-    this.page.title = "JVM 内存区域简介";
+    this.page.title = "JVM内存区域简介";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
