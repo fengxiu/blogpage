@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">105</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">106</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">206</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">208</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/d2073860.html">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/51727.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -210,7 +210,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/archives/d2073860.html" class="post-title-link" itemprop="url">maven依赖机制简介</a>
+            <a href="/archives/51727.html" class="post-title-link" itemprop="url">JVM内存区域之虚拟机栈</a>
         </h2>
 
         <div class="post-meta">
@@ -220,15 +220,8 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-07-28 10:09:53" itemprop="dateCreated datePublished" datetime="2021-07-28T10:09:53+00:00">2021-07-28</time>
+              <time title="创建时间：2021-03-24 21:30:12" itemprop="dateCreated datePublished" datetime="2021-03-24T21:30:12+00:00">2021-03-24</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -239,7 +232,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">构建工具</span></a>
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -252,8 +245,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/archives/d2073860.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/d2073860.html" itemprop="commentCount"></span>
+    <a title="disqus" href="/archives/51727.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/51727.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -266,8 +259,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/archives/d2073860.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/d2073860.html" itemprop="commentCount"></span>
+    <a title="valine" href="/archives/51727.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/51727.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -277,14 +270,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>18k</span>
+              <span>34</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>16 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -296,16 +289,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="maven依赖机制简介"><a href="#maven依赖机制简介" class="headerlink" title="maven依赖机制简介"></a>maven依赖机制简介</h1><p>本文主要是对maven官方文档<a target="_blank" rel="noopener" href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#introduction-to-the-dependency-mechanism">Introduction to the Dependency Mechanism</a>翻译与整理。其中加上了自己的一些理解。</p>
-<p>依赖关系管理是Maven的一个核心特性。管理单个项目的依赖关系很容易。管理由数百个模块组成的多模块项目和应用程序的依赖关系是可能的。Maven在定义、创建和维护具有良好定义的ClassPath路径和Library版本的可复制构建方面有很大帮助。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/d2073860.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+          <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/wmkPo9mh0CxlsdmZkdKEkw">JAVA 虚拟机栈</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.yuque.com/yangxiaofei-vquku/wmp1zm/mggrlr">虚拟机栈</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/yangxiaofei_java/article/details/119287202">JVM操作数栈之栈顶缓存(看不懂捶我！)</a></li>
+</ol>
+
       
     </div>
 
@@ -355,7 +344,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -487,7 +476,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -625,7 +614,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -773,7 +762,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -915,7 +904,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1050,7 +1039,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1196,7 +1185,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1330,7 +1319,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1467,7 +1456,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1620,7 +1609,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">206</span>
+          <span class="site-state-item-count">208</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1633,7 +1622,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">105</span>
+        <span class="site-state-item-count">106</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1676,7 +1665,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:07</span>
+    <span title="站点阅读时长">21:15</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

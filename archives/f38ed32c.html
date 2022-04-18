@@ -33,10 +33,8 @@
 <meta property="og:image" content="http://fengxiu.club/images/cms-4.png">
 <meta property="og:image" content="http://fengxiu.club/images/g1-10-591x187.png">
 <meta property="article:published_time" content="2019-04-18T15:14:47.000Z">
-<meta property="article:modified_time" content="2022-04-17T14:39:43.211Z">
+<meta property="article:modified_time" content="2022-04-18T14:14:21.345Z">
 <meta property="article:author" content="枫秀">
-<meta property="article:tag" content="GC">
-<meta property="article:tag" content="JVM">
 <meta property="article:tag" content="GC日志">
 <meta property="article:tag" content="CMS">
 <meta name="twitter:card" content="summary">
@@ -137,7 +135,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">105</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">106</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -147,7 +145,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">206</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">208</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -235,7 +233,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-17 14:39:43" itemprop="dateModified" datetime="2022-04-17T14:39:43+00:00">2022-04-17</time>
+                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -248,10 +246,6 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/GC/" itemprop="url" rel="index"><span itemprop="name">GC</span></a>
                 </span>
             </span>
 
@@ -342,9 +336,10 @@
 </ol>
 <h3 id="老年代"><a href="#老年代" class="headerlink" title="老年代"></a>老年代</h3><p>下面是CMS垃圾回收器的日志，这些是按照CMS的不同阶段打印出来：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark-start]</span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.140: [GC (CMS Final Remark) [YG occupancy: 6345 K (9216 K)]2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs][1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
 <p>下面分别来介绍各个阶段的情况：</p>
 <h4 id="阶段1：Initial-Mark"><a href="#阶段1：Initial-Mark" class="headerlink" title="阶段1：Initial Mark"></a>阶段1：Initial Mark</h4><p>这个是 CMS 两次 stop-the-wolrd 事件的其中一次，这个阶段的目标是：标记那些直接被 GC root 引用或者被年轻代存活对象所引用的所有对象，标记后示例如下所示<br><img src="/images/cms-1.png" alt="cms-1"><br>上述例子对应的日志信息为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
 <p>日志的意思如下：</p>
 <ol>
 <li><code>2019-04-18T15:38:27.141+0800:0.139: </code>GC 开始的时间，以及相对于 JVM 启动的相对时间（单位是秒，这里大概是4.33h），与前面 ParNew 类似，下面的分析中就直接跳过这个了；</li>
@@ -361,9 +356,11 @@
 <ol>
 <li><code>CMS-concurrent-mark</code>：并发收集阶段，这个阶段会遍历老年代，并标记所有存活的对象；</li>
 <li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
-<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code> ：如前面所示，但是这部分的时间，其实意义不大，因为它是从并发标记的开始时间开始计算，这期间因为是并发进行，不仅仅包含 GC 线程的工作，还包括了应用线程并行的线程。<h4 id="阶段3：concurrent-Preclean"><a href="#阶段3：concurrent-Preclean" class="headerlink" title="阶段3：concurrent Preclean"></a>阶段3：concurrent Preclean</h4>Concurrent Preclean：这也是一个并发阶段，与应用的线程并发运行，并不会stop应用的线程。上面一个阶段和应用并发运行的过程中，一些对象的引用可能会发生变化，但是这种情况发生时，JVM会将包含这个对象的区域（Card）标记为 Dirty，这也就是 Card Marking。<br><img src="/images/cms-3.png" alt="cms-3"><br>在pre-clean阶段，那些能够从 Dirty 对象到达的对象也会被标记，这个标记做完之后，dirty card 标记就会被清除了<br><img src="/images/cms-4.png" alt="cms-4"></li>
+<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code> ：如前面所示，但是这部分的时间，其实意义不大，因为它是从并发标记的开始时间开始计算，这期间因为是并发进行，不仅仅包含 GC 线程的工作，还包括了应用线程并行的线程。</li>
 </ol>
+<h4 id="阶段3：concurrent-Preclean"><a href="#阶段3：concurrent-Preclean" class="headerlink" title="阶段3：concurrent Preclean"></a>阶段3：concurrent Preclean</h4><p>Concurrent Preclean：这也是一个并发阶段，与应用的线程并发运行，并不会stop应用的线程。上面一个阶段和应用并发运行的过程中，一些对象的引用可能会发生变化，但是这种情况发生时，JVM会将包含这个对象的区域（Card）标记为 Dirty，这也就是 Card Marking。<br><img src="/images/cms-3.png" alt="cms-3"><br>在pre-clean阶段，那些能够从 Dirty 对象到达的对象也会被标记，这个标记做完之后，dirty card 标记就会被清除了<br><img src="/images/cms-4.png" alt="cms-4"></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
 <ol>
 <li><code>CMS-concurrent-preclean：Concurrent Preclean</code> 阶段，对在前面并发标记阶段中引用发生变化的对象进行标记；</li>
 <li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
@@ -374,10 +371,12 @@
 <ol>
 <li><code>CMS-concurrent-abortable-preclean</code>：Concurrent Abortable Preclean 阶段；</li>
 <li><code> 0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间，本质上，这里的 gc 线程会在 STW 之前做更多的工作，通常会持续 5s 左右；</li>
-<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code>：同前面。<h4 id="阶段5：Final-Remark"><a href="#阶段5：Final-Remark" class="headerlink" title="阶段5：Final Remark"></a>阶段5：Final Remark</h4>这是第二个 STW 阶段，也是 CMS 中的最后一个，这个阶段的目标是标记所有老年代所有的存活对象，由于之前的阶段是并发执行的，gc线程可能跟不上应用程序的变化，为了完成标记老年代所有存活对象的目标，STW就非常有必要了。</li>
+<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code>：同前面。</li>
 </ol>
+<h4 id="阶段5：Final-Remark"><a href="#阶段5：Final-Remark" class="headerlink" title="阶段5：Final Remark"></a>阶段5：Final Remark</h4><p>这是第二个 STW 阶段，也是 CMS 中的最后一个，这个阶段的目标是标记所有老年代所有的存活对象，由于之前的阶段是并发执行的，gc线程可能跟不上应用程序的变化，为了完成标记老年代所有存活对象的目标，STW就非常有必要了。</p>
 <p>通常 CMS的Final Remark 阶段会在年轻代尽可能干净的时候运行，目的是为了减少连续STW发生的可能性（年轻代存活对象过多的话，也会导致老年代涉及的存活对象会很多）。这个阶段会比前面的几个阶段更复杂一些，相关日志如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.142+0800: 0.140: [GC (CMS Final Remark) [YG occupancy: 6345 K (9216 K)]2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs][1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.142+0800: 0.140: [GC (CMS Final Remark) [YG occupancy: 6345 K (9216 K)]2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs][1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
 <ol>
 <li><code>2019-04-18T15:38:27.142+0800: 0.140:</code>阶段开始的时间，阶段开始的时间相对与JVM启动的时间，单位s</li>
 <li><code>[GC (CMS Final Remark)</code>：表示这是CMS的Final Remark阶段</li>
@@ -392,14 +391,16 @@
 </ol>
 <p>经历过这五个阶段之后，老年代所有存活的对象都被标记过了，现在可以通过清除算法去清理那些老年代不再使用的对象。<br><img src="/images/g1-10-591x187.png" alt="g1-10-591x187"></p>
 <h4 id="阶段6：Concurrent-Sweep"><a href="#阶段6：Concurrent-Sweep" class="headerlink" title="阶段6：Concurrent Sweep"></a>阶段6：Concurrent Sweep</h4><p>这里不需要STW，它是与用户的应用程序并发运行，这个阶段是：清除那些不再使用的对象，回收它们的占用空间为将来使用。如下图所示</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
 <ol>
 <li><code>CMS-concurrent-sweep</code>：这个阶段主要是清除那些没有被标记的对象，回收它们的占用空间；</li>
 <li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
 <li><code>[Times: user=0.00 sys=0.00, real=0.00 secs] </code>：同前面；</li>
 </ol>
-<h4 id="阶段7：Concurrent-Reset"><a href="#阶段7：Concurrent-Reset" class="headerlink" title="阶段7：Concurrent Reset."></a>阶段7：Concurrent Reset.</h4><p>这个阶段也是并发执行的，它会重设 CMS 内部的数据结构，为下次的 GC 做准备，对应的日志信息如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<h4 id="阶段7：Concurrent-Reset"><a href="#阶段7：Concurrent-Reset" class="headerlink" title="阶段7：Concurrent Reset"></a>阶段7：Concurrent Reset</h4><p>这个阶段也是并发执行的，它会重设 CMS 内部的数据结构，为下次的 GC 做准备，对应的日志信息如下：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
 <p>日志详情分别如下：</p>
 <ol>
 <li><code>CMS-concurrent-reset</code> ：这个阶段的开始，目的如前面所述；</li>
@@ -429,12 +430,6 @@
       <div class="popular-posts-title"><a href="/archives/f857a2aa.html" rel="bookmark">GC日志详解1之serial</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/af3fcb07.html" rel="bookmark">G1</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/f1158e94.html" rel="bookmark">什么是GC</a></div>
-    </li>
-    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/5319940a.html" rel="bookmark">GC日志详解2之Parallel GC</a></div>
     </li>
   </ul>
@@ -459,8 +454,6 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/GC/" rel="tag"># GC</a>
-              <a href="/tags/JVM/" rel="tag"># JVM</a>
               <a href="/tags/GC%E6%97%A5%E5%BF%97/" rel="tag"># GC日志</a>
               <a href="/tags/CMS/" rel="tag"># CMS</a>
           </div>
@@ -556,7 +549,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">1.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B4%E8%BD%BB%E4%BB%A3%EF%BC%88Minor-GC%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">年轻代（Minor GC）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">1.2.</span> <span class="nav-text">老年代</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B51%EF%BC%9AInitial-Mark"><span class="nav-number">1.2.1.</span> <span class="nav-text">阶段1：Initial Mark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B52-concurrent-Mark"><span class="nav-number">1.2.2.</span> <span class="nav-text">阶段2 concurrent Mark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B53%EF%BC%9Aconcurrent-Preclean"><span class="nav-number">1.2.3.</span> <span class="nav-text">阶段3：concurrent Preclean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B54%EF%BC%9AConcurrent-Abortable-Preclean"><span class="nav-number">1.2.4.</span> <span class="nav-text">阶段4：Concurrent Abortable Preclean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B55%EF%BC%9AFinal-Remark"><span class="nav-number">1.2.5.</span> <span class="nav-text">阶段5：Final Remark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B56%EF%BC%9AConcurrent-Sweep"><span class="nav-number">1.2.6.</span> <span class="nav-text">阶段6：Concurrent Sweep</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B57%EF%BC%9AConcurrent-Reset"><span class="nav-number">1.2.7.</span> <span class="nav-text">阶段7：Concurrent Reset.</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">1.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B4%E8%BD%BB%E4%BB%A3%EF%BC%88Minor-GC%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">年轻代（Minor GC）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">1.2.</span> <span class="nav-text">老年代</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B51%EF%BC%9AInitial-Mark"><span class="nav-number">1.2.1.</span> <span class="nav-text">阶段1：Initial Mark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B52-concurrent-Mark"><span class="nav-number">1.2.2.</span> <span class="nav-text">阶段2 concurrent Mark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B53%EF%BC%9Aconcurrent-Preclean"><span class="nav-number">1.2.3.</span> <span class="nav-text">阶段3：concurrent Preclean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B54%EF%BC%9AConcurrent-Abortable-Preclean"><span class="nav-number">1.2.4.</span> <span class="nav-text">阶段4：Concurrent Abortable Preclean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B55%EF%BC%9AFinal-Remark"><span class="nav-number">1.2.5.</span> <span class="nav-text">阶段5：Final Remark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B56%EF%BC%9AConcurrent-Sweep"><span class="nav-number">1.2.6.</span> <span class="nav-text">阶段6：Concurrent Sweep</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B57%EF%BC%9AConcurrent-Reset"><span class="nav-number">1.2.7.</span> <span class="nav-text">阶段7：Concurrent Reset</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -572,7 +565,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">206</span>
+          <span class="site-state-item-count">208</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -585,7 +578,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">105</span>
+        <span class="site-state-item-count">106</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -628,7 +621,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:07</span>
+    <span title="站点阅读时长">21:15</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
