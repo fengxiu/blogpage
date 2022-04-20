@@ -34,7 +34,7 @@
 <meta property="article:published_time" content="2019-03-24T17:25:00.000Z">
 <meta property="article:modified_time" content="2019-03-24T17:25:00.000Z">
 <meta property="article:author" content="枫秀">
-<meta property="article:tag" content="jvm对象">
+<meta property="article:tag" content="对象">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://fengxiu.club/images/1517815118540.png">
 
@@ -133,7 +133,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">106</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">107</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -143,7 +143,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">208</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">210</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -237,10 +237,6 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/java%E5%AF%B9%E8%B1%A1/" itemprop="url" rel="index"><span itemprop="name">java对象</span></a>
                 </span>
             </span>
 
@@ -351,8 +347,8 @@
 <p>从上面我们可以看出如果垃圾收集器使用标记-整理和标记-复制算法，则可以使用指针碰撞模式。如果使用的标记-清除则使用的是空闲列表模式。</p>
 <p>在内存分配过程中，除了上述划分可用空间之外，还有另外一个需要考虑的问题，是对象在创建过程中是非常频繁的行为，即使是仅仅修改一个指针所指向的位置，在并发情况下也并不是线程安全的，所以需要考虑分配的安全性。在java中解决的方案有俩种：</p>
 <ol>
-<li>对分配内存空间的动作进行同步处理-实际上是通过CAS重试的方式更新，保证原子操作。</li>
-<li>把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在java堆中预先分配一个小块内存，称为本地线程分配缓冲（TLAB）。哪个线程分配内存，就在线程的TLAB上分配。只有在TLAB用完并分配新的TLAB时，才需要同步锁定。</li>
+<li>对分配内存空间的动作进行同步处理-实际上是通过CAS重试的方式来保证原子操作。</li>
+<li>把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在java堆中预先分配一个小块内存，称为本地线程分配缓冲（TLAB）。哪个线程分配内存，就在线程的TLAB上分配。只有在TLAB用完并分配新的TLAB时，才需要同步锁定。可以减少并发的次数。</li>
 </ol>
 <h2 id="对象内存布局"><a href="#对象内存布局" class="headerlink" title="对象内存布局"></a>对象内存布局</h2><p>在内存中存储的布局可以分为3块区域：对象头（header），实例数据（Instance Data）和对齐填充（Padding）<br>对象头。</p>
 <h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>结构图如下<br><img src="/images/1517815118540.png" alt="1517815118540"><br>这里来看下对象头，如果是数组类型，其由MarkWord、length(数组长度)和Pointer，Pointer是指向该对象的元数据信息，即该对象的Class实例，对象的方法定义都是在Class实例中；如果是非数组类型，对象头只包含：运行时数据(MarkWord）和类型指针（Pointer）两部分。</p>
@@ -401,7 +397,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/jvm%E5%AF%B9%E8%B1%A1/" rel="tag"># jvm对象</a>
+              <a href="/tags/%E5%AF%B9%E8%B1%A1/" rel="tag"># 对象</a>
           </div>
 
         
@@ -511,7 +507,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">208</span>
+          <span class="site-state-item-count">210</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -524,7 +520,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -567,7 +563,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:15</span>
+    <span title="站点阅读时长">21:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

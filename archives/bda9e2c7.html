@@ -22,7 +22,7 @@
 
   <meta name="description" content="本文主要讲解Java8中JVM的一个更新，就是持久代的移除。将会介绍为什么需要移除持久代以及它的替代者：元空间(Metaspace)。 持久代绝大部分Java程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是J">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java 8元空间">
+<meta property="og:title" content="Java8元空间">
 <meta property="og:url" content="http://fengxiu.club/archives/bda9e2c7.html">
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="本文主要讲解Java8中JVM的一个更新，就是持久代的移除。将会介绍为什么需要移除持久代以及它的替代者：元空间(Metaspace)。 持久代绝大部分Java程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是J">
@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://fengxiu.club/images/compressed_class_pointer_space_java_latte.png">
 <meta property="og:image" content="http://fengxiu.club/images/java_object_layout_compressed_java_latte.png">
 <meta property="article:published_time" content="2019-04-22T16:50:11.000Z">
-<meta property="article:modified_time" content="2022-04-18T14:14:21.345Z">
+<meta property="article:modified_time" content="2019-04-22T16:50:11.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="MetaSpace">
 <meta property="article:tag" content="元空间">
@@ -56,7 +56,7 @@
   };
 </script>
 
-  <title>Java 8元空间 | 枫秀学习日志</title>
+  <title>Java8元空间 | 枫秀学习日志</title>
   
 
 
@@ -138,7 +138,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">106</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">107</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -148,7 +148,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">208</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">210</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -219,7 +219,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Java 8元空间
+          Java8元空间
         </h1>
 
         <div class="post-meta">
@@ -231,13 +231,6 @@
 
               <time title="创建时间：2019-04-22 16:50:11" itemprop="dateCreated datePublished" datetime="2019-04-22T16:50:11+00:00">2019-04-22</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -249,10 +242,6 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/%E5%86%85%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">内存</span></a>
                 </span>
             </span>
 
@@ -476,7 +465,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://fengxiu.club/archives/bda9e2c7.html" title="Java 8元空间">http://fengxiu.club/archives/bda9e2c7.html</a>
+    <a href="http://fengxiu.club/archives/bda9e2c7.html" title="Java8元空间">http://fengxiu.club/archives/bda9e2c7.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -599,7 +588,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">208</span>
+          <span class="site-state-item-count">210</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -612,7 +601,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -655,7 +644,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:15</span>
+    <span title="站点阅读时长">21:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -749,7 +738,7 @@
   var disqus_config = function() {
     this.page.url = "http://fengxiu.club/archives/bda9e2c7.html";
     this.page.identifier = "archives/bda9e2c7.html";
-    this.page.title = "Java 8元空间";
+    this.page.title = "Java8元空间";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

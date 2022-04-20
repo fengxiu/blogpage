@@ -20,21 +20,21 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="概念区分在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，制定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：">
+  <meta name="description" content="概念区分在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，指定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="系统、当前、线程上下文类加载概念介绍？">
 <meta property="og:url" content="http://fengxiu.club/archives/338e9034.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="概念区分在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，制定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：">
+<meta property="og:description" content="概念区分在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，指定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/20170625143404387.png">
-<meta property="og:image" content="http://fengxiu.club/images/20170625164611435.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20170625143404387.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20170625164611435.png">
 <meta property="article:published_time" content="2019-07-02T13:25:00.000Z">
-<meta property="article:modified_time" content="2022-04-18T14:14:21.345Z">
+<meta property="article:modified_time" content="2022-04-20T01:21:57.794Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="类加载">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/20170625143404387.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20170625143404387.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/338e9034.html">
 
@@ -131,7 +131,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">106</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">107</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -141,7 +141,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">208</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">210</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -229,7 +229,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-18 14:14:21" itemprop="dateModified" datetime="2022-04-18T14:14:21+00:00">2022-04-18</time>
+                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,7 +309,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="概念区分"><a href="#概念区分" class="headerlink" title="概念区分"></a>概念区分</h2><p>在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，制定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：</p>
+        <h2 id="概念区分"><a href="#概念区分" class="headerlink" title="概念区分"></a>概念区分</h2><p>在Java进行类加载时，一般会有多个ClassLoader可以使用，包括当前类加载器，指定类加载器，上下文类加载器三个，可以用多种方式进行类型加载，以下面这段代码来对这个三个概念进行说明：</p>
 <span id="more"></span>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">m</span><span class="params">()</span>&#123;</span><br><span class="line">        A.class.getClassLoader().loaClass(<span class="string">&quot;B&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上面的代码很简单，主要是为了说明下面三个概念：</p>
@@ -347,12 +347,13 @@
 <p>这种调用的时候，依旧能够通过<strong>当前</strong>的ClassLoader正确的加载用户的类。</p>
 <p>可以说<code>Reflection.getCallerClass</code>和<code>sun.misc.VM.latestuserDefinedLoader</code>都是用来突破双亲委派模型的一种解决方式，它能让Java在bootstrap加载的代码中运行时，能够获取到外界（用户）使用的子ClassLoader。</p>
 <h3 id="线程上下文类加载器"><a href="#线程上下文类加载器" class="headerlink" title="线程上下文类加载器"></a>线程上下文类加载器</h3><p>线程上下文类加载器（ThreadContextClassLoader）是从 JDK 1.2 开始引入的，我们可以通过java.lang.Thread类中的getContextClassLoader()和 setContextClassLoader(ClassLoader cl)方法来获取和设置线程的上下文类加载器。如果没有手动设置上下文类加载器，线程将继承其父线程的上下文类加载器，初始线程的上下文类加载器是系统类加载器（AppClassLoader）,在线程中运行的代码可以通过此类加载器来加载类和资源，<br>在介绍CurrentClassLoader中，已经说明它用来突破双亲委派模型的目的，而ThreadContextClassLoader也是为了完成这个工作。<br>在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的SPI有JDBC、JNDI等，这些SPI的接口属于Java核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而SPI的第三方实现代码则是作为Java应用所依赖的jar包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</p>
-<p>以jdbc.jar加载为例,类的加载如下图所示，<br><img src="/images/20170625143404387.png" alt="20170625143404387"></p>
+<p>以jdbc.jar加载为例,类的加载如下图所示，</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20170625143404387.png"></p>
 <p>从图可知rt.jar核心包是有Bootstrap类加载器加载的，其内包含SPI核心接口类，由于SPI中的类经常需要调用外部实现类的方法，而jdbc.jar包含外部实现类(jdbc.jar存在于classpath路径)无法通过Bootstrap类加载器加载，因此只能委派线程上下文类加载器把jdbc.jar中的实现类加载到内存以便SPI相关类使用。显然这种线程上下文类加载器的加载方式破坏了“双亲委派模型”，它在执行过程中抛弃双亲委派加载链模式，使程序可以逆向使用类加载器，当然这也使得Java类加载器变得更加灵活。为了进一步证实这种场景，不妨看看DriverManager类的源码，DriverManager是Java核心rt.jar包中的类，该类用来管理不同数据库的实现驱动即Driver，它们都实现了Java核心包中的java.sql.Driver接口，如mysql驱动包中的<code>com.mysql.jdbc.Driver</code>，这里主要看看如何加载外部实现类，在DriverManager初始化时会执行如下代码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DriverManager是Java核心包rt.jar的类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DriverManager</span> &#123;</span><br><span class="line">    <span class="comment">//省略不必要的代码</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        loadInitialDrivers();<span class="comment">//执行该方法</span></span><br><span class="line">        println(<span class="string">&quot;JDBC DriverManager initialized&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//loadInitialDrivers方法</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">loadInitialDrivers</span><span class="params">()</span> &#123;</span><br><span class="line">     sun.misc.Providers()</span><br><span class="line">     AccessController.doPrivileged(<span class="keyword">new</span> <span class="title class_">PrivilegedAction</span>&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="keyword">public</span> Void <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">                <span class="comment">//加载外部的Driver的实现类</span></span><br><span class="line">                ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">              <span class="comment">//省略不必要的代码......</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <p>在DriverManager类初始化时执行了loadInitialDrivers()方法,在该方法中通过<code>ServiceLoader.load(Driver.class)</code>;去加载外部实现的驱动类，ServiceLoader类会去读取mysql的jdbc.jar下META-INF文件的内容，如下所示</p>
-<p><img src="/images/20170625164611435.png" alt="20170625164611435"></p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20170625164611435.png"></p>
 <p>而com.mysql.jdbc.Driver继承类如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Driver</span> <span class="keyword">extends</span> <span class="title class_">com</span>.mysql.cj.jdbc.Driver &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Driver</span><span class="params">()</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.err.println(<span class="string">&quot;Loading class `com.mysql.jdbc.Driver&#x27;. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver&#x27;. &quot;</span></span><br><span class="line">                + <span class="string">&quot;The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -386,7 +387,7 @@
       <div class="popular-posts-title"><a href="/archives/53cf9979.html" rel="bookmark">类加载之SystemDictionary:系统字典</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/2735b28b.html" rel="bookmark">深入理解ClassLoader及双亲委派模型</a></div>
+      <div class="popular-posts-title"><a href="/archives/2735b28b.html" rel="bookmark">深入理解类加载以及其实现ClassLoader</a></div>
     </li>
   </ul>
 
@@ -520,7 +521,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">208</span>
+          <span class="site-state-item-count">210</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -533,7 +534,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -576,7 +577,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:15</span>
+    <span title="站点阅读时长">21:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
