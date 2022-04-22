@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="记录学习日志">
@@ -134,12 +134,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">55</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">54</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">210</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">211</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,149 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/a158638e.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/a158638e.html" class="post-title-link" itemprop="url">spring源码解析之 03统一资源加载</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-14 03:39:00" itemprop="dateCreated datePublished" datetime="2019-01-14T03:39:00+00:00">2019-01-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/spring/spring-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">spring 源码分析</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/spring/spring-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/SpringCore/" itemprop="url" rel="index"><span itemprop="name">SpringCore</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/a158638e.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/a158638e.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/a158638e.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/a158638e.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>23k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="spring源码解析之-03统一资源加载"><a href="#spring源码解析之-03统一资源加载" class="headerlink" title="spring源码解析之 03统一资源加载"></a>spring源码解析之 03统一资源加载</h1><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ol>
+<li>统一资源Resource</li>
+<li>统一资源定位ResourceLoader</li>
+</ol>
+<h3 id="1-统一资源Resource"><a href="#1-统一资源Resource" class="headerlink" title="1. 统一资源Resource"></a>1. 统一资源Resource</h3><p>java中有一个标准类 <code>java.net.URL</code>，该类在 Java SE 中的定位为统一资源定位器（Uniform Resource Locator），但是我们知道它的实现基本只限于网络形式发布的资源的查找和定位。虽然可以通过注册特定的处理器来扩展处理不同的地址前缀，但是这通常比较麻烦，而且不易于使用。另外，实际上资源的定义比较广泛，除了网络形式的资源，还有以二进制形式存在的、以文件形式存在的、以字节流形式存在的等等。而且它可以存在于任何场所，比如网络、文件系统、应用程序中。所以 <code>java.net.URL</code> 的局限性迫使 Spring 必须实现自己的资源加载策略，该资源加载策略需要满足如下要求：</p>
+<ol>
+<li><strong>职能划分清楚</strong>：资源的定义和资源的加载应该要有一个清晰的界限；</li>
+<li><strong>统一的抽象</strong>：统一的资源定义和资源加载策略。资源加载后要返回统一的抽象给客户端，客户端要对资源进行怎样的处理，应该由抽象资源接口来界定。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/a158638e.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/e3ecb02e.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +370,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -354,7 +497,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -486,7 +629,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -627,7 +770,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -768,7 +911,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1086,14 +1229,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.2k</span>
+              <span>20k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>18 分钟</span>
             </span>
 
         </div>
@@ -1105,10 +1248,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Java引用体系中我们最熟悉的就是强引用类型，如 A a&#x3D; new A();这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。</p>
-<p>除了强引用外，Java还引入了SoftReference，WeakReference，PhantomReference，FinalReference ，这些类放在java.lang.ref包下，类的继承体系如下图。Java额外引入这个四种类型引用主要目的是在jvm 在gc时，按照引用类型的不同，在回收时采用不同的逻辑。可以把这些引用看作是对对象的一层包裹，jvm根据外层不同的包裹，对其包裹的对象采用不同的回收策略，或特殊逻辑处理。 这几种类型的引用主要在jvm内存缓存、资源释放、对象可达性事件处理等场景会用到。</p>
-<p><img src="https://static.oschina.net/uploads/img/201701/21153037_ubGO.png" alt="输入图片说明"></p>
-<p>本篇文章主要讲解前面三种SoftReference，WeakReference和PhantomReference的使用，以及ReferenceQueue的使用。至于FinalRefeence会在另一篇文章中讲解。</p>
+          <p>Java引用体系中我们最熟悉的就是强引用类型，如 <code>A a= new A()</code>;这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。</p>
+<p>除了强引用外，Java还引入了SoftReference（软引用），WeakReference（弱引用），PhantomReference（虚引用），FinalReference ，这些类放在java.lang.ref包下，类的继承体系如下图。</p>
+<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/21153037_ubGO.png" alt="类图"></p>
+<p>Java额外引入这个四种类型引用主要目的是在jvm在gc时，按照引用类型的不同，在回收时采用不同的逻辑。可以把这些引用看作是对对象的一层包裹，jvm根据外层不同的包裹，对其包裹的对象采用不同的回收策略，或特殊逻辑处理。 这几种类型的引用主要在jvm内存缓存、资源释放、对象可达性事件处理等场景会用到。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/2e7bd07f.html#more" rel="contents">
@@ -1149,7 +1292,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/archives/53c15109.html" class="post-title-link" itemprop="url">JVM源码分析之 FinalReference 完全解读</a>
+            <a href="/archives/53c15109.html" class="post-title-link" itemprop="url">JVM源码分析之FinalReference 完全解读</a>
         </h2>
 
         <div class="post-meta">
@@ -1161,13 +1304,6 @@
 
               <time title="创建时间：2019-01-04 10:24:00" itemprop="dateCreated datePublished" datetime="2019-01-04T10:24:00+00:00">2019-01-04</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -1179,10 +1315,6 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/%E5%BC%95%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">引用</span></a>
                 </span>
             </span>
 
@@ -1305,7 +1437,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1458,7 +1590,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1544,149 +1676,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/6d00129c.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/6d00129c.html" class="post-title-link" itemprop="url">自旋锁</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-12-14 11:27:00" itemprop="dateCreated datePublished" datetime="2018-12-14T11:27:00+00:00">2018-12-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/juc/lock/" itemprop="url" rel="index"><span itemprop="name">lock</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/6d00129c.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/6d00129c.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/6d00129c.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/6d00129c.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>15k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h1><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ol>
-<li>自旋锁是什么</li>
-<li>自旋锁实现</li>
-<li>MCS自旋锁</li>
-<li>CLH自旋锁</li>
-</ol>
-<h3 id="1-自旋锁是什么"><a href="#1-自旋锁是什么" class="headerlink" title="1. 自旋锁是什么"></a>1. 自旋锁是什么</h3><p>自旋锁与<strong>互斥量</strong>(注意这里不是互斥锁)类似，用于多线程同步的一种锁。但他不是休眠使线程阻塞，而是在获取锁之前一直处于忙等（自旋）阻塞状态。基本的实现是通过线程反复检查锁特定变量是否可用。由于线程在这一过程中保持执行，因此是一种忙等待。一旦获取了自旋锁，线程会一直保持该锁，直至显式释放自旋锁。</p>
-<p>自旋锁通常被作为底层原语用于实现其他类型的锁。根据它们所基于与的系统体系结构，可以通过使用测试并设置指令（CAS）有效的实现。当然这里说的有效也还是会导致CPU资源的浪费：当线程自旋等待锁变为可用时，CPU不能做其它的事情，这也是自旋锁只能够持有一段时间的原因。</p>
-<p>有了这一层了解，自旋锁的优势和劣势，以及其适用场景也就一目了然了。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/6d00129c.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/18/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/20/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/18/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/20/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1754,14 +1747,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-count">211</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">54</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -1810,7 +1803,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:26</span>
+    <span title="站点阅读时长">21:24</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

@@ -17,18 +17,18 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前面已经讲解了Arraylist，但是留下了一个知识点没有说明，Iterator的fail-fast机制。本篇博客主要讲解一下这个机制。 Fail-fast简介下面是Java官方在Arraylist的介绍中一段描述fail-fast的话 1if the list is structurally modified at any time after the iterator is created,">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java 集合系列04之 fail-fast总结">
+<meta property="og:title" content="java集合系列04之 fail-fast总结">
 <meta property="og:url" content="http://fengxiu.club/archives/6ad3883.html">
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="前面已经讲解了Arraylist，但是留下了一个知识点没有说明，Iterator的fail-fast机制。本篇博客主要讲解一下这个机制。 Fail-fast简介下面是Java官方在Arraylist的介绍中一段描述fail-fast的话 1if the list is structurally modified at any time after the iterator is created,">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-03-04T12:02:00.000Z">
-<meta property="article:modified_time" content="2022-04-20T01:21:57.786Z">
+<meta property="article:modified_time" content="2019-03-04T12:02:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="集合">
 <meta name="twitter:card" content="summary">
@@ -46,7 +46,7 @@
   };
 </script>
 
-  <title>Java 集合系列04之 fail-fast总结 | 枫秀学习日志</title>
+  <title>java集合系列04之 fail-fast总结 | 枫秀学习日志</title>
   
 
 
@@ -133,12 +133,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">55</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">54</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">210</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">211</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -209,7 +209,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Java 集合系列04之 fail-fast总结
+          java集合系列04之 fail-fast总结
         </h1>
 
         <div class="post-meta">
@@ -221,13 +221,6 @@
 
               <time title="创建时间：2019-03-04 12:02:00" itemprop="dateCreated datePublished" datetime="2019-03-04T12:02:00+00:00">2019-03-04</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -283,7 +276,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.8k</span>
+              <span>5.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -306,7 +299,7 @@
 <h2 id="Fail-fast简介"><a href="#Fail-fast简介" class="headerlink" title="Fail-fast简介"></a>Fail-fast简介</h2><p>下面是Java官方在Arraylist的介绍中一段描述fail-fast的话</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if the list is structurally modified at any time after the iterator is created, in any way except through the iterator&#x27;s own remove or add methods, the iterator will throw a ConcurrentModificationException. Thus, in the face of concurrent modification, the iterator fails quickly and cleanly, rather than risking arbitrary, non-deterministic behavior at an undetermined time in the future.</span><br></pre></td></tr></table></figure>
 
-<p>大概的意思就是说：当通过list返回一个Iterator或者ListIterator对象之后，除了Iterator和ListIterator对象自己对集合的修改之外的其他任何修改集合的行为，都会报ConcurrentModificationException。因此在面对并发修改时，迭代器会快速而干净的失败，也就是不对List对象的状态有任何的修改，同时不会再未来某个不确定的时间产生任意的风险和不确定的行为。</p>
+<p>大概的意思就是说：当通过list返回一个Iterator或者ListIterator对象之后，除了Iterator和ListIterator对象自己对集合的修改之外的其他任何修改集合的行为，都会报ConcurrentModificationException。因此在面对并发修改时，迭代器会快速而干净的失败，也就是不对List对象的状态有任何的修改，同时不会在未来某个不确定的时间产生任意的风险和不确定的行为。</p>
 <p>用下面通俗的话来说就是：</p>
 <p><strong>fail-fast 机制是java集合(Collection)中的一种错误机制。</strong>当多个线程对同一个集合的内容进行操作时，就可能会产生fail-fast事件。<br>例如：当某一个线程A通过iterator去遍历某集合的过程中，若该集合的内容被其他线程所改变了；那么线程A访问集合时，就会抛出ConcurrentModificationException异常，产生fail-fast事件。</p>
 <!-- more  -->
@@ -326,10 +319,10 @@
 <p>接下来，我们再系统的梳理一下fail-fast是怎么产生的。步骤如下：</p>
 <ol>
 <li>新建了一个ArrayList，名称为arrayList</li>
-<li><em>向arrayList中添加内容。</em></li>
-<li>新建一个“<strong>线程a</strong>，并在“线程a”中<strong>通过Iterator反复的读取arrayList的值</strong></li>
-<li>新建一个<strong>线程b</strong>，在“线程b”中<strong>删除arrayList中的一个节点A</strong></li>
-<li>这时，就会产生有趣的事件了。在某一时刻，“线程a”创建了arrayList的Iterator。此时“节点A”仍然存在于arrayList中，<strong>创建arrayList时，expectedModCount &#x3D; modCount</strong>(假设它们此时的值为N)。在“线程a”在遍历arrayList过程中的某一时刻，“线程b”执行了，并且“线程b”删除了arrayList中的“节点A”。“线程b”执行remove()进行删除操作时，在remove()中执行了“modCount++”，此时<strong>modCount变成了N+1</strong>！“线程a”接着遍历，当它执行到next()函数时，调用checkForComodification()比较“expectedModCount”和“modCount”的大小；而“expectedModCount&#x3D;N”，“modCount&#x3D;N+1”,这样，便抛出ConcurrentModificationException异常，产生fail-fast事件。</li>
+<li>向arrayList中添加内容。</li>
+<li>新建一个“<strong>线程a</strong>，并在线程a中<strong>通过Iterator反复的读取arrayList的值</strong></li>
+<li>新建一个<strong>线程b</strong>，在线程b中<strong>删除arrayList中的一个节点A</strong></li>
+<li>这时，就会产生有趣的事件了。在某一时刻，线程a创建了arrayList的Iterator。此时节点A仍然存在于arrayList中，<strong>创建arrayList时，expectedModCount &#x3D; modCount</strong>(假设它们此时的值为N)。在线程a在遍历arrayList过程中的某一时刻，线程b执行了，并且线程b删除了arrayList中的节点A。线程b执行remove()进行删除操作时，在remove()中执行了<code>modCount++</code>，此时<strong>modCount变成了N+1</strong>！线程a接着遍历，当它执行到next()函数时，调用checkForComodification()比较expectedModCount和modCount的大小；而<code>expectedModCount=N</code>，<code>modCount=N+1</code>,这样，便抛出ConcurrentModificationException异常，产生fail-fast事件。</li>
 </ol>
 <p>至此，<strong>我们就完全了解了fail-fast是如何产生的！</strong><br>即，当多个线程对同一个集合进行操作的时候，某线程访问集合的过程中，该集合的内容被其他线程所改变(即其它线程通过add、remove、clear等方法，改变了modCount的值)；这时，就会抛出ConcurrentModificationException异常，产生fail-fast事件。</p>
 <h2 id="解决fail-fast方式"><a href="#解决fail-fast方式" class="headerlink" title="解决fail-fast方式"></a>解决fail-fast方式</h2><p>抛出这种错误的原因是因为出现并发操作，主要由以下俩种方式来解决</p>
@@ -337,6 +330,7 @@
 <li>我们可以使用<code>Collections.synchronizedList</code>包装一下Arraylist，对每个方法都是用Synchronize进行同步</li>
 <li>使用JUC中线程安全的集合类，类如<code>CopyOnWriteList</code>来替代ArrayList</li>
 </ol>
+<h2 id="Fail-fast存在的问题"><a href="#Fail-fast存在的问题" class="headerlink" title="Fail-fast存在的问题"></a>Fail-fast存在的问题</h2><p>从前面可以看到，Fail-fast产生的原因是expectedModCount和modCount不相等，就会抛出异常，什么时间会修改modCount，在删除或者新增的时候会修改，如果是更新呢，根据ArrayList的源码可以看出，是不会对modCount进行修改，因此如果遍历数据的时候，只是修改数据，则不会出现Fail-fast的问题，因此会带来数据不一致的问题，但是ArrayList本身也没有保证一致性。</p>
 
     </div>
 
@@ -347,19 +341,19 @@
   <div class="popular-posts-header">相关文章推荐</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/2d62f277.html" rel="bookmark">Java 集合系列01之 总体框架</a></div>
+      <div class="popular-posts-title"><a href="/archives/2d62f277.html" rel="bookmark">java集合系列01之 总体框架</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/4dcbcf5f.html" rel="bookmark">Java 集合系列03之ArrayList</a></div>
+      <div class="popular-posts-title"><a href="/archives/4dcbcf5f.html" rel="bookmark">java集合系列03之ArrayList</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/ab3cc2a5.html" rel="bookmark">Java 集合系列07之 Stack源码解析和使用示例</a></div>
+      <div class="popular-posts-title"><a href="/archives/ab3cc2a5.html" rel="bookmark">java集合系列07之 Stack源码解析和使用示例</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/719892b8.html" rel="bookmark">Java 集合系列09之 Map架构</a></div>
+      <div class="popular-posts-title"><a href="/archives/719892b8.html" rel="bookmark">java集合系列09之Map架构</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/c4403926.html" rel="bookmark">Java 集合系列10 之HashMap详细介绍和使用示例</a></div>
+      <div class="popular-posts-title"><a href="/archives/272a8849.html" rel="bookmark">java集合系列11之LinkedHashMap和LinkedHashSet源码解析</a></div>
     </li>
   </ul>
 
@@ -372,7 +366,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://fengxiu.club/archives/6ad3883.html" title="Java 集合系列04之 fail-fast总结">http://fengxiu.club/archives/6ad3883.html</a>
+    <a href="http://fengxiu.club/archives/6ad3883.html" title="java集合系列04之 fail-fast总结">http://fengxiu.club/archives/6ad3883.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -392,12 +386,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/archives/9646a357.html" rel="prev" title="Java 集合系列02之 Collection">
-      <i class="fa fa-chevron-left"></i> Java 集合系列02之 Collection
+    <a href="/archives/9646a357.html" rel="prev" title="java集合系列02之 Collection">
+      <i class="fa fa-chevron-left"></i> java集合系列02之 Collection
     </a></div>
       <div class="post-nav-item">
-    <a href="/archives/4dcbcf5f.html" rel="next" title="Java 集合系列03之ArrayList">
-      Java 集合系列03之ArrayList <i class="fa fa-chevron-right"></i>
+    <a href="/archives/4dcbcf5f.html" rel="next" title="java集合系列03之ArrayList">
+      java集合系列03之ArrayList <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -477,7 +471,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-fast%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Fail-fast简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-fast%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">Fail-fast示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-fast%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">Fail-fast原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3fail-fast%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">解决fail-fast方式</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-fast%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Fail-fast简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-fast%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">Fail-fast示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-fast%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">Fail-fast原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3fail-fast%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">解决fail-fast方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fail-fast%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">Fail-fast存在的问题</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -493,14 +487,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-count">211</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">54</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -549,7 +543,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:26</span>
+    <span title="站点阅读时长">21:24</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -643,7 +637,7 @@
   var disqus_config = function() {
     this.page.url = "http://fengxiu.club/archives/6ad3883.html";
     this.page.identifier = "archives/6ad3883.html";
-    this.page.title = "Java 集合系列04之 fail-fast总结";
+    this.page.title = "java集合系列04之 fail-fast总结";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

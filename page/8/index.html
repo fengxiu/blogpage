@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="记录学习日志">
@@ -134,12 +134,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">55</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">54</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">210</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">211</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -196,6 +196,289 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/dc527cae.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/dc527cae.html" class="post-title-link" itemprop="url">数据库和缓存双写一致性方案简介</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-03 16:45:55" itemprop="dateCreated datePublished" datetime="2019-04-03T16:45:55+00:00">2019-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/dc527cae.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/dc527cae.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/dc527cae.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/dc527cae.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本篇文章主要先介绍几种数据库和缓存双写一致性的方案并分析其中的优缺点，最后讲解一下网上经常出现的一些关于这方面的名词。</p>
+<h2 id="更新策略"><a href="#更新策略" class="headerlink" title="更新策略"></a>更新策略</h2><p>首先，缓存由于其高并发和高性能的特性，已经在项目中被广泛使用。在读取缓存方面，都是按照下图的流程来进行业务操作。</p>
+<p><img src="/images/o_getkeyflow.png" alt="o_getkeyflow"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/dc527cae.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/8650cc91.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/8650cc91.html" class="post-title-link" itemprop="url">阿里春招实习面经：java开发</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-02 11:27:29" itemprop="dateCreated datePublished" datetime="2019-04-02T11:27:29+00:00">2019-04-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/8650cc91.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/8650cc91.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/8650cc91.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/8650cc91.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>先说一下，你们可能看到我的面经也会觉得很惊奇，为什么其他面经里面出现的问题，我这里几乎都没出现，而且面试流程也走的这么快。下面就看一下我的阿里春招面试奇葩之旅。</p>
+<h2 id="阿里一面-2019年03月28日"><a href="#阿里一面-2019年03月28日" class="headerlink" title="阿里一面 2019年03月28日"></a>阿里一面 2019年03月28日</h2><ol>
+<li><strong>你是怎么学习java</strong></li>
+<li><strong>你看过什么比较经典的java方面的书</strong></li>
+<li><strong>你觉得java中有什么类你很喜欢</strong></li>
+<li><strong>java中的锁</strong></li>
+<li><strong>自定义无锁队列，不能使用CAS</strong></li>
+<li><strong>JVM内存划分</strong></li>
+<li><strong>能不能自定义java.lang.String</strong>：考察java类加载机制</li>
+<li><strong>top k问题</strong></li>
+<li><strong>有什么想问他的，紧接着后面问了我一个你面试过了腾讯吗</strong>：我回答：不知道。这个很失水准。后面仔细想想，主要是自己当时因为最后一个topk问题没回答出来，脑子正处于蒙的阶段。<!-- more  -->
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3></li>
+<li>开放性问题，就把自己知道的全部讲出来，只要他不打断你，你还有的说就讲。另外要给他一个你在学习过程中是怎样看待这个问题，怎样解决这个问题的。不要只是简单的罗列。</li>
+<li>千万要保持清醒，不然就被套路了。</li>
+</ol>
+<h2 id="阿里二面-2019年03月29日"><a href="#阿里二面-2019年03月29日" class="headerlink" title="阿里二面 2019年03月29日"></a>阿里二面 2019年03月29日</h2><ol>
+<li><strong>自我介绍</strong></li>
+<li><strong>你是怎样学习java</strong></li>
+<li><strong>在学习java中遇到的困难</strong></li>
+<li><strong>你有没有在学习java中遇到瓶颈</strong>：我主要说的是学习java web中遇到配置问题，然后描述了一下自己学习的经历，说刚开始很痛苦，也不知道如何解决，经过一次次的解决终于找到如何解决问题的方法，也知道出现了问题怎么去google搜。后面自己在遇到问题的时候，简单的一眼就可以看出来，复杂的就按照先分析问题，然后按照分析出来的思路一步步的解决，如果思路有问题，在查找解决思路的过程中及时调整。</li>
+<li><strong>你觉得你取得的最大成就是什么</strong></li>
+<li><strong>在参加阿里比赛的过程中遇到的最大困难是什么</strong>：我回答的是自己转变思路很难，以前都是在命令编程模式下写程序，忽然转到异步模式下，很不适应。</li>
+<li><strong>事务</strong>：这个问题很宽，没有具体说什么事务，我就办自己知道的mysql事务全部说给他听。其实后来想想还可以讲讲分布式事务，毕竟我也稍微懂点。</li>
+<li><strong>你有什想问我的</strong></li>
+</ol>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>自己在回答问题的时候想到哪就说道哪，没有一个具体明确的思路，所以面试完需要自己整理自己学过的知识点，然后形成一个体系。</p>
+<h2 id="阿里三面-交叉面-2019年04月1日"><a href="#阿里三面-交叉面-2019年04月1日" class="headerlink" title="阿里三面 交叉面 2019年04月1日"></a>阿里三面 交叉面 2019年04月1日</h2><ol>
+<li><strong>自我介绍</strong>：我主要介绍了一下阿里天池中间件大赛的项目，然后在中间也分析了自己如何解决问题，如何选择框架，以及自己如何去拓展这些问题，从中学习到的知识点。我觉得这个思路其实挺好的，因为面试官一直说很不错。</li>
+<li><strong>FOTA项目介绍</strong>：这个是一个简单的前后端分离的web后端管理系统，然后向他介绍一下。他问这个项目的原因是因为觉得我前一个项目已经被阿里的面试官都问过了，就不想在问那个项目。在介绍的时候分析了问什么前后端分离，选java原因，选择springboot的原因等等。</li>
+<li><strong>你是怎样理解springboot中约定由于配置</strong>：讲了一下自己学习java web的经历，然后说了配置的难点，然后说了一下这些约定的好处。然后说了一下自己的理解，只有先熟悉了整个框架如何使用才能很好的去分析流程很原理。</li>
+<li><strong>bean的声明周期</strong>：我说知道的几种，以及他其实如何实现的。</li>
+<li><strong>spring创建bean的流程</strong>：简单的说了整个流程</li>
+<li><strong>beanFactoryPost，FactoryBean，BeanPostProessor等等的作用</strong></li>
+<li><strong>如何设计一个秒杀系统</strong>：这里还是没有整理好，想到哪就说到哪。其实应该按照从请求的入口到访问数据库的流程来整理。我的回答是先做页面静态化，这些全部交给nginx来做。接着说将这部分系统分离出来，以免影响其他功能的访问。然后将商品数量放到redis中，使得数据的访问尽量都到redis中，而不会到mysql中。避免缓存被击穿。这一点我觉的我对redis不怎么熟，也就每太仔细说。然后说了一下用队列来防止redis中的数据成为热点数据，从而降低访问量。接着提供限流和降级，防止系统出现崩溃。</li>
+<li><strong>快速排序</strong></li>
+<li><strong>俩数之和问题</strong></li>
+</ol>
+<h2 id="阿里四面-终面"><a href="#阿里四面-终面" class="headerlink" title="阿里四面 终面"></a>阿里四面 终面</h2><ol>
+<li><strong>介绍一下自己</strong>：这里主要是介绍自己经历</li>
+<li><strong>介绍一下项目中的关键点</strong></li>
+<li><strong>你最近在学习什么新技术</strong></li>
+</ol>
+<h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>这一面总体不是很好，首先自己是跑到一个安静的地点接的电话，当时气喘吁吁。因此自己在面试的时候最好处于一个很好的状态，不要像我这样。然后就面试，因为没怎么准备自我介绍，所以比较蒙。另外这一面就是总结面，没什么技术问题，主要是聊聊你的学习情况，所以最好多看看面经，准备这些比较长问到的问题。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/52bb366.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -227,7 +510,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -384,7 +667,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -507,7 +790,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -640,7 +923,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -855,7 +1138,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1233,7 +1516,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
+                <time title="修改时间：2022-04-22 01:41:16" itemprop="dateModified" datetime="2022-04-22T01:41:16+00:00">2022-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1331,282 +1614,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/3f56c103.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/3f56c103.html" class="post-title-link" itemprop="url">深入分析Java IO 的工作机制</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-23 05:22:00" itemprop="dateCreated datePublished" datetime="2019-03-23T05:22:00+00:00">2019-03-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/IO/" itemprop="url" rel="index"><span itemprop="name">IO</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/3f56c103.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/3f56c103.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/3f56c103.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/3f56c103.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="IO类库的基本架构"><a href="#IO类库的基本架构" class="headerlink" title="IO类库的基本架构"></a>IO类库的基本架构</h2><p>I&#x2F;O 问题是任何编程语言都无法回避的问题，可以说 I&#x2F;O 问题是整个人机交互的核心问题，因为 I&#x2F;O 是机器获取和交换信息的主要渠道。在当今这个数据大爆炸时代，I&#x2F;O 问题尤其突出，很容易成为一个性能瓶颈。正因如此，所以 Java 在 I&#x2F;O 上也一直在做持续的优化，如从 1.4 开始引入了 NIO，提升了 I&#x2F;O 的性能。关于 NIO 我们将在后面详细介绍。</p>
-<p>Java 的 I&#x2F;O 操作类在包 java.io 下，大概有将近 80 个类，但是这些类大概可以分成四组，分别是：</p>
-<ol>
-<li>基于字节操作的 I&#x2F;O 接口：InputStream 和 OutputStream</li>
-<li>基于字符操作的 I&#x2F;O 接口：Writer 和 Reader</li>
-<li>基于磁盘操作的 I&#x2F;O 接口：File</li>
-<li>基于网络操作的 I&#x2F;O 接口：Socket</li>
-</ol>
-<p>前两组主要是根据传输数据的数据格式，后两组主要是根据传输数据的方式，虽然 Socket 类并不在 java.io 包下，但是仍然把它们划分在一起，因为 I&#x2F;O 的核心问题要么是数据格式影响 I&#x2F;O 操作，要么是传输方式影响 I&#x2F;O 操作，也就是将什么样的数据写到什么地方的问题，I&#x2F;O 只是人与机器或者机器与机器交互的手段，除了在它们能够完成这个交互功能外，我们关注的就是如何提高它的运行效率了，而数据格式和传输方式是影响效率最关键的因素了。后面的分析也是基于这两个因素来展开的。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/3f56c103.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/aeafbee0.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/aeafbee0.html" class="post-title-link" itemprop="url">IO模型：阻塞、非阻塞、同步和异步之间的区别</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-22 23:04:13" itemprop="dateCreated datePublished" datetime="2019-03-22T23:04:13+00:00">2019-03-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-20 01:21:57" itemprop="dateModified" datetime="2022-04-20T01:21:57+00:00">2022-04-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/aeafbee0.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/aeafbee0.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/aeafbee0.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/aeafbee0.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在Unix系统中，主要有以下5种IO模型:</p>
-<ul>
-<li>阻塞式IO</li>
-<li>非阻塞式IO</li>
-<li>IO复用</li>
-<li>信号量式驱动IO</li>
-<li>异步IO</li>
-</ul>
-<p>本篇文章主要是想弄明白阻塞和非阻塞、同步与异步之间的区别，因此信号量式驱动IO本篇文章不会涉及，如果以后我用到的话，会在来补充。</p>
-<p>对于一个network IO (这里我们以read举例)，它会涉及到两个系统对象，一个是调用这个IO的process (or thread)，另一个就是系统内核(kernel)。当一个read操作发生时，它会经历两个阶段：</p>
-<ol>
-<li>等待数据准备 (Waiting for the data to be ready)</li>
-<li>将数据从内核拷贝到进程中 (Copying the data from the kernel<br> to the process)</li>
-</ol>
-<p>记住这两点很重要，因为这些IO Model的区别就是在两个阶段上各有不同的情况。下面首先介绍每种IO模型，然后在来总结他们之间的区别。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/aeafbee0.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1674,14 +1685,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">210</span>
+          <span class="site-state-item-count">211</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">54</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -1730,7 +1741,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:26</span>
+    <span title="站点阅读时长">21:24</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
