@@ -27,25 +27,25 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="同源策略与跨域访问同源策略（Same-Origin Policy）是浏览器访问网页过程中最基础的安全策略。它仍然是由大名鼎鼎的网景公司提出的（网景公司对HTTP、SSL等协议的制定做出了巨大贡献，只是在随后的浏览器大战中输给了以垄断见长的微软IE）。所谓同源是指浏览器访问目标url的域名（domain）、协议（protocol）、端口（port）这三个要素是相同的。所谓“同源策略”是指A页面里的脚">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-241.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-242.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-243.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-244.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-245.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-246.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-247.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-248.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-249.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-250.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-251.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-252.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-253.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-241.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-242.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-243.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-244.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-245.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-246.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-247.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-248.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-249.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-250.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-251.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-252.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-253.png">
 <meta property="article:published_time" content="2019-03-10T10:23:00.000Z">
 <meta property="article:modified_time" content="2019-03-10T10:23:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="http">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/pasted-241.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-241.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/d6ee44af.html">
 
@@ -312,17 +312,17 @@
         <h2 id="同源策略与跨域访问"><a href="#同源策略与跨域访问" class="headerlink" title="同源策略与跨域访问"></a>同源策略与跨域访问</h2><p>同源策略（Same-Origin Policy）是浏览器访问网页过程中最基础的安全策略。它仍然是由大名鼎鼎的网景公司提出的（网景公司对HTTP、SSL等协议的制定做出了巨大贡献，只是在随后的浏览器大战中输给了以垄断见长的微软IE）。所谓同源是指浏览器访问目标url的域名（domain）、协议（protocol）、端口（port）这三个要素是相同的。所谓“同源策略”是指A页面里的脚本通过<a href="http://link.zhihu.com/?target=https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest">XHR</a>和<a href="http://link.zhihu.com/?target=https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API">Fetch</a>等方式加载B页面资源时，如果发现B页面与A页面不是“同源”的，则会禁止访问（准确的说是对跨域请求的返回结果进行屏蔽）。下图显示了一个由script发出的非同源请求，数据最终会在browser端被屏蔽。</p>
 <span id="more"></span>
 
-<p><img src="/images/pasted-241.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-241.png" alt="upload successful"></p>
 <p>为了验证一下同源策略的有效性，我进行了如下测试，首先在本地Mac上搭建一个nignx服务器，可以参照这个<a href="http://link.zhihu.com/?target=https://blog.csdn.net/snowrain1108/article/details/50072057">方法</a>搭建。然后在首页（&#x2F;usr&#x2F;local&#x2F;var&#x2F;www&#x2F;index.html）中添加如下script内容：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"><span class="type">var</span> <span class="variable">xhr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">xhr.onreadystatechange=function()&#123;</span><br><span class="line">    <span class="keyword">if</span> (xhr.readyState == <span class="number">4</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span>((xhr.status &gt;= <span class="number">200</span> &amp;&amp; xhr.status &lt; <span class="number">300</span>) || xhr.status == <span class="number">304</span>) &#123;</span><br><span class="line">            alert(<span class="string">&quot;ok&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            alert(<span class="string">&quot;fail&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">xhr.open(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;http://api.yunos.com&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">xhr.send(<span class="literal">null</span>);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 
 <p>在shell中开启nignx，然后通过chrome浏览器输入<a href="http://localhost:8080会显示以下内容。这表示由xhr发起的跨域请求没有成功。">http://localhost:8080会显示以下内容。这表示由xhr发起的跨域请求没有成功。</a></p>
-<p><img src="/images/pasted-242.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-242.png" alt="upload successful"></p>
 <p>再通过chrome浏览器的开发者工具中的console可以看到如下信息。从红色信息中可以看到，由于跨域请求的资源 <a target="_blank" rel="noopener" href="http://api.yunos.com/">http://api.yunos.com</a>的response header中没有Access-Control-Allow-Origin头域（后面会讲到），因此本次跨域请求的返回结果被屏蔽。</p>
-<p><img src="/images/pasted-243.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-243.png" alt="upload successful"></p>
 <p>为了进一步验证数据是在浏览器侧被屏蔽的，我们通过wireshark进行了抓包处理，从抓包中可以清楚的看到<a target="_blank" rel="noopener" href="http://api.yunos.com/">http://api.yunos.com</a>的内容已经下载到了客户端：</p>
-<p><img src="/images/pasted-244.png" alt="upload successful"></p>
-<p><img src="/images/pasted-245.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-244.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-245.png" alt="upload successful"></p>
 <p>从上面的实验可以验证同源测试的有效性。</p>
 <h2 id="跨域资源共享（Cross-Origin-Resource-Sharing-CORS）"><a href="#跨域资源共享（Cross-Origin-Resource-Sharing-CORS）" class="headerlink" title="跨域资源共享（Cross-Origin Resource Sharing, CORS）"></a>跨域资源共享（Cross-Origin Resource Sharing, CORS）</h2><p>随着互联网的不断发展，网站的规模和复杂程度也与日俱增，因此在网页设计上会存在类似上面那样的跨域请求，即需要绕过“同源策略”去完成跨域请求。因此，出现了“跨域资源共享”（CORS）机制，它的实现原理是服务端与客户端配合，新增一组HTTP首部字段，允许服务器声明哪些源站有权限访问哪些资源。例如，通过在response header中添加相关头域（上面看到的Access-Control-Allow-Origin头域）来告知客户端（浏览器）该资源是否可以跨域访问本资源。</p>
 <p>此外，对于那些可能对服务端数据产生副作用的HTTP方法（例如GET以外的一些方法），要求浏览器必须先使用<a href="http://link.zhihu.com/?target=https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/OPTIONS">OPTIONS</a>方法发起一个预检请求（preflight request），从服务器端获知是否允许本次跨域请求。只有当服务器端允许后，才能发起实际的HTTP请求。在预检请求对应的response中，服务端也可以通知客户端是否需要携带身份凭证（例如Cookie等）。因此，CORS将跨域请求分为了三种情况：</p>
@@ -336,9 +336,9 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><br><span class="line">    <span class="keyword">var</span> invocation = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">    <span class="keyword">var</span> url = <span class="string">&#x27;http://aruner.net/resources/access-control-with-get/&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    invocation.<span class="title function_">open</span>(<span class="string">&#x27;GET&#x27;</span>, url, <span class="literal">true</span>);</span><br><span class="line">    invocation.<span class="property">onreadystatechange</span> = handler;</span><br><span class="line">    invocation.<span class="title function_">send</span>(); </span><br><span class="line">    ...    </span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 
 <p>通过chrome的开发者工具来看具体的request请求。当在arunranga中发起对<a target="_blank" rel="noopener" href="http://aruner.net/">http://aruner.net</a>的资源的请求后，<a target="_blank" rel="noopener" href="http://aruner.net/">http://aruner.net</a>返回的response header中添加了Access-Control-Allow-Origin头域并告知可以允许<a target="_blank" rel="noopener" href="http://arunrange.com/">http://arunrange.com</a>使用该资源。</p>
-<p><img src="/images/pasted-246.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-246.png" alt="upload successful"></p>
 <p>下面是通过wireshark抓包的情况：</p>
-<p><img src="/images/pasted-247.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-247.png" alt="upload successful"></p>
 <p>简单请求的原理是在浏览器中设置了一个白名单，符合以上条件的才是简单请求。当我们要发送一个跨域请求的时候，浏览器会先检查该请求，如果满足以上条件，浏览器会立即发送该请求。如果发现为非简单请求（比如头域中包含一个X-Forwarded-For字段），此时浏览器不会马上发送该请求，而是发送一个Preflight Request，有一个与服务器进行验证的过程。</p>
 <h3 id="预检请求（Preflight-Request）"><a href="#预检请求（Preflight-Request）" class="headerlink" title="预检请求（Preflight Request）"></a>预检请求（Preflight Request）</h3><p>如果一个请求包含了任何自定义的头域，或者它使用的HTTP方法是GET、HEAD、POST之外的任何一个方法，或者POST请求的Content-Type不是application&#x2F;x-www-form-urlencoded，multipart&#x2F;form-data或text&#x2F;plain之一。</p>
 <p>下面是一个Preflight Request的示例。此处是在<a target="_blank" rel="noopener" href="http://arunranga.com/examples/access-control/preflightInvocation.html">arunranga</a>这个域名里面通过一个XHR请求POST一段数据至<a target="_blank" rel="noopener" href="http://aruner.net/resources/access-control-with-post-preflight/">aruner</a>端。</p>
@@ -346,22 +346,22 @@
 
 <p>通过chrome的开发者工具来看具体的request请求。当浏览器发现本次请求存在跨域情况并且不符合“简单请求”的条件（此处为POST操作且包含自定义的头域X-PINGARGUNER，此外Content-Type也不符合“简单请求”的限制），因此将其视为Preflight Request进行操作。此时会先向目标地址发送一个OPTIONS请求并告知服务器随后会使用POST方法（Access-Control-Request-Method: POST）和自定义的请求头部（Access-Control-Request-Headers: X-PINGARUNER, CONTENT-TYPE）以此来问询服务器是否接受。</p>
 <p>服务器在response header中对OPTIONS请求中的问询内容进行了反馈，具体可以看到Access-Control-Allow-Methods: POST, GET, OPTIONS 表明服务端允许客户端使用POST、GET、OPTIONS方法；Access-Control-Allow-Headers: X-PINGARUNER, CONTENT-TYPE表明服务端允许客户端使用携带X-PINGARUNER和CONTENT-TYPE的头域；Access-Control-Max-Age表明该响应的时效为20天，即20天内浏览器无需再为同一个请求发起预检请求（浏览器自身维护了一个最大有效时间，以两者中较小值为准）。</p>
-<p><img src="/images/pasted-248.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-248.png" alt="upload successful"></p>
 <p>下面的这个请求就是OPTIONS返回后实际发出的POST请求。在该请求中包含了OPTIONS向服务端查询的那些头域：</p>
-<p><img src="/images/pasted-249.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-249.png" alt="upload successful"></p>
 <p>下面是wireshark抓包的情况。从抓包可以看到，两次请求是通过一个tcp connection发出的。首先发送了OPTIONS进行问询，随后发送了真正的POST请求：</p>
-<p><img src="/images/pasted-250.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-250.png" alt="upload successful"></p>
 <h3 id="附带身份凭证请求（Request-with-Credential）"><a href="#附带身份凭证请求（Request-with-Credential）" class="headerlink" title="附带身份凭证请求（Request with Credential）"></a>附带身份凭证请求（Request with Credential）</h3><p>如果一个跨域请求中包含了当前页面的用户凭证（例如Cookie信息等）。</p>
 <p>下面是一个的示例。当将XHR的withCredentials设置为“true”以后，则会想服务端发送当前页面的Cookie信息。此处是在arunranga这个域名里面通过一个XHR请求GET申请<a target="_blank" rel="noopener" href="http://aruner.net/resources/access-control-with-credentials/">aruner</a>里面的资源并要求携带本页面的Cookie信息。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt; </span><br><span class="line">    <span class="keyword">var</span> invocation = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>(); </span><br><span class="line">    <span class="keyword">var</span> url = <span class="string">&#x27;http://aruner.net/resources/access-control-with-credentials/&#x27;</span>;       </span><br><span class="line">     </span><br><span class="line">    invocation.<span class="title function_">open</span>(<span class="string">&#x27;GET&#x27;</span>, url, <span class="literal">true</span>);      </span><br><span class="line">    invocation.<span class="property">withCredentials</span> = <span class="string">&quot;true&quot;</span>; <span class="comment">// 向服务器发送Cookie信息     </span></span><br><span class="line">    invocation.<span class="property">onreadystatechange</span> = handler;     </span><br><span class="line">    invocation.<span class="title function_">send</span>();</span><br><span class="line">    ... </span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 
 <p>由于这是一个GET请求，因此浏览器不会视其为“预检请求”，她会直接发送GET请求。当第一次发起请求的时候，服务端会通过Set-Cookie头域返回Cookie信息，并且通过Access-Control-Allow-Credentials: true 头域告知浏览器可以将响应内容传递给用户（如果响应头域中未包含该项，则浏览器将屏蔽返回内容）。</p>
-<p><img src="/images/pasted-251.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-251.png" alt="upload successful"></p>
 <p>当二次发起该请求的时候，可以看到此时已经将Cookie信息带上了。从返回的内容也可以看出，服务端已经识别了客户端的Cookie信息：</p>
-<p><img src="/images/pasted-252.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-252.png" alt="upload successful"></p>
 <p>需要注意的是：对于“附带身份凭证请求”，服务器响应的Access-Control-Allow-Origin的值不能为“*”（即不能设置对所有人可见），这是因为在第一次的响应请求头域中携带了Set-Cookie信息、在第二次的请求头域中携带了Cookie信息。</p>
 <p><strong>相关头域</strong></p>
-<p><img src="/images/pasted-253.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-253.png" alt="upload successful"></p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://www.zhihu.com/people/lonniez/activities">lonnieZ http的演进之路</a></li>
 </ol>

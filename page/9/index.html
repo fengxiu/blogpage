@@ -227,7 +227,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -360,7 +360,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -495,7 +495,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -632,7 +632,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -711,8 +711,8 @@
 </ol>
 <h2 id="第一范式"><a href="#第一范式" class="headerlink" title="第一范式"></a>第一范式</h2><p><strong>1NF的定义为：符合1NF的关系中的每个属性都不可再分</strong></p>
 <p>数据库表的每一列都是不可分割的基本数据项，同一列中不能有多个值，即实体中的某个属性不能有多个值或者不能有重复的属性。（保持数据的原子性）</p>
-<p>表1所示的情况，就不符合1NF的要求。<br><img src="/images/24afd11455ac34a280fa83e4e8d75ccc_hd.jpg" alt="表1"></p>
-<p>实际上，1NF是所有关系型数据库的最基本要求，你在关系型数据库管理系统（RDBMS），例如SQL Server，Oracle，MySQL中创建数据表的时候，如果数据表的设计不符合这个最基本的要求，那么操作一定是不能成功的。也就是说，只要在RDBMS中已经存在的数据表，一定是符合1NF的。如果我们要在RDBMS存储表中的数据，就得设计为表2的形式：<br><img src="/images/6b735fb9503b0930e741faa474fed28e_hd.jpg" alt="表2"><br>但是仅仅符合1NF的设计，仍然会存在数据冗余过大，插入异常，删除异常，修改异常的问题，例如对于表3中的设计：<br><img src="/images/5b16f655b57a957bfa340d0a996a0eea_hd.jpg" alt="表三"></p>
+<p>表1所示的情况，就不符合1NF的要求。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/24afd11455ac34a280fa83e4e8d75ccc_hd.jpg" alt="表1"></p>
+<p>实际上，1NF是所有关系型数据库的最基本要求，你在关系型数据库管理系统（RDBMS），例如SQL Server，Oracle，MySQL中创建数据表的时候，如果数据表的设计不符合这个最基本的要求，那么操作一定是不能成功的。也就是说，只要在RDBMS中已经存在的数据表，一定是符合1NF的。如果我们要在RDBMS存储表中的数据，就得设计为表2的形式：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/6b735fb9503b0930e741faa474fed28e_hd.jpg" alt="表2"><br>但是仅仅符合1NF的设计，仍然会存在数据冗余过大，插入异常，删除异常，修改异常的问题，例如对于表3中的设计：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/5b16f655b57a957bfa340d0a996a0eea_hd.jpg" alt="表三"></p>
 <ol>
 <li><strong>数据冗余过大</strong>：每一名学生的学号、姓名、系名、系主任这些数据重复多次。每个系与对应的系主任的数据也重复多次</li>
 <li><strong>插入异常</strong>：假如学校新建了一个系，但是暂时还没有招收任何学生（比如3月份就新建了，但要等到8月份才招生），那么是无法将系名与系主任的数据单独地添加到数据表中去的 （注2）<ul>
@@ -740,21 +740,21 @@
 <li>课名-&gt;系主任</li>
 </ul>
 <p>从函数依赖这个概念展开，还会有三个概念：</p>
-<h4 id="完全函数依赖"><a href="#完全函数依赖" class="headerlink" title="完全函数依赖"></a>完全函数依赖</h4><p>在一张表中，如果X-&gt;Y,且对于X的任何一个真子集(假如属性组X包含超过一个属性的话，如果是一个那么真子集就是自己)，任意真子集用X1表示，X1-&gt;Y都不成立，那么我们称Y对于X完全函数依赖，记做：<br>    <img src="/images/pasted-324.png" alt="upload successful"></p>
+<h4 id="完全函数依赖"><a href="#完全函数依赖" class="headerlink" title="完全函数依赖"></a>完全函数依赖</h4><p>在一张表中，如果X-&gt;Y,且对于X的任何一个真子集(假如属性组X包含超过一个属性的话，如果是一个那么真子集就是自己)，任意真子集用X1表示，X1-&gt;Y都不成立，那么我们称Y对于X完全函数依赖，记做：<br>    <img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-324.png" alt="upload successful"></p>
 <p>继续用上面表三来做例子：</p>
 <ul>
 <li>姓名完全依赖于学号</li>
 <li>分数完全依赖于(学号，课名)，(一个学生可能有多门课，因此有多个分数，一个课程有多个学生，就有多个分数)</li>
 </ul>
 <h4 id="部分函数依赖："><a href="#部分函数依赖：" class="headerlink" title="部分函数依赖："></a><strong>部分函数依赖：</strong></h4><p>假如Y函数依赖于X，但同时Y并不完全函数依赖于X。那么我们就称Y部分依赖于X，记作：</p>
-<p><img src="/images/pasted-325.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-325.png" alt="upload successful"></p>
 <p>上面定义比较绕，我们可以这样理解，当主键由两个或两个以上字段构成，而表中的某些信息通过主键的一个字段就能唯一确定，我们称这样的依赖关系为部分依赖</p>
 <p>比如：</p>
 <ul>
 <li>姓名完全依赖于(学号，课名)，但是学号本身就可以决定姓名。</li>
 </ul>
 <h4 id="传递函数依赖"><a href="#传递函数依赖" class="headerlink" title="传递函数依赖"></a>传递函数依赖</h4><p>假如Z函数依赖于Y，且Y函数依赖于X ，同时Y不包含于X，且X不函数依赖于Y这个前提，那么我们就称Z传递函数依赖于X ，简单的理解就是A依赖于B，B依赖于C，就可以说A依赖C，记作</p>
-<p><img src="/images/pasted-326.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-326.png" alt="upload successful"></p>
 <h3 id="码、候选码和主码"><a href="#码、候选码和主码" class="headerlink" title="码、候选码和主码"></a>码、候选码和主码</h3><p><strong>码</strong>：简单的说就是能唯一标识实体的属性。如果用前面函数依赖关系来解释，假设K是某表中的一个属性或属性组，若除K之外的所有属性都完全函数依赖于K，那么我们称K为候选码，简称为码。在实际中我们通常可以理解为：假如当 K 确定的情况下，该表除 K 之外的所有属性的值也就随之确定，那么K就是码。</p>
 <p>一张表中可以有超过一个码。（实际应用中为了方便，通常选择其中的一个码作为<strong>主码</strong>）主码我们在建立数据库的时候，需要为每张表指定一个主码，主码也叫主键。所谓主码就是在实体集中区分不同实体的候选码。</p>
 <p> 例如：在学生实体中，“学号”是能唯一的区分学生实体的，同时又假设“姓名”、“年龄”的属性组合足以区分学生实体，那么{学号}和{姓名，年龄}都是候选码。而我们选择学号极少变化，比较稳定，因此我们选他做主码。</p>
@@ -772,7 +772,7 @@
 </ol>
 <p>看起来很麻烦是，但是这里有一个诀窍，就是假如A是码，这里的A可能是一个单独属性也可能是多个属性，那么所有包含了A的属性组，如（A，B）、（A，C）、（A，B，C）等等，都不是码了（因为码的要求里有一个“<strong>完全函数依赖</strong>要求）。</p>
 <p><strong>下图是表3中所有的函数依赖关系：</strong></p>
-<p><img src="/images/pasted-327.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-327.png" alt="upload successful"></p>
 <p>这一步完成以后，可以得到，表3的码只有一个，就是<strong>（学号、课名）</strong>。</p>
 <h4 id="第二步：根据第一步所得到的码，找出所有的主属性"><a href="#第二步：根据第一步所得到的码，找出所有的主属性" class="headerlink" title="第二步：根据第一步所得到的码，找出所有的主属性"></a>第二步：根据第一步所得到的码，找出所有的主属性</h4><p>主属性有俩个：学号与课名</p>
 <h4 id="第三步：找出所有的非主属性"><a href="#第三步：找出所有的非主属性" class="headerlink" title="第三步：找出所有的非主属性"></a>第三步：找出所有的非主属性</h4><p>非主属性有四个：<strong>姓名</strong>、<strong>系名</strong>、<strong>系主任</strong>、<strong>分数</strong></p>
@@ -783,9 +783,9 @@
 <p>对于<strong>选课</strong>表，其码是<strong>（学号，课名）</strong>，主属性是<strong>学号</strong>和<strong>课名</strong>，非主属性是<strong>分数</strong>，<strong>学号</strong>确定，并不能唯一确定<strong>分数</strong>，<strong>课名</strong>确定，也不能唯一确定<strong>分数</strong>，所以不存在非主属性<strong>分数</strong>对于码 <strong>（学号，课名）</strong>的部分函数依赖，所以此表符合2NF的要求。</p>
 <p>对于<strong>学生</strong>表，其码是<strong>学号，</strong>主属性是<strong>学号</strong>，非主属性是<strong>姓名、系名</strong>和<strong>系主任</strong>，因为码只有一个属性，所以不可能存在非主属性对于码 的部分函数依赖，所以此表符合2NF的要求。</p>
 <p>下表表示了模式分解以后的新的函数依赖关系</p>
-<p><img src="/images/pasted-328.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-328.png" alt="upload successful"></p>
 <p>下图是相对应上面表3进行模式分解之后的数据表4图</p>
-<p><img src="/images/pasted-329.png" alt="表4"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-329.png" alt="表4"></p>
 <p>这里来看看相对于上面的第一范式出现的问题，使用上表进行同样的操作，是否还存在问题？</p>
 <ol>
 <li>数据冗余减少：从上表可以明显的看出，学生的姓名，系主任和系名明显的减少。有改进</li>
@@ -803,9 +803,9 @@
 <p>对于<strong>学生</strong>表，码为<strong>学号</strong>，主属性为<strong>学号</strong>，非主属性为<strong>系名</strong>，不可能存在非主属性对于码的传递函数依赖，所以符合3NF的要求。</p>
 <p>对于<strong>系</strong>表，码为<strong>系名</strong>，主属性为<strong>系名</strong>，非主属性为<strong>系主任</strong>，不可能存在非主属性对于码的传递函数依赖（至少要有三个属性才可能存在传递函数依赖关系），所以符合3NF的要求。</p>
 <p>新的依赖关系如下图：</p>
-<p><img src="/images/pasted-330.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-330.png" alt="upload successful"></p>
 <p>新的数据表如下图</p>
-<p><img src="/images/pasted-331.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-331.png" alt="upload successful"></p>
 <p>现在我们来看一下，进行同样的操作，是否还存在着之前的那些问题？</p>
 <ol>
 <li>删除某个系中所有的学生记录<br>该系的信息不会丢失。——有改进</li>
@@ -822,7 +822,7 @@
 <p>那么关系模式仓库（仓库名，管理员，物品名，数量） 属于哪一级范式？</p>
 <p>答：已知函数依赖集：仓库名 → 管理员，管理员 → 仓库名，（仓库名，物品名）→ 数量<br>码：（管理员，物品名），（仓库名，物品名）<br>主属性：仓库名、管理员、物品名<br>非主属性：数量<br>所以不存在非主属性对码的部分函数依赖和传递函数依赖，此关系模式属于3NF。</p>
 <p>基于此关系模式的关系（具体的数据）可能如图所示：</p>
-<p><img src="/images/pasted-332.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-332.png" alt="upload successful"></p>
 <p>好，既然此关系模式已经属于了 3NF，那么这个关系模式是否存在问题呢？我们来看以下几种操作：</p>
 <ol>
 <li>先新增加一个仓库，但尚未存放任何物品，是否可以为该仓库指派管理员？——不可以，因为物品名也是主属性，根据实体完整性的要求，主属性不能为空。</li>
@@ -899,7 +899,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1026,7 +1026,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1164,7 +1164,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1296,7 +1296,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1531,7 +1531,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1604,7 +1604,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>从字面意思理解就是信号量，本质上来说是用于线程之间访问共享资源，是一种同步原语，只是访问的资源可能有多个，其实现是通过AQS框架。在我们开发中，经常会碰见使用信号量的场景，比如出于系统性能的考虑需要限流，这时需要控制同时访问共享资源的最大线程数量，或者共享资源是稀缺资源，我们需要有一种办法能够协调各个线程，以保证合理的使用公共资源。<br>可以看下图来理解<br><img src="/images/pasted-309.png" alt="upload successful"><br>有四个线程来共同竞争资源，现在信号量是5，则表明共享资源的数量是5。如果每个线程申请一个资源，则可以同时满足5个线程申请资源，每个线程在使用完之后，需要释放资源。如果在线程在申请资源的时候，没有足够的资源来满足，则会阻塞线程。</p>
+          <p>从字面意思理解就是信号量，本质上来说是用于线程之间访问共享资源，是一种同步原语，只是访问的资源可能有多个，其实现是通过AQS框架。在我们开发中，经常会碰见使用信号量的场景，比如出于系统性能的考虑需要限流，这时需要控制同时访问共享资源的最大线程数量，或者共享资源是稀缺资源，我们需要有一种办法能够协调各个线程，以保证合理的使用公共资源。<br>可以看下图来理解<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-309.png" alt="upload successful"><br>有四个线程来共同竞争资源，现在信号量是5，则表明共享资源的数量是5。如果每个线程申请一个资源，则可以同时满足5个线程申请资源，每个线程在使用完之后，需要释放资源。如果在线程在申请资源的时候，没有足够的资源来满足，则会阻塞线程。</p>
 <!-- more  -->
 <h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> JUC.tools;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Semaphore;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**************************************</span></span><br><span class="line"><span class="comment"> *      Author : zhangke</span></span><br><span class="line"><span class="comment"> *      Date   : 2018/4/20 20:00</span></span><br><span class="line"><span class="comment"> *      Desc   : Semaphore 学习</span></span><br><span class="line"><span class="comment"> ***************************************/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SemaphoreTest1</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Semaphore</span> <span class="variable">sem</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Semaphore</span>(<span class="number">10</span>);</span><br><span class="line">        <span class="type">ExecutorService</span> <span class="variable">threadPool</span> <span class="operator">=</span> Executors.newFixedThreadPool(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//在线程池中执行任务</span></span><br><span class="line">        threadPool.execute(<span class="keyword">new</span> <span class="title class_">MyThread</span>(sem, <span class="number">5</span>));</span><br><span class="line">        threadPool.execute(<span class="keyword">new</span> <span class="title class_">MyThread</span>(sem, <span class="number">4</span>));</span><br><span class="line">        threadPool.execute(<span class="keyword">new</span> <span class="title class_">MyThread</span>(sem, <span class="number">7</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//关闭池</span></span><br><span class="line">        threadPool.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">MyThread</span> <span class="keyword">extends</span> <span class="title class_">Thread</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> Semaphore sem;   <span class="comment">//信号量</span></span><br><span class="line">        <span class="keyword">private</span> <span class="type">int</span> count;   <span class="comment">//申请信号量的大小</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">MyThread</span><span class="params">(Semaphore sem, <span class="type">int</span> count)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.sem = sem;</span><br><span class="line">            <span class="built_in">this</span>.count = count;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">//从信号量中获取count个许可</span></span><br><span class="line">                sem.acquire(count);</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">                System.out.println(Thread.currentThread().getName() </span><br><span class="line">                                   + <span class="string">&quot; acquire count=&quot;</span> + count);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="comment">// 释放给定数目的许可，将其返回到信号量。</span></span><br><span class="line">                sem.release(count);</span><br><span class="line">                System.out.println(Thread.currentThread().getName() </span><br><span class="line">                                   + <span class="string">&quot; release &quot;</span> + count + <span class="string">&quot;&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
@@ -1614,7 +1614,7 @@
 
 <p>从结果可以看出，这有点类似于共享锁，锁的获取可以不用等待锁的释放。但必须满足下面的条件<strong>许可数 ≤ 0代表共享资源不可用。许可数 ＞ 0，代表共享资源可用，且多个线程可以同时访问共享资源。</strong></p>
 <h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>类图如下：</p>
-<p><img src="/images/pasted-308.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-308.png" alt="upload successful"></p>
 <ol>
 <li>Semaphore也包含sync对象，sync是Sync类型；而且，Sync是一个继承于AQS的抽象类。</li>
 <li>Sync包括两个子类：”公平信号量”FairSync 和 “非公平信号量”NonfairSync。sync是”FairSync的实例”，或者”NonfairSync的实例”；默认情况下，sync是NonfairSync(即，默认是非公平信号量)。</li>
@@ -1710,7 +1710,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1785,7 +1785,7 @@
       
           <p>字面意思回环栅栏，通过它可以实现让一组线程等待至某个状态之后再全部同时执行。叫做回环是因为当所有等待线程都被释放以后，CyclicBarrier可以被重用。我们暂且把这个状态就叫做barrier，当调用await()方法之后，线程就处于barrier了。</p>
 <p>可以看下面这个图来理解下:<br>一共4个线程A、B、C、D，它们到达栅栏的顺序可能各不相同。当A、B、C到达栅栏后，由于没有满足总数4的要求，所以会一直等待，当线程D到达后，栅栏才会放行。</p>
-<p><img src="/images/pasted-306.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-306.png" alt="upload successful"></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/c05d7ca.html#more" rel="contents">

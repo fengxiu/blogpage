@@ -27,17 +27,17 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="本篇文章主要先介绍几种数据库和缓存双写一致性的方案并分析其中的优缺点，最后讲解一下网上经常出现的一些关于这方面的名词。 更新策略首先，缓存由于其高并发和高性能的特性，已经在项目中被广泛使用。在读取缓存方面，都是按照下图的流程来进行业务操作。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/o_getkeyflow.png">
-<meta property="og:image" content="http://fengxiu.club/images/o_update1.png">
-<meta property="og:image" content="http://fengxiu.club/images/o_update2.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/o_getkeyflow.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/o_update1.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/o_update2.png">
 <meta property="article:published_time" content="2019-04-03T16:45:55.000Z">
-<meta property="article:modified_time" content="2022-04-24T02:51:17.159Z">
+<meta property="article:modified_time" content="2022-04-24T06:37:28.401Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="缓存">
 <meta property="article:tag" content="一致性方案">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/o_getkeyflow.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/o_getkeyflow.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/dc527cae.html">
 
@@ -232,7 +232,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -306,7 +306,7 @@
       
         <p>本篇文章主要先介绍几种数据库和缓存双写一致性的方案并分析其中的优缺点，最后讲解一下网上经常出现的一些关于这方面的名词。</p>
 <h2 id="更新策略"><a href="#更新策略" class="headerlink" title="更新策略"></a>更新策略</h2><p>首先，缓存由于其高并发和高性能的特性，已经在项目中被广泛使用。在读取缓存方面，都是按照下图的流程来进行业务操作。</p>
-<p><img src="/images/o_getkeyflow.png" alt="o_getkeyflow"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/o_getkeyflow.png" alt="o_getkeyflow"></p>
 <span id="more"></span>
 <p>但是在更新缓存上就出现了很多种方案。主要的争议点是对于更新完数据库，是更新缓存呢，还是删除缓存。又或者是先删除缓存，再更新数据库，其实大家存在很大的争议。当然这里并不是说哪一种方案最好，只是进行比较，你还需要结合自己的业务场景进行选择合适的方案。</p>
 <p>这里先做一个说明，从理论上来说，给缓存设置过期时间，是保证最终一致性的解决方案。这种方案下，我们可以对存入缓存的数据设置过期时间，所有的写操作以数据库为准，对缓存操作只是尽最大努力即可。也就是说如果数据库写成功，缓存更新失败，那么只要到达过期时间，则后面的读请求自然会从数据库中读取新值然后回填缓存。因此，接下来讨论的思路中都不包含对缓存设置过期时间。这样可以简化下面的讨论</p>
@@ -329,7 +329,7 @@
 <li>给缓存设有效时间是一种方案。</li>
 <li>采用异步延时删除策略，保证读请求完成以后，再进行删除操作。<br>还有其他造成不一致的原因么？<br>有的，这也是缓存更新策略（2）和缓存更新策略（3）都存在的一个问题，如果删缓存失败了怎么办，那不是会有不一致的情况出现么。比如一个写数据请求，然后写入数据库了，删缓存失败了，这会就出现不一致的情况了。这也是缓存更新策略（2）里留下的最后一个疑问。</li>
 </ol>
-<p><strong>如何解决？</strong><br>提供一个保障的重试机制即可，这里给出两套方案。<br><strong>方案一：</strong><br>如下图所示<br><img src="/images/o_update1.png" alt="o_update1"><br>流程如下所示<br>（1）更新数据库数据；<br>（2）缓存因为种种问题删除失败<br>（3）将需要删除的key发送至消息队列<br>（4）自己消费消息，获得需要删除的key<br>（5）继续重试删除操作，直到成功<br>然而，该方案有一个缺点，对业务线代码造成大量的侵入。于是有了方案二，在方案二中，启动一个订阅程序去订阅数据库的binlog，获得需要操作的数据。在应用程序中，另起一段程序，获得这个订阅程序传来的信息，进行删除缓存操作。<br>方案二：<br><img src="/images/o_update2.png" alt="o_update2"><br>流程如下图所示：<br>（1）更新数据库数据<br>（2）数据库会将操作信息写入binlog日志当中<br>（3）订阅程序提取出所需要的数据以及key<br>（4）另起一段非业务代码，获得该信息<br>（5）尝试删除缓存操作，发现删除失败<br>（6）将这些信息发送至消息队列<br>（7）重新从消息队列中获得该数据，重试操作。</p>
+<p><strong>如何解决？</strong><br>提供一个保障的重试机制即可，这里给出两套方案。<br><strong>方案一：</strong><br>如下图所示<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/o_update1.png" alt="o_update1"><br>流程如下所示<br>（1）更新数据库数据；<br>（2）缓存因为种种问题删除失败<br>（3）将需要删除的key发送至消息队列<br>（4）自己消费消息，获得需要删除的key<br>（5）继续重试删除操作，直到成功<br>然而，该方案有一个缺点，对业务线代码造成大量的侵入。于是有了方案二，在方案二中，启动一个订阅程序去订阅数据库的binlog，获得需要操作的数据。在应用程序中，另起一段程序，获得这个订阅程序传来的信息，进行删除缓存操作。<br>方案二：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/o_update2.png" alt="o_update2"><br>流程如下图所示：<br>（1）更新数据库数据<br>（2）数据库会将操作信息写入binlog日志当中<br>（3）订阅程序提取出所需要的数据以及key<br>（4）另起一段非业务代码，获得该信息<br>（5）尝试删除缓存操作，发现删除失败<br>（6）将这些信息发送至消息队列<br>（7）重新从消息队列中获得该数据，重试操作。</p>
 <p>备注说明：上述的订阅binlog程序在mysql中有现成的中间件叫canal，可以完成订阅binlog日志的功能。至于oracle中，博主目前不知道有没有现成中间件可以使用。另外，重试机制，博主是采用的是消息队列的方式。如果对一致性要求不是很高，直接在程序中另起一个线程，每隔一段时间去重试即可，这些大家可以灵活自由发挥，只是提供一个思路。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在上面三种方案中，其中第三种方案是大多数人选择的方案，微软在自己的博客中也是使用的这种方案。不过他起了一个新的名称<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/azure/architecture/patterns/cache-aside">Cache-Aside pattern</a>将缓存的操作，总结为下面三步：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">失效：应用程序先从cache取数据，没有得到，则从数据库中取数据，成功后，放到缓存中。</span><br><span class="line">命中：应用程序从cache中取数据，取到后返回。</span><br><span class="line">更新：先把数据存到数据库中，成功后，再让缓存失效。</span><br></pre></td></tr></table></figure>

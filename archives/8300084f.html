@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="本文介绍了NIO和BIO的工作原理，并通过一组性能测试，对NIO和BIO的性能进行对比，为如何选择NIO和BIO提供理论和实践依据。术语介绍  BIO – Blocking IO 即阻塞式IO。 NIO – Non-Blocking IO, 即非阻塞式IO或异步IO。 性能 – 所谓的性能是指服务器响应客户端的能力，对于服务器我们通常用并发客户连接数+系统响应时间来衡量服务器性能，例如，我们说这个">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/8de4fec77b5e66a0f30380dd6f34d306ee051742.jpeg">
-<meta property="og:image" content="http://fengxiu.club/images/ce5eb30ec17b6ea31a914e02a8eac224270ee89f.jpeg">
-<meta property="og:image" content="http://fengxiu.club/images/612710e524d3e5a94e8c9c8325d222ab73e90485.jpeg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/8de4fec77b5e66a0f30380dd6f34d306ee051742.jpeg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/ce5eb30ec17b6ea31a914e02a8eac224270ee89f.jpeg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/612710e524d3e5a94e8c9c8325d222ab73e90485.jpeg">
 <meta property="article:published_time" content="2019-07-20T16:50:39.000Z">
-<meta property="article:modified_time" content="2022-04-24T02:51:17.139Z">
+<meta property="article:modified_time" content="2022-04-24T06:37:28.385Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="IO">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/8de4fec77b5e66a0f30380dd6f34d306ee051742.jpeg">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/8de4fec77b5e66a0f30380dd6f34d306ee051742.jpeg">
 
 <link rel="canonical" href="http://fengxiu.club/archives/8300084f.html">
 
@@ -230,7 +230,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -330,12 +330,12 @@
 <p>如果希望得到比较准确的结果，最好还是先预热下服务端的代码。从测试结果可以看出，NIO的接受请求的速率大概是BIO的6倍，而且这里NIO还只是使用了单线程，如果是多线程可能性能还会更好。</p>
 <h2 id="NIO还是BIO"><a href="#NIO还是BIO" class="headerlink" title="NIO还是BIO"></a>NIO还是BIO</h2><p>在探讨在什么场景下使用BIO，什么场景下使用NIO之前，让我们先看一下在两种不同IO模型下，实现的服务器有什么不同。</p>
 <h3 id="BIO-Server"><a href="#BIO-Server" class="headerlink" title="BIO Server"></a><strong>BIO Server</strong></h3><p>通常采用的是request-per-thread模式，用一个Acceptor线程负责接收TCP连接请求，并建立链路（这是一个典型的网络IO，是非常耗时的操作），然后将请求dispatch给负责业务逻辑处理的线程池，业务逻辑线程从inputStream中读取数据，进行业务处理，最后将处理结果写入outputStream，自此，一个Transaction完成。<br>Acceptor线程是服务的入口，任何发生在其上面的堵塞操作，都将严重影响Server性能，假设建立一个TCP连接需要4ms，无论你后面的业务处理有多快，因为Acceptor的堵塞，这个Server最多每秒钟只能接受250个请求。而NIO则是另外一番风景，因为所有的IO操作都是非堵塞的，毫无疑问，Acceptor可以接受更大的并发量，并能最大限度的利用CPU和硬件资源处理这些请求。</p>
-<p>BIO通信模型图<br><img src="/images/8de4fec77b5e66a0f30380dd6f34d306ee051742.jpeg" alt="8de4fec77b5e66a0f30380dd6f34d306ee051742"><br>BIO序列图<br><img src="/images/ce5eb30ec17b6ea31a914e02a8eac224270ee89f.jpeg" alt="ce5eb30ec17b6ea31a914e02a8eac224270ee89f"></p>
+<p>BIO通信模型图<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/8de4fec77b5e66a0f30380dd6f34d306ee051742.jpeg" alt="8de4fec77b5e66a0f30380dd6f34d306ee051742"><br>BIO序列图<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/ce5eb30ec17b6ea31a914e02a8eac224270ee89f.jpeg" alt="ce5eb30ec17b6ea31a914e02a8eac224270ee89f"></p>
 <h3 id="NIO-Server"><a href="#NIO-Server" class="headerlink" title="NIO Server"></a>NIO Server</h3><p>如下图所示，在NIO Server中，所有的IO操作都是异步非堵塞的，Acceptor的工作变的非常轻量，即将IO操作分派给IO线程池，在收到IO操作完成的消息通知时，指派业务逻辑线程池去完成业务逻辑处理，因为所有的耗时工作都是异步的，使得Acceptor可以以非常快的速度接收请求，10W每秒是完全有可能的。</p>
 <p>10W&#x2F;S可能是没有考虑业务处理时间，考虑到业务时间，现实场景中，普通服务器可能很难做到10W TPS，为什么这么说呢？试想下，假设一个业务处理需要500ms，而业务线程池中只有50个线程，假设其它耗时忽略不计，50个线程满负载运行，在50个并发下，大家都很happy，所有的Client都能在500ms后获得响应. 在100个并发下，因为只有50个线程，当50个请求被处理时，另50个请求只能处在等待状态直到有可用线程为止。也就是说，理想情况下50个请求会在500ms返回，另50个可能会在1000ms返回。以此类推，若是10000个并发，最慢的50个请求需要100S才能返回。</p>
 <p>以上做法是为线程池预设50个线程，这是相对保守的一种做法，其好处是不管有多少个并发请求，系统只有这么多资源（50个线程）提供服务，是一种时间换空间的做法，也许有的客户会等很长时间，甚至超时，但是服务器的运行是平稳的。 还有一种比较激进的线程池模型是类似Netty里推荐的弹性线程池，就是没有给线程池制定一个线程上线，而是根据需要，弹性的增减线程数量，这种做法的好处是，并发量加大时，系统会创建更多的线程以缩短响应时间，缺点是到达一个极限时，系统可能会因为资源耗尽（CPU 100%或者Out of Memory)而down机。</p>
 <p>所以可以这样说，NIO极大的提升了服务器接受并发请求的能力，而服务器性能还是要取决于业务处理时间和业务线程池模型。</p>
-<p>NIO序列图<br><img src="/images/612710e524d3e5a94e8c9c8325d222ab73e90485.jpeg" alt="612710e524d3e5a94e8c9c8325d222ab73e90485"></p>
+<p>NIO序列图<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/612710e524d3e5a94e8c9c8325d222ab73e90485.jpeg" alt="612710e524d3e5a94e8c9c8325d222ab73e90485"></p>
 <h2 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h2><p><strong>什么时候使用BIO？</strong></p>
 <ul>
 <li>低负载、低并发的应用程序可以选择同步阻塞BIO以降低编程复杂度。</li>

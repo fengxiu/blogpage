@@ -227,7 +227,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -355,7 +355,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -483,7 +483,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -581,7 +581,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark-start]</span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.140: [GC (CMS Final Remark) [YG occupancy: 6345 K (9216 K)]2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs][1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
 
 <p>下面分别来介绍各个阶段的情况：</p>
-<h4 id="阶段1：Initial-Mark"><a href="#阶段1：Initial-Mark" class="headerlink" title="阶段1：Initial Mark"></a>阶段1：Initial Mark</h4><p>这个是 CMS 两次 stop-the-wolrd 事件的其中一次，这个阶段的目标是：标记那些直接被 GC root 引用或者被年轻代存活对象所引用的所有对象，标记后示例如下所示<br><img src="/images/cms-1.png" alt="cms-1"><br>上述例子对应的日志信息为：</p>
+<h4 id="阶段1：Initial-Mark"><a href="#阶段1：Initial-Mark" class="headerlink" title="阶段1：Initial Mark"></a>阶段1：Initial Mark</h4><p>这个是 CMS 两次 stop-the-wolrd 事件的其中一次，这个阶段的目标是：标记那些直接被 GC root 引用或者被年轻代存活对象所引用的所有对象，标记后示例如下所示<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-1.png" alt="cms-1"><br>上述例子对应的日志信息为：</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
 <p>日志的意思如下：</p>
 <ol>
@@ -594,14 +594,14 @@
 <li><code>0.0002405 secs</code>：这个阶段的持续时间；</li>
 <li><code>[Times: user=0.04 sys=0.00, real=0.04 secs]</code>：与前面的类似，这里是相应 user、system and real 的时间统计。</li>
 </ol>
-<h4 id="阶段2-concurrent-Mark"><a href="#阶段2-concurrent-Mark" class="headerlink" title="阶段2 concurrent Mark"></a>阶段2 concurrent Mark</h4><p>在这个阶段GC垃圾回收器会遍历老年代，然后标记所有存活的对象，它会根据上个阶段找到的 GC Roots 遍历查找。并发标记阶段，它会与用户的应用程序并发运行。并不是老年代所有的存活对象都会被标记，因为在标记期间用户的程序可能会改变一些引用，如下图所示：<br><img src="/images/g1-07-591x187.png" alt="g1-07-591x187"><br>在上面的图中，与阶段1的图进行对比，就会发现有一个对象的引用已经发生了变化，这个阶段相应的日志信息如下：</p>
+<h4 id="阶段2-concurrent-Mark"><a href="#阶段2-concurrent-Mark" class="headerlink" title="阶段2 concurrent Mark"></a>阶段2 concurrent Mark</h4><p>在这个阶段GC垃圾回收器会遍历老年代，然后标记所有存活的对象，它会根据上个阶段找到的 GC Roots 遍历查找。并发标记阶段，它会与用户的应用程序并发运行。并不是老年代所有的存活对象都会被标记，因为在标记期间用户的程序可能会改变一些引用，如下图所示：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/g1-07-591x187.png" alt="g1-07-591x187"><br>在上面的图中，与阶段1的图进行对比，就会发现有一个对象的引用已经发生了变化，这个阶段相应的日志信息如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark-start]</span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
 <ol>
 <li><code>CMS-concurrent-mark</code>：并发收集阶段，这个阶段会遍历老年代，并标记所有存活的对象；</li>
 <li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
 <li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code> ：如前面所示，但是这部分的时间，其实意义不大，因为它是从并发标记的开始时间开始计算，这期间因为是并发进行，不仅仅包含 GC 线程的工作，还包括了应用线程并行的线程。</li>
 </ol>
-<h4 id="阶段3：concurrent-Preclean"><a href="#阶段3：concurrent-Preclean" class="headerlink" title="阶段3：concurrent Preclean"></a>阶段3：concurrent Preclean</h4><p>Concurrent Preclean：这也是一个并发阶段，与应用的线程并发运行，并不会stop应用的线程。上面一个阶段和应用并发运行的过程中，一些对象的引用可能会发生变化，但是这种情况发生时，JVM会将包含这个对象的区域（Card）标记为 Dirty，这也就是 Card Marking。<br><img src="/images/cms-3.png" alt="cms-3"><br>在pre-clean阶段，那些能够从 Dirty 对象到达的对象也会被标记，这个标记做完之后，dirty card 标记就会被清除了<br><img src="/images/cms-4.png" alt="cms-4"></p>
+<h4 id="阶段3：concurrent-Preclean"><a href="#阶段3：concurrent-Preclean" class="headerlink" title="阶段3：concurrent Preclean"></a>阶段3：concurrent Preclean</h4><p>Concurrent Preclean：这也是一个并发阶段，与应用的线程并发运行，并不会stop应用的线程。上面一个阶段和应用并发运行的过程中，一些对象的引用可能会发生变化，但是这种情况发生时，JVM会将包含这个对象的区域（Card）标记为 Dirty，这也就是 Card Marking。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-3.png" alt="cms-3"><br>在pre-clean阶段，那些能够从 Dirty 对象到达的对象也会被标记，这个标记做完之后，dirty card 标记就会被清除了<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-4.png" alt="cms-4"></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
 
 <ol>
@@ -632,7 +632,7 @@
 <li><code>[1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs]</code>这个阶段之后，老年代堆的使用情况（老年代总的内存大小）堆的使用量与总量（包括年轻代，年轻代在前面发生过 GC）</li>
 <li><code>[Times: user=0.01 sys=0.00, real=0.00 secs]</code> ：在不同态下执行的时间。</li>
 </ol>
-<p>经历过这五个阶段之后，老年代所有存活的对象都被标记过了，现在可以通过清除算法去清理那些老年代不再使用的对象。<br><img src="/images/g1-10-591x187.png" alt="g1-10-591x187"></p>
+<p>经历过这五个阶段之后，老年代所有存活的对象都被标记过了，现在可以通过清除算法去清理那些老年代不再使用的对象。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/g1-10-591x187.png" alt="g1-10-591x187"></p>
 <h4 id="阶段6：Concurrent-Sweep"><a href="#阶段6：Concurrent-Sweep" class="headerlink" title="阶段6：Concurrent Sweep"></a>阶段6：Concurrent Sweep</h4><p>这里不需要STW，它是与用户的应用程序并发运行，这个阶段是：清除那些不再使用的对象，回收它们的占用空间为将来使用。如下图所示</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
 
@@ -710,7 +710,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -849,7 +849,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1096,7 +1096,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1146,7 +1146,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
+              <span>2.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -1224,7 +1224,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1297,7 +1297,7 @@
 <p>首先有一种最简单的方法，就是讲子模块下面的<code>.git</code>目录给删除，那么这个仓库就是一个普通的目录，但是这个对以后升级不方便。</p>
 <p>下面我们通过实例来讲解如何优雅的解决这个问题。</p>
 <p>我创建的目录结构如下</p>
-<p><img src="/images/Xnip2019-04-14_00-30-14.jpg" alt="Xnip2019-04-14_00-30-14"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/Xnip2019-04-14_00-30-14.jpg" alt="Xnip2019-04-14_00-30-14"></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/archives/5d8f9bd8.html#more" rel="contents">
@@ -1355,7 +1355,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1478,7 +1478,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">

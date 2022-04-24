@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="本文翻译自Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems 前面在学习Spring Cloud中，了解到zuul这个应用网关，但是由于当时看到的是zuul1，使用的Servlet方式实现，所以整体性能很低。不过Netflix实际上升级了zuul，使用了netty来改造网关，也就是现在网关底层使用的是异步非阻塞的架构">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/source/images/0_kPzgZrACokyPJJfy.png">
-<meta property="og:image" content="http://fengxiu.club/source/images/0_jrG2ldEVRRJcgpkj.png">
+<meta property="og:image" content="http://fengxiu.club/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/0_kPzgZrACokyPJJfy.png">
+<meta property="og:image" content="http://fengxiu.club/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/0_jrG2ldEVRRJcgpkj.png">
 <meta property="article:published_time" content="2019-07-12T16:02:36.000Z">
-<meta property="article:modified_time" content="2022-04-24T02:51:17.159Z">
+<meta property="article:modified_time" content="2022-04-24T06:37:28.401Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="zuul2">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/source/images/0_kPzgZrACokyPJJfy.png">
+<meta name="twitter:image" content="http://fengxiu.club/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/0_kPzgZrACokyPJJfy.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/ad8701ca.html">
 
@@ -229,7 +229,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
+                <time title="修改时间：2022-04-24 06:37:28" itemprop="dateModified" datetime="2022-04-24T06:37:28+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -307,7 +307,7 @@
 <p>我们还希望Zuul2在延迟，吞吐量和成本方面提供弹性优势和性能改进。但正如您将在本文中了解到的那样，我们的愿望与结果不同。</p>
 <span id="more"></span>
 <h2 id="阻塞和非阻塞系统的不同之处"><a href="#阻塞和非阻塞系统的不同之处" class="headerlink" title="阻塞和非阻塞系统的不同之处"></a>阻塞和非阻塞系统的不同之处</h2><p>要理解为什么我们构建Zuul2，您必须首先理解异步非阻塞（异步）系统与多线程阻塞（阻塞）系统之间的架构差异，无论是在理论上还是在实践中。</p>
-<p>Zuul1构建于Servlet框架之上。这样的系统是阻塞和多线程的，这意味着它们通过每个连接使用一个线程来处理请求。I&#x2F;O操作的完成是通过从线程池中选择I&#x2F;O工作线程执行，并且阻塞请求线程直到工作线程完成。工作线程在其工作完成时通知请求线程。这适用于处理100个并发连接的现代多核AWS实例。但是当出现问题时，如后端延迟增加或设备因错误而重试，活动连接和线程的数量会增加。当发生这种情况时，节点会遇到麻烦，并且可能会陷入死亡螺旋，其中备份线程会加剧服务器负载并使群集不堪重负。为了抵消这些风险，我们建立了限流机制和库（例如，<br>Hystrix）帮助我们的阻塞系统在这些事件中保持稳定。<br><img src="/source/images/0_kPzgZrACokyPJJfy.png" alt="多核多线程架构"><br>异步系统的运行方式不同，通常每个CPU核心只有一个线程处理所有请求和响应。请求和响应的生命周期通过事件和回调来处理。因为不是一个请求对应一个线程，所以连接成本很低。这里成本消耗都只是文件描述符以及监听器的添加。而阻塞模型中的连接成本是一个线程，并且具有大量内存和系统开销。并且这里一个线程处理所有的请求和响应会带来下面的好处。由于数据保留在同一CPU上，因此可以更好地利用CPU级别缓存并减少上下文切换，从而提高效率。后端延迟和重试风暴（客户和设备在发生问题时重试请求）的影响对系统的压力也较小，因为队列中的连接和事件的增加远比堆积线程要便宜。<br><img src="/source/images/0_jrG2ldEVRRJcgpkj.png" alt="异步非阻塞架构"><br>与同步阻塞的处理机制不同，Async是基于回调并由事件循环驱动的。尝试跟踪请求时，事件循环的堆栈跟踪毫无意义。在处理事件和回调时很难跟踪请求，并且在这方面非常缺乏帮助调试它的工具。边缘情况，未处理的异常和错误处理的状态更改会产生悬空资源(什么是悬空资源，可以参考文后给出的野指针和悬空指针的文章链接)，导致ByteBuf泄漏，文件描述符泄漏，丢失响应等。这些类型的问题已经证明很难调试，因为很难知道哪个事件没有妥善处理或适当清理。</p>
+<p>Zuul1构建于Servlet框架之上。这样的系统是阻塞和多线程的，这意味着它们通过每个连接使用一个线程来处理请求。I&#x2F;O操作的完成是通过从线程池中选择I&#x2F;O工作线程执行，并且阻塞请求线程直到工作线程完成。工作线程在其工作完成时通知请求线程。这适用于处理100个并发连接的现代多核AWS实例。但是当出现问题时，如后端延迟增加或设备因错误而重试，活动连接和线程的数量会增加。当发生这种情况时，节点会遇到麻烦，并且可能会陷入死亡螺旋，其中备份线程会加剧服务器负载并使群集不堪重负。为了抵消这些风险，我们建立了限流机制和库（例如，<br>Hystrix）帮助我们的阻塞系统在这些事件中保持稳定。<br><img src="/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/0_kPzgZrACokyPJJfy.png" alt="多核多线程架构"><br>异步系统的运行方式不同，通常每个CPU核心只有一个线程处理所有请求和响应。请求和响应的生命周期通过事件和回调来处理。因为不是一个请求对应一个线程，所以连接成本很低。这里成本消耗都只是文件描述符以及监听器的添加。而阻塞模型中的连接成本是一个线程，并且具有大量内存和系统开销。并且这里一个线程处理所有的请求和响应会带来下面的好处。由于数据保留在同一CPU上，因此可以更好地利用CPU级别缓存并减少上下文切换，从而提高效率。后端延迟和重试风暴（客户和设备在发生问题时重试请求）的影响对系统的压力也较小，因为队列中的连接和事件的增加远比堆积线程要便宜。<br><img src="/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/0_jrG2ldEVRRJcgpkj.png" alt="异步非阻塞架构"><br>与同步阻塞的处理机制不同，Async是基于回调并由事件循环驱动的。尝试跟踪请求时，事件循环的堆栈跟踪毫无意义。在处理事件和回调时很难跟踪请求，并且在这方面非常缺乏帮助调试它的工具。边缘情况，未处理的异常和错误处理的状态更改会产生悬空资源(什么是悬空资源，可以参考文后给出的野指针和悬空指针的文章链接)，导致ByteBuf泄漏，文件描述符泄漏，丢失响应等。这些类型的问题已经证明很难调试，因为很难知道哪个事件没有妥善处理或适当清理。</p>
 <h2 id="构建非阻塞zuul"><a href="#构建非阻塞zuul" class="headerlink" title="构建非阻塞zuul"></a>构建非阻塞zuul</h2><p>在Netflix的基础设施内构建Zuul2比预期更具挑战性。Netflix生态系统中的许多服务都是在假设阻塞的情况下构建的。Netflix的核心网络库也采用阻塞架构假设下构建的;许多库依赖线程局部变量来构建和存储有关请求的上下文。因为异步非阻塞的架构是在同一线程上处理多个请求，所以线程局部变量在异步非阻塞世界中不起作用。因此，构建Zuul2的大部分复杂性在于解决使用线程局部变量的黑暗角落。其他挑战包括将阻塞网络逻辑转换为非阻塞网络代码，在库内部查找阻塞代码，修复资源泄漏以及将核心基础结构转换为异步运行。没有一种通用的策略可以将阻塞网络逻辑转换为异步;必须对它们进行单独分析和重构。这同样适用于核心Netflix库，其中一些代码被修改，一些代码必须分叉和重构以使用异步。通过检测我们的服务器以发现代码块和库被阻塞的情况，开源项目<a target="_blank" rel="noopener" href="https://github.com/octo-online/reactive-audit">Reactive-Audit</a>非常有用。<br>我们采用了一种有趣的方法来构建Zuul2.因为阻塞系统可以裕兴异步代码，所以我们首先更改我们的Zuul Filters和过滤器链路代码以异步运行。Zuul过滤器包含我们为执行网关功能而创建的特定逻辑（路由，日志记录，反向代理，ddos预防等）。我们使用RxJava重构核心Zuul，基本Zuul过滤器类和我们的Zuul过滤器，以允许它们异步运行。我们现在有两种类型的过滤器一起使用：用于异步的I&#x2F;O操作，以及运行不需要I&#x2F; O逻辑操作的同步过滤器。 Async Zuul Filters允许我们在阻塞系统和非阻塞系统中执行完全相同的过滤器逻辑。这给我们一个能能力，可以使用一个过滤器集，以便我们可以为合作伙伴开发网关功能，同时在单个代码库中开发基于Netty的体系结构。随着异步Zuul过滤器逐步被取代，构建Zuul2就变成了让我们的Zuul基础架构的剩下部分以异步和非阻塞方式运行。相同的Zuul过滤器可能会落入两种架构中。</p>
 <h2 id="zuul2-在生产环境下的结果"><a href="#zuul2-在生产环境下的结果" class="headerlink" title="zuul2 在生产环境下的结果"></a>zuul2 在生产环境下的结果</h2><p>假设与我们的网关的异步架构的好处差异很大。有些人认为，由于上下文切换的减少和CPU缓存的更有效使用，我们会看到效率提高一个数量级，而另一些人则认为我们根本没有看到效率增益。关于变革和发展努力的复杂性，意见也各不相同。</p>
 <p>那么我们通过这种架构变化获得了什么？它值得吗？这个话题引起了激烈的争论。 Cloud Gateway团队率先在Netflix上创建和测试基于异步的服务。很有兴趣了解使用异步的微服务如何在Netflix上运行，而Zuul看起来像是看到好处的理想服务。</p>

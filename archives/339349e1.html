@@ -27,16 +27,16 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本比较高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实现的锁我们称之为重量级锁。JDK中对">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-149.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-150.png">
-<meta property="og:image" content="http://fengxiu.club/images/pasted-151.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-149.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-150.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-151.png">
 <meta property="article:published_time" content="2019-02-28T19:55:00.000Z">
 <meta property="article:modified_time" content="2019-02-28T19:55:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="并发">
 <meta property="article:tag" content="lock">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/pasted-149.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-149.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/339349e1.html">
 
@@ -333,10 +333,10 @@
 <p>既然是锁，就分为加锁和释放来个阶段。</p>
 <p><strong>加锁过程</strong>:</p>
 <ol>
-<li>在代码进入同步块的时候，如果同步对象锁状态为无锁状态（锁标志位为“01”状态，是否为偏向锁为“0”），虚拟机首先将在当前线程的栈帧中建立一个名为锁记录（Lock Record）的空间，用于存储锁对象目前的Mark Word的拷贝，官方称之为<code>Displaced Mark Word</code>。这时候线程堆栈与对象头的状态如图所示。<br><img src="/images/pasted-149.png" alt="upload successful"></li>
+<li>在代码进入同步块的时候，如果同步对象锁状态为无锁状态（锁标志位为“01”状态，是否为偏向锁为“0”），虚拟机首先将在当前线程的栈帧中建立一个名为锁记录（Lock Record）的空间，用于存储锁对象目前的Mark Word的拷贝，官方称之为<code>Displaced Mark Word</code>。这时候线程堆栈与对象头的状态如图所示。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-149.png" alt="upload successful"></li>
 <li>拷贝对象头中的Mark Word复制到锁记录中。</li>
 <li>拷贝成功后，虚拟机将使用CAS操作尝试将对象的Mark Word更新为指向Lock Record的指针，并将Lock record里的owner指针指向object mark word。如果更新成功，则执行步骤4，否则执行步骤5。</li>
-<li>如果这个更新动作成功了，那么这个线程就拥有了该对象的锁，并且对象Mark Word的锁标志位设置为“00”，即表示此对象处于轻量级锁定状态，这时候线程堆栈与对象头的状态如图所示。<br><img src="/images/pasted-150.png" alt="upload successful"></li>
+<li>如果这个更新动作成功了，那么这个线程就拥有了该对象的锁，并且对象Mark Word的锁标志位设置为“00”，即表示此对象处于轻量级锁定状态，这时候线程堆栈与对象头的状态如图所示。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-150.png" alt="upload successful"></li>
 <li>如果这个更新操作失败了，虚拟机首先会检查对象的Mark Word是否指向当前线程的栈帧，如果是就说明当前线程已经拥有了这个对象的锁，那就可以直接进入同步块继续执行。否则说明多个线程竞争锁，轻量级锁就要膨胀为重量级锁，锁标志的状态值变为“10”，Mark Word中存储的就是指向重量级锁（互斥量）的指针，后面等待锁的线程也要进入阻塞状态。</li>
 </ol>
 <p><strong>解锁过程</strong>:</p>
@@ -361,7 +361,7 @@
 <p><strong>偏向锁的释放</strong>：</p>
 <p>偏向锁的撤销在上述第四步骤中有提到，偏向锁只有遇到其他线程尝试竞争偏向锁时，持有偏向锁的线程才会释放锁，线程不会主动去释放偏向锁。偏向锁的撤销，需要等待全局安全点（在这个时间点上没有字节码正在执行），它会首先暂停拥有偏向锁的线程，判断锁对象是否处于被锁定状态，撤销偏向锁后恢复到未锁定（标志位为“01”）或轻量级锁（标志位为“00”）的状态。</p>
 <p>重量级锁、轻量级锁和偏向锁之间转换</p>
-<p><img src="/images/pasted-151.png" alt="upload successful"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-151.png" alt="upload successful"></p>
 <p>补充一点的是：当对象进入偏向状态的时候，Mark Word大部分的空间（23个比特）都用于存储持有锁的线程ID了，这部分空间占用了原有存储对象哈希码的位置，那原来对象的哈希码怎么办呢？ 在Java语言里面一个对象如果计算过哈希码，就应该一直保持该值不变（强烈推荐但不强制，因为用户可以重载hashCode()方法按自己的意愿返回哈希码），否则很多依赖对象哈希码的API都可能存 在出错风险。而作为绝大多数对象哈希码来源的Object::hashCode()方法，返回的是对象的一致性哈希码（Identity Hash Code），这个值是能强制保证不变的，它通过在对象头中存储计算结果来保证第一次计算之后，再次调用该方法取到的哈希码值永远不会再发生改变。因此，当一个对象已经计算过一 致性哈希码后，它就再也无法进入偏向锁状态了；而当一个对象当前正处于偏向锁状态，又收到需要计算其一致性哈希码请求时，它的偏向状态会被立即撤销，并且锁会膨胀为重量级锁。</p>
 <p>在重量级锁的实现中，对象头指向了重量级锁的位置，代表重量级锁的ObjectMonitor类里有字段可以记录非加锁 状态（标志位为“01”）下的Mark Word，其中自然可以存储原来的哈希码。 偏向锁可以提高带有同步但无竞争的程序性能，但它同样是一个带有效益权衡（Trade Off）性质 的优化，也就是说它并非总是对程序运行有利。如果程序中大多数的锁都总是被多个不同的线程访 问，那偏向模式就是多余的。在具体问题具体分析的前提下，有时候使用参数-XX：- UseBiasedLocking来禁止偏向锁优化反而可以提升性能。</p>
 <p>这里整理下hashcode在加锁情形下所有获取情况，java中hashcode的生成的具体实现，可以参考<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/6be2e37aca6f">Java中hashCode的实现</a></p>

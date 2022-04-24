@@ -27,13 +27,13 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="本文主要讲解Java8中JVM的一个更新，就是持久代的移除。将会介绍为什么需要移除持久代以及它的替代者：元空间(Metaspace)。 持久代绝大部分Java程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是J">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/images/820406-20160327005846979-1124627174.png">
-<meta property="og:image" content="http://fengxiu.club/images/java_memory_permGen.png">
-<meta property="og:image" content="http://fengxiu.club/images/jvm_metapsace.png">
-<meta property="og:image" content="http://fengxiu.club/images/metaspace_allocation_java_latte.png">
-<meta property="og:image" content="http://fengxiu.club/images/java_object_layout_java_latte.png">
-<meta property="og:image" content="http://fengxiu.club/images/compressed_class_pointer_space_java_latte.png">
-<meta property="og:image" content="http://fengxiu.club/images/java_object_layout_compressed_java_latte.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/820406-20160327005846979-1124627174.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/java_memory_permGen.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/jvm_metapsace.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/metaspace_allocation_java_latte.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/java_object_layout_java_latte.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/compressed_class_pointer_space_java_latte.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/java_object_layout_compressed_java_latte.png">
 <meta property="article:published_time" content="2019-04-22T16:50:11.000Z">
 <meta property="article:modified_time" content="2019-04-22T16:50:11.000Z">
 <meta property="article:author" content="枫秀">
@@ -41,7 +41,7 @@
 <meta property="article:tag" content="元空间">
 <meta property="article:tag" content="java 8">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/images/820406-20160327005846979-1124627174.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/820406-20160327005846979-1124627174.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/bda9e2c7.html">
 
@@ -309,10 +309,10 @@
 <h2 id="持久代"><a href="#持久代" class="headerlink" title="持久代"></a>持久代</h2><p>绝大部分Java程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是JVM规范，而后者则是JVM规范的一种实现，并且只有HotSpot才有 “PermGen space”，而对于其他类型的虚拟机，如JRockit（Oracle）、J9（IBM）并没有“PermGen space”。由于方法区主要存储类的相关信息，所以对于动态生成类的情况比较容易出现永久代的内存溢出。最典型的场景就是，在jsp页面比较多的情况，容易出现永久代内存溢出。我们现在通过动态生成类来模拟 “PermGen space”的内存溢出：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码段1</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 持续创建新的class</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PermGenOomMock</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        List&lt;ClassLoader&gt; classLoaderList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;ClassLoader&gt;();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            url = <span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;/tmp&quot;</span>).toURI().toURL();</span><br><span class="line">            URL[] urls = &#123;url&#125;;</span><br><span class="line">            <span class="keyword">while</span> (<span class="literal">true</span>)&#123;</span><br><span class="line">                <span class="type">ClassLoader</span> <span class="variable">loader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URLClassLoader</span>(urls);</span><br><span class="line">                classLoaderList.add(loader);</span><br><span class="line">                loader.loadClass(<span class="string">&quot;com.paddx.test.memory.Test&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>运行结果如下<br><img src="/images/820406-20160327005846979-1124627174.png" alt="820406-20160327005846979-1124627174"><br>本例中使用的JDK版本是1.7，指定的PermGen区的大小为8M。通过每次生成不同URLClassLoader对象来加载Test类，从而生成不同的类对象，这样就能看到我们熟悉的 “java.lang.OutOfMemoryError: PermGen space “异常。这里之所以采用JDK 1.7，是因为在JDK1.8 中， HotSpot已经没有 “PermGen space”这个区间了，取而代之是一个叫做Metaspace（元空间）的东西。<br>其实，移除永久代的工作从JDK1.7就开始了。JDK1.7中，存储在永久代的部分数据就已经转移到了Java Heap或者是 Native Heap。但永久代仍存在于JDK1.7中，并没完全移除，譬如符号引用(Symbols)转移到了native heap；字面量(interned strings)转移到了java heap；类的静态变量(class statics)转移到了java heap。</p>
+<p>运行结果如下<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/820406-20160327005846979-1124627174.png" alt="820406-20160327005846979-1124627174"><br>本例中使用的JDK版本是1.7，指定的PermGen区的大小为8M。通过每次生成不同URLClassLoader对象来加载Test类，从而生成不同的类对象，这样就能看到我们熟悉的 “java.lang.OutOfMemoryError: PermGen space “异常。这里之所以采用JDK 1.7，是因为在JDK1.8 中， HotSpot已经没有 “PermGen space”这个区间了，取而代之是一个叫做Metaspace（元空间）的东西。<br>其实，移除永久代的工作从JDK1.7就开始了。JDK1.7中，存储在永久代的部分数据就已经转移到了Java Heap或者是 Native Heap。但永久代仍存在于JDK1.7中，并没完全移除，譬如符号引用(Symbols)转移到了native heap；字面量(interned strings)转移到了java heap；类的静态变量(class statics)转移到了java heap。</p>
 <!-- more  -->
 
-<p>java 6中JVM的内存结构如下：<br><img src="/images/java_memory_permGen.png" alt="java_memory_permGen"></p>
+<p>java 6中JVM的内存结构如下：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/java_memory_permGen.png" alt="java_memory_permGen"></p>
 <p>持久代中包含了虚拟机中所有可通过反射获取到的数据，比如Class和Method对象。不同的Java虚拟机之间可能会进行类共享，因此持久代又分为只读区和读写区。</p>
 <p>JVM用于描述应用程序中用到的类和方法的元数据也存储在持久代中。JVM运行时会用到多少持久代的空间取决于应用程序用到了多少类。除此之外，Java SE库中的类和方法也都存储在这里。</p>
 <p>如果JVM发现有的类已经不再需要了，它会去回收（卸载）这些类，将它们的空间释放出来给其它类使用。Full GC会进行持久代的回收。</p>
@@ -350,7 +350,7 @@
 <li><p>使得原来受限于持久代的一些改进未来有可能实现</p>
 </li>
 </ul>
-<h2 id="元空间"><a href="#元空间" class="headerlink" title="元空间"></a>元空间</h2><p><img src="/images/jvm_metapsace.png" alt="jvm_metapsace"><br>持久代的空间被彻底地删除了，它被一个叫元空间的区域所替代了。持久代删除了之后，很明显，JVM会忽略PermSize和MaxPermSize这两个参数，还有就是你再也看不到java.lang.OutOfMemoryError: PermGen error的异常。</p>
+<h2 id="元空间"><a href="#元空间" class="headerlink" title="元空间"></a>元空间</h2><p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/jvm_metapsace.png" alt="jvm_metapsace"><br>持久代的空间被彻底地删除了，它被一个叫元空间的区域所替代了。持久代删除了之后，很明显，JVM会忽略PermSize和MaxPermSize这两个参数，还有就是你再也看不到java.lang.OutOfMemoryError: PermGen error的异常。</p>
 <p>JDK 8的HotSpot JVM现在使用的是本地内存来表示类的元数据，这个区域就叫做元空间。</p>
 <p><strong>元空间的特点：</strong></p>
 <ul>
@@ -372,12 +372,12 @@
 <li>一旦元空间的数据被清空了，虚拟内存的空间会被回收掉</li>
 <li>减少碎片的策略</li>
 </ul>
-<p>我们来看下JVM是如何给元数据分配虚拟内存的空间的<br><img src="/images/metaspace_allocation_java_latte.png" alt="metaspace_allocation_java_latte"></p>
+<p>我们来看下JVM是如何给元数据分配虚拟内存的空间的<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/metaspace_allocation_java_latte.png" alt="metaspace_allocation_java_latte"></p>
 <p>你可以看到虚拟内存空间是如何分配的(vs1,vs2,vs3) ，以及类加载器的内存块是如何分配的。CL是Class Loader的缩写。</p>
 <p><strong>理解_mark和_klass指针</strong><br>要想理解下面这张图，你得搞清楚这些指针都是什么东西。<br>JVM中，每个对象都有一个指向它自身类的指针，不过这个指针只是指向具体的实现类，而不是接口或者抽象类。</p>
 <p><strong>对于32位的JVM:</strong><br>_mark : 4字节常量<br>_klass: 指向类的4字节指针 对象的内存布局中的第二个字段( _klass，在32位JVM中，相对对象在内存中的位置的偏移量是4，64位的是8)指向的是内存中对象的类定义。</p>
 <p><strong>64位的JVM：</strong><br>_mark : 8字节常量<br>_klass: 指向类的8字节的指针<br>开启了指针压缩的64位JVM： _mark : 8字节常量，_klass: 指向类的4字节的指针</p>
-<h3 id="java对象的内存布局"><a href="#java对象的内存布局" class="headerlink" title="java对象的内存布局"></a>java对象的内存布局</h3><p><img src="/images/java_object_layout_java_latte.png" alt="java_object_layout_java_latte"><br><strong>类指针压缩空间（Compressed Class Pointer Space）</strong><br>只有是64位平台上启用了类指针压缩才会存在这个区域。对于64位平台，为了压缩JVM对象中的_klass指针的大小，引入了类指针压缩空间（Compressed Class Pointer Space）。<br><img src="/images/compressed_class_pointer_space_java_latte.png" alt="compressed_class_pointer_space_java_latte"><br><strong>类指针压缩空间（Compressed Class Pointer Space）</strong><br><img src="/images/java_object_layout_compressed_java_latte.png" alt="java_object_layout_compressed_java_latte"><br><strong>指针压缩概要</strong><br>64位平台上默认打开。</p>
+<h3 id="java对象的内存布局"><a href="#java对象的内存布局" class="headerlink" title="java对象的内存布局"></a>java对象的内存布局</h3><p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/java_object_layout_java_latte.png" alt="java_object_layout_java_latte"><br><strong>类指针压缩空间（Compressed Class Pointer Space）</strong><br>只有是64位平台上启用了类指针压缩才会存在这个区域。对于64位平台，为了压缩JVM对象中的_klass指针的大小，引入了类指针压缩空间（Compressed Class Pointer Space）。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/compressed_class_pointer_space_java_latte.png" alt="compressed_class_pointer_space_java_latte"><br><strong>类指针压缩空间（Compressed Class Pointer Space）</strong><br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/java_object_layout_compressed_java_latte.png" alt="java_object_layout_compressed_java_latte"><br><strong>指针压缩概要</strong><br>64位平台上默认打开。</p>
 <ul>
 <li>使用-XX:+UseCompressedOops压缩对象指针 “oops”指的是普通对象指针(“ordinary” object pointers)。 Java堆中对象指针会被压缩成32位。 使用堆基地址（如果堆在低26G内存中的话，基地址为0）</li>
 <li>使用-XX:+UseCompressedClassPointers选项来压缩类指针</li>
