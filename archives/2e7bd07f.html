@@ -27,17 +27,17 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="Java引用体系中我们最熟悉的就是强引用类型，如 A a&#x3D; new A();这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。 除了强引用外，Java还引入了SoftReference（软引用），WeakReference（弱引用），PhantomR">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/21153037_ubGO.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/21153037_ubGO.png">
 <meta property="og:image" content="https://static.oschina.net/uploads/img/201701/21165610_kkb9.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421205039.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421205054.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421205346.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205039.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205054.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205346.png">
 <meta property="article:published_time" content="2019-01-04T10:25:00.000Z">
 <meta property="article:modified_time" content="2019-01-04T10:25:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="引用">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/21153037_ubGO.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/21153037_ubGO.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/2e7bd07f.html">
 
@@ -303,7 +303,7 @@
       
         <p>Java引用体系中我们最熟悉的就是强引用类型，如 <code>A a= new A()</code>;这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。</p>
 <p>除了强引用外，Java还引入了SoftReference（软引用），WeakReference（弱引用），PhantomReference（虚引用），FinalReference ，这些类放在java.lang.ref包下，类的继承体系如下图。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/21153037_ubGO.png" alt="类图"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/21153037_ubGO.png" alt="类图"></p>
 <p>Java额外引入这个四种类型引用主要目的是在jvm在gc时，按照引用类型的不同，在回收时采用不同的逻辑。可以把这些引用看作是对对象的一层包裹，jvm根据外层不同的包裹，对其包裹的对象采用不同的回收策略，或特殊逻辑处理。 这几种类型的引用主要在jvm内存缓存、资源释放、对象可达性事件处理等场景会用到。</p>
 <span id="more"></span>
 
@@ -429,8 +429,8 @@
 <li>Inactive：queue &#x3D; ReferenceQueue.NULL; next &#x3D; this.</li>
 </ul>
 <p>通过这个组合，收集器只需要检测next属性为了决定是否一个Reference实例需要特殊的处理：如果next&#x3D;&#x3D;null，则实例是active；如果next!&#x3D;null，为了确保并发收集器能够发现active的Reference对象，而不会影响可能将enqueue()方法应用于这些对象的应用程序线程，收集器应通过discovered字段链接发现的对象。discovered字段也用于链接pending列表中的引用对象。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220421205039.png"></p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220421205054.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205039.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205054.png"></p>
 <p>外部从queue中获取Reference</p>
 <ul>
 <li>WeakReference对象进入到queue之后,相应的referent为null。</li>
@@ -445,7 +445,7 @@
 <li>pending ——&gt; enqueue ：ReferenceQueue#enqueue</li>
 <li>enqueue ——&gt; inactive ：Reference#clear</li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220421205346.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205346.png"></p>
 <p><strong>构造函数</strong><br>其内部提供2个构造函数，一个带queue，一个不带queue。其中queue的意义在于，我们可以在外部对这个queue进行监控。即如果有对象即将被回收，那么相应的reference对象就会被放到这个queue里。我们拿到reference，就可以再作一些事务。</p>
 <p>而如果不带的话，就只有不断地轮询reference对象，通过判断里面的get是否返回null( phantomReference对象不能这样作，其get始终返回null，因此它只有带queue的构造函数 )。这两种方法均有相应的使用场景，取决于实际的应用。如weakHashMap中就选择去查询queue的数据，来判定是否有对象将被回收。而ThreadLocalMap，则采用判断get()是否为null来作处理。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Reference(T referent) &#123;</span><br><span class="line">    <span class="built_in">this</span>(referent, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Reference(T referent, ReferenceQueue&lt;? <span class="built_in">super</span> T&gt; queue) &#123;</span><br><span class="line">    <span class="built_in">this</span>.referent = referent;</span><br><span class="line">    <span class="built_in">this</span>.queue = (queue == <span class="literal">null</span>) ? ReferenceQueue.NULL : queue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

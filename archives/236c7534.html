@@ -27,16 +27,16 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="URL详解   平时看源码中，发现很多开源库都会使用URL这个类，因此有必要对这个类的使用以及原理做一个总结。 这里先简单介绍一个概念，URL（Uniform Resource Locator）中文名为统一资源定位符，有时也被俗称为网页地址。表示为互联网上的资源，如网页或者FTP地址。 URL可以分为如下几个部分 1protocol:&#x2F;&#x2F;host:port&#x2F;path?query#fragment">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/URL.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/URL.png">
 <meta property="article:published_time" content="2020-09-28T10:09:53.000Z">
-<meta property="article:modified_time" content="2022-04-23T15:06:05.075Z">
+<meta property="article:modified_time" content="2022-04-24T02:51:17.155Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="spring">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/URL.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/URL.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/236c7534.html">
 
@@ -231,7 +231,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-23 15:06:05" itemprop="dateModified" datetime="2022-04-23T15:06:05+00:00">2022-04-23</time>
+                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -371,7 +371,7 @@
 <li>自定义java.net.URLStreamHandlerFactory ，然后通过URL#setURLStreamHandlerFactory设置，则创建Handler时就可以通过创建Handler的第二步来创建自定义的URLStreamHandler。</li>
 </ol>
 <p>java.net.URLStreamHandlerFactory ，顾名思义，它是URLStreamHandler的工厂，即抽类工厂接口。通过调用 createURLStreamHandler(String protocol) 来创建 java.net.URLStreamHandler 对象。因此，建议java.net.URLStreamHandlerFactory 实现类应该采用 one protocol one hander 的模式， SUN JDK 也采用该模式。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/URL.png" alt="URL"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/URL.png" alt="URL"></p>
 <h3 id="URLStreamHandlerFactory-方式"><a href="#URLStreamHandlerFactory-方式" class="headerlink" title="URLStreamHandlerFactory 方式"></a>URLStreamHandlerFactory 方式</h3><p>图 1 所示， URL 包含了名为 factory 的 URLStreamHandlerFactory 类对象和 handler 的 URLStreamHandler的实例对象。对于 URL 而言， handler 对象是必须的，因为前面说到实际处理 openConnection() 方法是 handler对象，而 factory 并不是必须的。接下来，来分析这两个对象是如何和 URL 交互的。</p>
 <p>在 URL 的构造方法中，暂时不用关心协议字符串等参数，更多的关注于 URL context 和 URLStreamHandler参数。 URL 实例能够依赖于 URL context ，当 URLStreamHandler 参数为空的情况下，当前 URL 实例将会采用URL context 的 URLStreamHandler 成员对象。当 Context 和 URLStreamHandler 参数都为空的时。 URL 会调用getURLStreamHandler （ String) 方法，从而根据协议 (protocol) 获得协议 URLStreamHandler 对象。</p>
 <p>在 URL 底层实现中，最初会初始化一个 protocol 和 hander 键值关系的 Map 映射。如果找到已有的映射关系，立即返回 URLStreamHandler 对象（第一次是取不到 URLStreamHandler 对象的）。</p>

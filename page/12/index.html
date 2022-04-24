@@ -354,7 +354,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-23 15:06:05" itemprop="dateModified" datetime="2022-04-23T15:06:05+00:00">2022-04-23</time>
+                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -913,7 +913,7 @@
 
       
           <p>本文主要介绍了HTTP协议的演进过程，从HTTP&#x2F;0.9到目前HTTP&#x2F;2中各个版本的特点以及成因。通过对比各个版本的特点以及相关数据的支持来讲解整个HTTP协议的演进过程。此外，文中还会涉及一些相关协议概念，包括TCP&#x2F;IP、DNS、HTTPS、QUIC、SPDY等，正是这些协议与HTTP一起为我们展现了一个丰富多彩的互联网的世界。</p>
-<h2 id="HTTP的演进"><a href="#HTTP的演进" class="headerlink" title="HTTP的演进"></a>HTTP的演进</h2><p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-209.png" alt="演进图"></p>
+<h2 id="HTTP的演进"><a href="#HTTP的演进" class="headerlink" title="HTTP的演进"></a>HTTP的演进</h2><p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-209.png" alt="演进图"></p>
 <p>HTTP(HyperText Transfer Protocol)是万维网（World Wide Web）的基础协议，它制定了浏览器与服务器之间的通讯规则，它由Berners-Lee和他的团队在1989-1991年期间开发完成，至今共经历了3个版本的演化。</p>
           <!--noindex-->
             <div class="post-button">
@@ -1093,7 +1093,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-23 15:06:05" itemprop="dateModified" datetime="2022-04-23T15:06:05+00:00">2022-04-23</time>
+                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1166,7 +1166,7 @@
 <p>在OSI七层模型中，HTTP协议位于应用层，是应用层协议。浏览器访问网页使用http协议来进行数据的传输，使用HTTP协议时，客户端首先与服务端的80（默认）端口建立一个TCP连接，然后在这个连接的基础上进行请求和应答，以及数据的交换，数据可以是HTML文件, 图片文件, 查询结果等。</p>
 <p>HTTP是一个属于应用层的面向对象的协议，由于其简捷、快速的方式，适用于分布式超媒体信息系统。它于1990年提出，经过几年的使用与发展，得到不断地完善和扩展。HTTP有三个常用版本，分别是1.0、1.1和2。主要区别在于HTTP1.0中每次请求和应答都会使用一个新的TCP连接，而从HTTP1.1开始，运行在一个TCP连接上发送多个请求和应答。因此大幅度减少了TCP连接的建立和断开，提高了效率。HTTP2在1.1的基础上改进协议的一些特点，包括长连接、pipeline、并行连接等。</p>
 <p>HTTP协议工作于客户端-服务端架构为上。浏览器作为HTTP客户端通过URL向HTTP服务端即WEB服务器发送所有请求。Web服务器根据接收到的请求后，向客户端发送响应信息。基本模式如下图：</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-205.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-205.png"></p>
 <h2 id="主要特点"><a href="#主要特点" class="headerlink" title="主要特点"></a>主要特点</h2><ol>
 <li><p>简单快速：客户向服务器请求服务时，只需传送请求方法和路径。请求方法常用的有GET、HEAD、POST。每种方法规定了客户与服务器联系的类型不同。由于HTTP协议简单，使得HTTP服务器的程序规模小，因而通信速度很快。</p>
 </li>
@@ -1923,7 +1923,7 @@
 <p>HTTP&#x2F;2 未指定任何特定算法来实现流控制。 不过，它提供了简单的构建块并推迟了客户端和服务器实现，可以实现自定义策略来调节资源使用和分配，以及实现新传输能力，同时提升网页应用的实际性能和感知性能（请参阅<a target="_blank" rel="noopener" href="https://hpbn.co/primer-on-web-performance/#speed-performance-and-human-perception">速度、性能和人类感知</a>）。</p>
 <p>例如，应用层流控制允许浏览器仅提取一部分特定资源，通过将数据流流控制窗口减小为零来暂停提取，稍后再行恢复。 换句话说，它允许浏览器提取图像预览或首次扫描结果，进行显示并允许其他高优先级提取继续，然后在更关键的资源完成加载后恢复提取。</p>
 <h2 id="服务器推送"><a href="#服务器推送" class="headerlink" title="服务器推送"></a>服务器推送</h2><p>HTTP&#x2F;2 新增的另一个强大的新功能是，服务器可以对一个客户端请求发送多个响应。 换句话说，除了对最初请求的响应外，服务器还可以向客户端推送额外资源（图 12-5），而无需客户端明确地请求。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220416210519.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220416210519.png"></p>
 <p>注：HTTP&#x2F;2 打破了严格的请求-响应语义，支持一对多和服务器发起的推送工作流，在浏览器内外开启了全新的互动可能性。 这是一项使能功能，对我们思考协议、协议用途和使用方式具有重要的长期影响。</p>
 <p>为什么在浏览器中需要一种此类机制呢？一个典型的网络应用包含多种资源，客户端需要检查服务器提供的文档才能逐个找到它们。 那为什么不让服务器提前推送这些资源，从而减少额外的延迟时间呢？ 服务器已经知道客户端下一步要请求什么资源，这时候服务器推送即可派上用场。</p>
 <p>事实上，如果您在网页中内联过 CSS、JavaScript，或者通过数据 URI 内联过其他资产（请参阅<a target="_blank" rel="noopener" href="https://hpbn.co/http1x/#resource-inlining">资源内联</a>），那么您就已经亲身体验过服务器推送了。 对于将资源手动内联到文档中的过程，我们实际上是在将资源推送给客户端，而不是等待客户端请求。 使用 HTTP&#x2F;2，我们不仅可以实现相同结果，还会获得其他性能优势。 推送资源可以进行以下处理：</p>
@@ -1944,7 +1944,7 @@
 <li>这种格式要求客户端和服务器同时维护和更新一个包含之前见过的标头字段的索引列表（换句话说，它可以建立一个共享的压缩上下文），此列表随后会用作参考，对之前传输的值进行有效编码。</li>
 </ol>
 <p>利用霍夫曼编码，可以在传输时对各个值进行压缩，而利用之前传输值的索引列表，我们可以通过传输索引值的方式对重复值进行编码，索引值可用于有效查询和重构完整的标头键值对。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220416210355.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220416210355.png"></p>
 <p>作为一种进一步优化方式，HPACK 压缩上下文包含一个静态表和一个动态表：静态表在规范中定义，并提供了一个包含所有连接都可能使用的常用 HTTP 标头字段（例如，有效标头名称）的列表；动态表最初为空，将根据在特定连接内交换的值进行更新。 因此，为之前未见过的值采用静态 Huffman 编码，并替换每一侧静态表或动态表中已存在值的索引，可以减小每个请求的大小。</p>
 <p>注：在 HTTP&#x2F;2 中，请求和响应标头字段的定义保持不变，仅有一些微小的差异：所有标头字段名称均为小写，请求行现在拆分成各个 <code>:method</code>、<code>:scheme</code>、<code>:authority</code> 和 <code>:path</code> 伪标头字段。</p>
 <h3 id="HPACK-的安全性和性能"><a href="#HPACK-的安全性和性能" class="headerlink" title="HPACK 的安全性和性能"></a>HPACK 的安全性和性能</h3><p>早期版本的 HTTP&#x2F;2 和 SPDY 使用 zlib（带有一个自定义字典）压缩所有 HTTP 标头。 这种方式可以将所传输标头数据的大小减小 85% - 88%，显著减少了页面加载时间延迟：</p>

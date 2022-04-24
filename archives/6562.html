@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="过期时间的基本操作Redis有四个不同的命令可以用于设置键的生存时间（键可以存在 多久）或过期时间（键什么时候会被删除）：  EXPIRE &lt;key&gt; &lt;ttl&gt;命令用于将键key的生存时间设置为ttl秒。 PEXPIRE &lt;key&gt; &lt;ttl&gt;命令用于将键key的生存时间设置为ttl毫秒。 EXPIREAT &lt;key&gt; &lt;time">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421234049.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220422102852.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421234049.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220422102852.png">
 <meta property="article:published_time" content="2022-04-21T23:38:43.000Z">
 <meta property="article:modified_time" content="2022-04-21T23:38:43.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421234049.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421234049.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/6562.html">
 
@@ -302,7 +302,7 @@
 <li><code>PEXPIREAT &lt;key&gt; &lt;timestamp&gt;</code>命令用于将键key的过期时间设置为 timestamp所指定的毫秒数时间戳。</li>
 </ul>
 <p>虽然有多种不同单位和不同形式的设置命令，但实际上EXPIRE、 PEXPIRE、EXPIREAT三个命令都是使用PEXPIREAT命令来实现的： 无论客户端执行的是以上四个命令中的哪一个，经过转换之后，最终的执行效果都和执行PEXPIREAT命令一样。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220421234049.png" alt="设置过期时间"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421234049.png" alt="设置过期时间"></p>
 <span id="more"></span>
 
 <p><strong>保存过期时间</strong><br>redis数据库使用字典保存了数据库中所有键的过期时间，称这个字典为过期字典：</p>
@@ -348,7 +348,7 @@
 <li>如果输入键已经过期，那么expireIfNeeded函数将输入键从数据库 中删除。</li>
 <li>如果输入键未过期，那么expireIfNeeded函数不做动作。<br>命令调用expireIfNeeded函数的过程如图9-15所示。</li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220422102852.png" alt="命令执行过程"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220422102852.png" alt="命令执行过程"></p>
 <p>expireIfNeeded函数就像一个过滤器，它可以在命令真正执行之前，过滤掉过期的输入键，从而避免命令接触到过期键。 另外，因为每个被访问的键都可能因为过期而被expireIfNeeded函数删除，所以每个命令的实现函数都必须能同时处理键存在以及键不存 在这两种情况：</p>
 <ul>
 <li>当键存在时，命令按照键存在的情况执行。 </li>

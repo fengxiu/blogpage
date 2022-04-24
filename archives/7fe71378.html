@@ -27,20 +27,20 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="对于JVM运行时区域有了一定了解以后，本文将更进一步介绍虚拟机内存中存储数据的细节信息，虚拟机(Hotspot)最大的一块内存是堆，在堆中存储的主要内容是对象，文章将探讨对象的创建、布局以及如何访问。 对象的创建在java中对象的创建主要由以下几种：    创建方式 是否调用构造函数    new 是   使用Class的newInstance 是   使用Construct类的newInstan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/1517815118540.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423114755.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423114808.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423115404.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423115455.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423115818.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/Xnip2019-03-25_22-34-10.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/Xnip2019-03-25_22-36-16.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/1517815118540.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423114755.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423114808.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423115404.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423115455.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423115818.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/Xnip2019-03-25_22-34-10.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/Xnip2019-03-25_22-36-16.jpg">
 <meta property="article:published_time" content="2019-03-24T17:25:00.000Z">
 <meta property="article:modified_time" content="2019-03-24T17:25:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="对象">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/1517815118540.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/1517815118540.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/7fe71378.html">
 
@@ -356,7 +356,7 @@
 <li>把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在java堆中预先分配一个小块内存，称为本地线程分配缓冲（TLAB）。哪个线程分配内存，就在线程的TLAB上分配。只有在TLAB用完并分配新的TLAB时，才需要同步锁定。可以减少并发的次数。</li>
 </ol>
 <h2 id="对象内存布局"><a href="#对象内存布局" class="headerlink" title="对象内存布局"></a>对象内存布局</h2><p>在内存中存储的布局可以分为3块区域：对象头（header），实例数据（Instance Data）和对齐填充（Padding）对象头。整体结构如下图结构如下图</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/1517815118540.png" alt="对象结构图"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/1517815118540.png" alt="对象结构图"></p>
 <h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>对象头也就是上图中橙色的部分，主要包含MarkWord、length(数组长度)和Pointer，</p>
 <ul>
 <li>MarkWord：存储的是运行时数据，如哈希码、GC分代年龄、线程持有的锁类、偏向线程Id等信息；</li>
@@ -364,15 +364,15 @@
 <li>length：如果是非数组类型，对象头中不包含这部分数据，数组类型则存储的是数组长度</li>
 </ul>
 <p>因此对象头会出现俩种情形</p>
-<p><strong>普通对象</strong><br><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220423114755.png" alt="普通对象"></p>
-<p><strong>数组对象</strong><br><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220423114808.png" alt="数组对象"></p>
+<p><strong>普通对象</strong><br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423114755.png" alt="普通对象"></p>
+<p><strong>数组对象</strong><br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423114808.png" alt="数组对象"></p>
 <h4 id="MarkWord"><a href="#MarkWord" class="headerlink" title="MarkWord"></a>MarkWord</h4><p>这部分主要用来存储对象自身的运行时数据，如hashcode、gc分代年龄等，会根据对象运行时不通的状态来调整字段对应的含义，其实主要的状态转变是由于加锁引起的。</p>
 <p>mark word的位长度为JVM的一个Word大小，也就是说32位JVM的Mark word为32位，64位JVM为64位。</p>
 <p>为了让一个字大小存储更多的信息，JVM将字的最低两个位设置为标记位，不同标记位下的Mark Word示意如下：</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220423115404.png" alt="各种运行时数据"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423115404.png" alt="各种运行时数据"></p>
 <p>其中各部分的含义如下：</p>
 <ul>
-<li><p>lock：2位的锁状态标记位，由于希望用尽可能少的二进制位表示尽可能多的信息，所以设置了lock标记。该标记的值不同，整个mark word表示的含义不同。<br><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220423115455.png" alt="标记"></p>
+<li><p>lock：2位的锁状态标记位，由于希望用尽可能少的二进制位表示尽可能多的信息，所以设置了lock标记。该标记的值不同，整个mark word表示的含义不同。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423115455.png" alt="标记"></p>
 </li>
 <li><p>bias_lock：对象是否启动偏向锁标记，只占1个二进制位。为1时表示对象启动偏向锁，为0时表示对象没有偏向锁。</p>
 </li>
@@ -389,7 +389,7 @@
 <li><p>ptr_to_heavyweight_monitor：指向monitor对象（也称为管程或监视器锁）的起始地址，每个对象都存在着一个monitor与之关联，对象与其monitor之间的关系存在多种实现方式，如monitor对象可以与对象一起创建销毁或当前线程试图获取对象锁时自动生成，但当一个monitor被某个线程持有后，它便处于锁定状态。</p>
 </li>
 </ul>
-<p>64位下的标记字与32位的相似：<br><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220423115818.png" alt="64"></p>
+<p>64位下的标记字与32位的相似：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423115818.png" alt="64"></p>
 <h4 id="pointer"><a href="#pointer" class="headerlink" title="pointer"></a>pointer</h4><p>这一部分用于存储对象的类型指针，该指针指向它的类元数据，JVM通过这个指针确定对象是哪个类的实例。该指针的位长度为JVM的一个字大小，即32位的JVM为32位，64位的JVM为64位。</p>
 <p>如果应用的对象过多，使用64位的指针将浪费大量内存，统计而言，64位的JVM将会比32位的JVM多耗费50%的内存。为了节约内存可以使用选项<code>+UseCompressedOops</code>开启指针压缩，其中，oop即<code>ordinary object pointer</code>普通对象指针。开启该选项后，下列指针将压缩至32位：</p>
 <ul>
@@ -403,9 +403,9 @@
 <h3 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h3><p>HotSpot虚拟机要求每个对象的起始地址必须是8字节的整数倍，也就是对象的大小必须是8字节的整数倍。而对象头部分正好是8字节的倍数（32位为1倍，64位为2倍），因此，当对象实例数据部分没有对齐的时候，就需要通过对齐填充来补全。</p>
 <h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2><p>Java程序需要通过JVM栈上的引用访问堆中的具体对象。对象的访问方式取决于JVM虚拟机的实现。目前主流的访问方式有<strong>句柄</strong>和<strong>直接指针</strong> 两种方式。<br>这里补充一点定义：<br>指针： 指向对象，代表一个对象在内存中的起始地址。<br>句柄： 可以理解为指向指针的指针，维护着对象的指针。句柄不直接指向对象，而是指向对象的指针（句柄不发生变化，指向固定内存地址），再由对象的指针指向对象的真实内存地址。</p>
 <ol>
-<li><p>句柄<br>Java堆中划分出一块内存来作为句柄池，引用中存储对象的句柄地址，而句柄中包含了对象实例数据与对象类型数据各自的具体地址信息，具体构造如下图所示：<br><img src="https://raw.githubusercontent.com/fengxiu/img/master/Xnip2019-03-25_22-34-10.jpg" alt="句柄"><br>优势：引用中存储的是稳定的句柄地址，在对象被移动（垃圾收集时移动对象是非常普遍的行为）时只会改变句柄中的实例数据指针，而引用本身不需要修改。</p>
+<li><p>句柄<br>Java堆中划分出一块内存来作为句柄池，引用中存储对象的句柄地址，而句柄中包含了对象实例数据与对象类型数据各自的具体地址信息，具体构造如下图所示：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/Xnip2019-03-25_22-34-10.jpg" alt="句柄"><br>优势：引用中存储的是稳定的句柄地址，在对象被移动（垃圾收集时移动对象是非常普遍的行为）时只会改变句柄中的实例数据指针，而引用本身不需要修改。</p>
 </li>
-<li><p>直接指针<br>如果使用直接指针访问，引用 中存储的直接就是对象地址，那么Java堆对象内部的布局中就必须考虑如何放置访问类型数据的相关信息。<br><img src="https://raw.githubusercontent.com/fengxiu/img/master/Xnip2019-03-25_22-36-16.jpg" alt="直接指针"><br>优势：速度更快，节省了一次指针定位的时间开销。由于对象的访问在Java中非常频繁，因此这类开销积少成多后也是非常可观的执行成本。</p>
+<li><p>直接指针<br>如果使用直接指针访问，引用 中存储的直接就是对象地址，那么Java堆对象内部的布局中就必须考虑如何放置访问类型数据的相关信息。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/Xnip2019-03-25_22-36-16.jpg" alt="直接指针"><br>优势：速度更快，节省了一次指针定位的时间开销。由于对象的访问在Java中非常频繁，因此这类开销积少成多后也是非常可观的执行成本。</p>
 </li>
 </ol>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>

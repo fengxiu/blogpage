@@ -27,21 +27,21 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="Spring类型转换整理  平常在使用Spring过程中，经常会用到类型转换，但一直没时间对这一块进行系统的整理。因此接下来会用几篇文章对这一块进行系统的整理。 大概的想法是下面俩篇：  Spring类型转换整理 BeanWrapper使用以及原理 DataBinder使用以及原理  这篇文章用于记录自己在学习Spring类型转换相关的内容，主要有以下三块。  PropertyEditor：用于S">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104250.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104722.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104806.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903113527.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200825111842.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200825180414.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903104250.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903104722.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903104806.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903113527.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20200825111842.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20200825180414.png">
 <meta property="article:published_time" content="2021-11-11T06:46:00.000Z">
-<meta property="article:modified_time" content="2022-04-23T15:06:05.075Z">
+<meta property="article:modified_time" content="2022-04-24T02:51:17.155Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="spring">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20200903104250.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903104250.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/22104.html">
 
@@ -236,7 +236,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-23 15:06:05" itemprop="dateModified" datetime="2022-04-23T15:06:05+00:00">2022-04-23</time>
+                <time title="修改时间：2022-04-24 02:51:17" itemprop="dateModified" datetime="2022-04-24T02:51:17+00:00">2022-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -364,11 +364,11 @@ https://juejin.im/post/6844903940484513806
 
 <p>从上面可以接口的定义，PropertyEditorRegistry这个接口的作用，下面我们来看看其具体的几个实现类。</p>
 <h3 id="PropertyEditorRegistrySupport"><a href="#PropertyEditorRegistrySupport" class="headerlink" title="PropertyEditorRegistrySupport"></a>PropertyEditorRegistrySupport</h3><p>由于PropertyEditorRegistry只是定义对PropertyEditor注册和查找的方法，其具体的核心实现类是org.springframework.beans.PropertyEditorRegistrySupport，真正对PropertyEditor管理的操作全部在该类中实现，下面来看看PropertyEditorRegistrySupport的源码，由于PropertyEditorRegistrySupport源码篇幅比较多，这里就采用截图来说明其实现：</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903104250.png" alt="20200903104250"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903104250.png" alt="20200903104250"></p>
 <p>通过上面的标注我们看到PropertyEditorSupport底层对于不同种类的PropertyEditor使用不同的Map来进行存储，下面我们看下它是如何进行注册的。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903104722.png" alt="20200903104722"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903104722.png" alt="20200903104722"></p>
 <p>其注册的实现机制也并没有出人意料的地方，就是判断存储Classs与PropertyEditor之间映射关系的Map是否已经存在，如果不存在则先创建一个LinkedHashMap，如果有就直接进行存储映射关系。<br>前面我们提到过在IOC容器中默认就会内置一些PropertyEditor,通过createDefaultEditors()我们可以清楚地看到其默认所添加的PropertyEditor。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903104806.png" alt="20200903104806"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903104806.png" alt="20200903104806"></p>
 <h3 id="PropertyEditorRegistrar"><a href="#PropertyEditorRegistrar" class="headerlink" title="PropertyEditorRegistrar"></a>PropertyEditorRegistrar</h3><p>PropertyEditorRegistrar接口的定义如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PropertyEditorRegistrar</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">registerCustomEditors</span><span class="params">(PropertyEditorRegistry registry)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -376,7 +376,7 @@ https://juejin.im/post/6844903940484513806
 <p>相同的PropertyEditor需要在多处进行注册的原因是因为我们在IOC容器中通过CustomEditorConfigurer添加了自定义的PropertyEditor后，其并不会对SpringMVC中所使用的DataBinder而生效，因此需要再次进行注册，我们通过分析CustomEditorConfigurer可以在其注释说明中清楚地看到这点说明。</p>
 <p>上面那个注册自定义的PointEditor，就是用自定义的PropertyEditorRegistrar来注册的。这里就不在做具体的补充。</p>
 <h3 id="PropertyEditor的缺点分析"><a href="#PropertyEditor的缺点分析" class="headerlink" title="PropertyEditor的缺点分析"></a>PropertyEditor的缺点分析</h3><p>1.只能完成字符串到Java类型的转换，并不能完成任意类型之间的转换。<br>2.由于PropertyEditor是非线程安全，因此对于每一次的类型转换，都需要创建一个新的PropertyEdtitor，如果希望达到共享，那么底层会使用synchronized来对其进行并发地控制。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200903113527.png" alt="20200903113527"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20200903113527.png" alt="20200903113527"></p>
 <h2 id="convert"><a href="#convert" class="headerlink" title="convert"></a>convert</h2><p>core.convert是在Spring3之后，引进的一个新的通用类型转换系统，主要用来替代前面说到的PropertyEditor。PropertyEditor主要用在String到Object类型的准换，但是在实际开发中还有需要Object到Obejct的类型转换。下面主要介绍Convert的基本使用。</p>
 <h3 id="Converter-SPI"><a href="#Converter-SPI" class="headerlink" title="Converter SPI"></a>Converter SPI</h3><p>这个接口的定义比较简单，在Spring中如果需要自定义类型转换，推介使用这个。</p>
 <p>接口定义如下</p>
@@ -386,7 +386,7 @@ https://juejin.im/post/6844903940484513806
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.springframework.core.convert.support;</span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">StringToInteger</span> <span class="keyword">implements</span> <span class="title class_">Converter</span>&lt;String, Integer&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">convert</span><span class="params">(String source)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Integer.valueOf(source);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>从上面可以看出，如果使用这个自定一类型转换实现起来比较简单。在Spring中已经提供了一些基本类型之间的转换，主要在org.springframework.core.convert.support包下。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200825111842.png" alt="convert"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20200825111842.png" alt="convert"></p>
 <h3 id="ConverterFactory"><a href="#ConverterFactory" class="headerlink" title="ConverterFactory"></a>ConverterFactory</h3><p>这个相对于上面来说比较复杂，主要用来转换一个类型到另一个继承体系类型。举个例子，如果需要String转成Enum以及他的子类，这时可以使用ConverFactory这个接口来定义类型转换。</p>
 <p>接口定义如下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.springframework.core.convert.converter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConverterFactory</span>&lt;S, R&gt; &#123;</span><br><span class="line"></span><br><span class="line">    &lt;T <span class="keyword">extends</span> <span class="title class_">R</span>&gt; Converter&lt;S, T&gt; <span class="title function_">getConverter</span><span class="params">(Class&lt;T&gt; targetType)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -437,7 +437,7 @@ https://juejin.im/post/6844903940484513806
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Parser</span>&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">    T <span class="title function_">parse</span><span class="params">(String clientValue, Locale locale)</span> <span class="keyword">throws</span> ParseException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>org.springframework.format下面提供了很多默认的Fromat，具体的类如下</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20200825180414.png" alt="20200825180414"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20200825180414.png" alt="20200825180414"></p>
 <p>下面是一个时间格式化的例子:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">DateFormatter</span> <span class="keyword">implements</span> <span class="title class_">Formatter</span>&lt;Date&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String pattern;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">DateFormatter</span><span class="params">(String pattern)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.pattern = pattern;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">print</span><span class="params">(Date date, Locale locale)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (date == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> getDateFormat(locale).format(date);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Date <span class="title function_">parse</span><span class="params">(String formatted, Locale locale)</span> <span class="keyword">throws</span> ParseException &#123;</span><br><span class="line">        <span class="keyword">if</span> (formatted.length() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> getDateFormat(locale).parse(formatted);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> DateFormat <span class="title function_">getDateFormat</span><span class="params">(Locale locale)</span> &#123;</span><br><span class="line">        <span class="type">DateFormat</span> <span class="variable">dateFormat</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="built_in">this</span>.pattern, locale);</span><br><span class="line">        dateFormat.setLenient(<span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">return</span> dateFormat;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 

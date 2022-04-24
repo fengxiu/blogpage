@@ -27,13 +27,13 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="本文主要对yield的使用进行介绍，然后和wait进行对比，最后介绍join以及使用方式。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220422153250.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220422153250.png">
 <meta property="article:published_time" content="2018-07-13T11:08:00.000Z">
 <meta property="article:modified_time" content="2018-07-13T11:08:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="并发">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220422153250.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220422153250.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/9dbd6aed.html">
 
@@ -341,7 +341,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">t1 start</span><br><span class="line">t1 finish</span><br><span class="line">main finish</span><br></pre></td></tr></table></figure>
 
 <p><strong>结果说明</strong>：<br>运行流程如图<br>(01) 在“主线程main”中通过 new ThreadA(“t1”) 新建“线程t1”。 接着，通过 t1.start() 启动“线程t1”，并执行t1.join()。<br>(02) 执行t1.join()之后，“主线程main”会进入“阻塞状态”等待t1运行结束。“子线程t1”结束之后，会唤醒“主线程main”，“主线程”重新获取cpu执行权，继续运行。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220422153250.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220422153250.png" alt="img"></p>
 
     </div>
 

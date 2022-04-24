@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="HTTP&#x2F;1.1仅仅在HTTP&#x2F;1.0公布后的几个月，HTTP&#x2F;1.1发布了，是目前主流HTTP协议的版本，也是目前为止使用最为广泛、延用时间最为久远的HTTP版本，以至于随后的近10年时间里都没有新的HTTP协议版本发布。对比之前的版本，其主要更新如下：  默认长连接机制 Pipeline机制 header中引入host Chunked编码传输 更全面的Cache机">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-211.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-211.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-212.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-214.png">
 <meta property="og:image" content="http://fengxiu.club/images/pasted-215.png">
@@ -51,7 +51,7 @@
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="http">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-211.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-211.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/d860bebc.html">
 
@@ -330,7 +330,7 @@
 <p>随着互联网的迅猛发展，网页资源也越来越多，HTTP&#x2F;1.0的出现正是解决了浏览器与服务器间传递非html类型文件的需求，但随之而来的是请求次数的增多。由于每个资源的下载都需要重新建立连接，每次建连都包含tcp的三次握手，完成数据传递后又通过tcp的四次挥手关闭连接，周而复始，访问一个较为复杂的网页会消耗大量的时间。虽然在HTTP&#x2F;1.0中引入了长连接的机制，但由于未加入标准，因此此时仍然是每个资源会重新建立一次连接。</p>
 <p>好在HTTP&#x2F;1.1的及时出现将长连接加入了标准并作为默认实现，服务器端也按照协议保持客户端的长连接状态。一个Web Server上的多个资源都可以通过这一条连接多个request的方式一一得到。这样可以极大的节省在建连和关闭连接过程中消耗的时间，越复杂的网站节省的时间越多。</p>
 <p>基于HTTP的工作原理，后面又有了针对DNS和Connection的优化，不过这都是后话了。<br>Http0.9 到Http1.1的请求示意图如下：</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-211.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-211.png"></p>
 <p>为了进一步说明keep-alive的重要性，在此进行了一次测试，分别以Keep-Alive的方式和非Keep-Alive的方式对<a target="_blank" rel="noopener" href="http://api.yunos.com/">http://api.yunos.com</a>访问5次、10次、15次、20次。以下是测试数据的对比：</p>
 <p><img src="/images/pasted-212.png" alt="upload successful"></p>
 <p>从上面的数据可以看出，随着访问次数增长Close与Keep-Alive的时间差距越来越大，除了平均耗时上的差异，还有一组方差数据的对比：<br><img src="/images/pasted-214.png" alt="upload successful"><br>从方差数据来看，Close模式的波动要大于Keep-Alive模式。我们再从另一个角度看这个问题，从下面的数据可以看出：一个网络请求过程中DNS和Connection建连的过程会耗费很大的时间：<br><img src="/images/pasted-215.png" alt="upload successful"><br>从上面的这些数据可以看出长连接对于网络访问速度的重要性，这也是为何我们在多个场合提及Keep-Alive机制。包括后续的许多优化都是针对DNS、Connection建连这两个方面进行的。</p>

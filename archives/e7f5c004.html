@@ -27,8 +27,8 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="摘要在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。这个框架为同步状态的原子性管理、线程的阻塞和解除阻塞以及排队提供了一种通用机制。这篇论文主要描述了这个框架基本原理、设计、实现、用法以及性能。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423182208.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423182636.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423182208.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423182636.png">
 <meta property="og:image" content="http://ifeve.com/wp-content/uploads/2013/02/formula-300x66.jpg">
 <meta property="og:image" content="http://ifeve.com/wp-content/uploads/2013/02/1-1024x409.jpg">
 <meta property="og:image" content="http://ifeve.com/wp-content/uploads/2013/02/2-1024x385.jpg">
@@ -39,7 +39,7 @@
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="AQS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220423182208.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423182208.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/e7f5c004.html">
 
@@ -349,7 +349,7 @@
 <h3 id="3-3-队列"><a href="#3-3-队列" class="headerlink" title="3.3 队列"></a>3.3 队列</h3><p>整个框架的关键就是如何管理被阻塞的线程的队列，该队列是严格的FIFO队列，因此，框架不支持基于优先级的同步。</p>
 <p>同步队列的最佳选择是自身没有使用底层锁来构造的非阻塞数据结构，目前，业界对此很少有争议。而其中主要有两个选择：一个是Mellor-Crummey和Scott锁（MCS锁）[<a target="_blank" rel="noopener" href="http://ifeve.com/aqs-2/#r9">9]</a>的变体，另一个是Craig，Landin和Hagersten锁（CLH锁）[<a target="_blank" rel="noopener" href="http://ifeve.com/aqs-2/#r5">5]</a>[<a target="_blank" rel="noopener" href="http://ifeve.com/aqs-2/#r8">8]</a>[<a target="_blank" rel="noopener" href="http://ifeve.com/aqs-2/#r10">10]</a>的变体。一直以来，CLH锁仅被用于自旋锁。但是，在这个框架中，CLH锁显然比MCS锁更合适。因为CLH锁可以更容易地去实现“取消（cancellation）”和“超时”功能，因此我们选择了CLH锁作为实现的基础。但是最终的设计已经与原来的CLH锁有较大的出入，因此下文将对此做出解释。</p>
 <p>CLH队列实际上并不那么像队列，因为它的入队和出队操作都与它的用途（即用作锁）紧密相关。它是一个链表队列，通过两个字段<code>head</code>和<code>tail</code>来存取，这两个字段是可原子更新的，两者在初始化时都指向了一个空节点。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220423182208.png" alt="CLH队列节点间的关系"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423182208.png" alt="CLH队列节点间的关系"></p>
 <p>一个新的节点，node，通过一个原子操作入队：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">do &#123;</span><br><span class="line">    pred = tail;</span><br><span class="line">&#125; while(!tail.compareAndSet(pred, node));</span><br></pre></td></tr></table></figure>
 
@@ -400,7 +400,7 @@
 <p>虽然将同步器序列化（持久化存储或传输）一般来说没有太大意义，但这些类经常会被用于构造其它类，例如线程安全的集合，而这些集合通常是可序列化的。<code>AbstractQueuedSynchronizer</code>和<code>ConditionObject</code>类都提供了方法用于序列化同步状态，但不会序列化潜在的被阻塞的线程，也不会序列化其它内部暂时性的簿记（bookkeeping）变量。即使如此，在反序列化时，大部分同步器类也只仅将同步状态重置为初始值，这与内置锁的隐式策略一致 —— 总是反序列化到一个解锁状态。这相当于一个空操作，但仍必须显式地支持以便<code>final</code>字段能够反序列化。</p>
 <h3 id="4-1-公平调度的控制"><a href="#4-1-公平调度的控制" class="headerlink" title="4.1 公平调度的控制"></a>4.1 公平调度的控制</h3><p>尽管同步器是基于FIFO队列的，但它们并不一定就得是公平的。可以注意到，在基础的acquire算法（3.3节）中，<code>tryAcquire</code>是在入队前被执行的。因此一个新的acquire线程能够“窃取”本该属于队列头部第一个线程通过同步器的机会。</p>
 <p>可<em>闯入</em>的FIFO策略通常会提供比其它技术更高的总吞吐率。当一个有竞争的锁已经空闲，而下一个准备获取锁的线程又正在解除阻塞的过程中，这时就没有线程可以获取到这个锁，如果使用<em>闯入</em>策略，则可减少这之间的时间间隔。与此同时，这种策略还可避免过分的，无效率的竞争，这种竞争是由于只允许一个（第一个）排队的线程被唤醒然后尝试acquire操作导致的。在只要求短时间持有同步器的场景中，创建同步器的开发者可以通过定义<code>tryAcquire</code>在控制权返回之前重复调用自己若干次，来进一步凸显<em>闯入</em>的效果。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220423182636.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220423182636.png"></p>
 <p>可闯入的FIFO同步器只有概率性的公平属性。锁队列头部一个解除了阻塞的线程拥有一次无偏向的机会（<em>译者注：即不会偏向队头的线程也不会偏向闯入的线程</em>）来赢得与<em>闯入</em>的线程之间的竞争，如果竞争失败，要么重新阻塞要么进行重试。然而，如果<em>闯入</em>的线程到达的速度比队头的线程解除阻塞快，那么在队列中的第一个线程将很难赢得竞争，以至于几乎总要重新阻塞，并且它的后继节点也会一直保持阻塞。对于短暂持有的同步器来说，在队列中第一个线程被解除阻塞期间，多处理器上很可能发生过多次<em>闯入</em>（<em>译者注：即闯入的线程的acquire操作</em>）和<code>release</code>了。正如下文所提到的，最终结果就是保持一或多个线程的高进展速度的同时，仍至少在一定概率上避免了饥饿的发生。</p>
 <p>当有更高的公平性需求时，实现起来也很简单。如果需要严格的公平性，程序员可以把tryAcquire方法定义为，若当前线程不是队列的头节点（可通过<code>getFirstQueuedThread</code>方法检查，这是框架提供的为数不多的几个检测方法之一），则立即失败（返回false）。</p>
 <p>一个更快，但非严格公平的变体可以这样做，若队列为空（判断的瞬间），仍然允许<code>tryAcquire</code>执行成功。在这种情况下，多个线程同时遇到一个空队列时可能会去竞争以使自己第一个获得锁，这样，通常至少有一个线程是无需入队列的。<code>java.util.concurrent</code>包中所有支持公平模式的同步器都采用了这种策略。</p>

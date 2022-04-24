@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="TreeMap底层通过红黑树(Red-Black tree)实现，也就意味着containsKey(), get(), put(), remove()都有着log(n)的时间复杂度。其具体算法实现参照了《算法导论》 出于性能原因，TreeMap是非同步的(not synchronized)，如果需要在多线程环境使用，需要程序员手动同步；或者通过如下方式将TreeMap包装成(wrapped)同步的">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421191341.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421191456.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421191341.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421191456.png">
 <meta property="article:published_time" content="2019-03-04T22:58:00.000Z">
 <meta property="article:modified_time" content="2019-03-04T22:58:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="集合">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220421191341.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421191341.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/7b22f4ce.html">
 
@@ -308,9 +308,9 @@
 <li>对于每个节点，从该点至null(树尾端)的任何路径，都含有相同个数的黑色节点。</li>
 </ol>
 <p>在树的结构发生改变时(插入或者删除操作)，往往会破坏上述条件3或条件4，需要通过调整使得查找树重新满足红黑树的约束条件。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220421191341.png" alt="红黑树"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421191341.png" alt="红黑树"></p>
 <p>TreeMap整体结构如下图所示</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220421191456.png" alt="类图结构"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421191456.png" alt="类图结构"></p>
 <p>TreeMap实现了NavigableMap接口，该接口主要是扩展SortedMap接口，用于搜锁离指定接口最近的匹配数据。SortedMap接口主要定义根据key值的排序来定义Map的视图顺序，如果key值实现了Comparable，则会根据返回结果进行排序，如果指定了Comparator，则会根据其进行排序。</p>
 <p>因此在创将TreeMap对象的时候，最好指定Comparator，或者插入的key值实现了Comparable接口，否则会抛出异常。</p>
 <h2 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h2><p>TreeSet是对TreeMap的简单包装，对TreeSet的函数调用都会转换成合适的TreeMap方法，因此TreeSet的实现非常简单。这里不再赘述。</p>

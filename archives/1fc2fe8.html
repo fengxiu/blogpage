@@ -27,20 +27,20 @@
 <meta property="og:site_name" content="枫秀学习日志">
 <meta property="og:description" content="tcp是面向连接的，在通信前会进行三次握手，在断开连接时会进行四次挥手。本篇文章会对连接的具体过程进行详细介绍，同时也会深入挖掘一些与连接相关的问题进行说明。 三次握手第一次握手：客户端发送syn包(seq&#x3D;x)到服务器，并进入SYN_SEND状态，等待服务器确认； 第二次握手：服务器收到syn包，必须确认客户的SYN（ack&#x3D;x+1），同时自己也发送一个SYN包（seq&amp;#x">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-178.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-179.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-180.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-185.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-181.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-182.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220416093916.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/fengxiu/img/master/20220416094500.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-178.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-179.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-180.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-185.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-181.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-182.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220416093916.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220416094500.png">
 <meta property="article:published_time" content="2019-03-09T13:25:00.000Z">
 <meta property="article:modified_time" content="2019-03-09T13:25:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="tcp">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/fengxiu/img/master/pasted-178.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-178.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/1fc2fe8.html">
 
@@ -310,11 +310,11 @@
 <p>第三次握手：客户端收到服务器的SYN＋ACK包，向服务器发送确认包ACK(ack&#x3D;y+1)，此包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。</p>
 <p><strong>注意：tcp是全双工通信，客户端和服务器端都可以发送和接收数据，所以发送端和接收端都各自有一个序列号，也就是上面的x和y值</strong></p>
 <p>握手过程中传送的包里不包含数据，三次握手完毕后，客户端与服务器才正式开始传送数据。理想状态下，TCP连接一旦建立，在通信双方中的任何一方主动关闭连接之前，TCP 连接都将被一直保持下去。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-178.png" alt="三次握手"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-178.png" alt="三次握手"></p>
 <span id="more"></span>
 
 <h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>数据传输完毕后，双方都可释放连接。最开始的时候，客户端和服务器都是处于ESTABLISHED状态，假设客户端主动关闭，服务器被动关闭。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-179.png" alt="四次挥手"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-179.png" alt="四次挥手"></p>
 <p><strong>第一次挥手</strong>：客户端发送一个FIN，用来关闭客户端到服务器的数据传送，也就是客户端告诉服务器：我已经不会再给你发数据了(当然，在FIN包之前发送出去的数据，如果没有收到对应的ack确认报文，客户端依然会重发这些数据)，但是，此时客户端还可以接受数据，FIN&#x3D;1，其序列号为seq&#x3D;u（等于前面已经传送过来的数据的最后一个字节的序号加1），此时，客户端进入FIN-WAIT-1（终止等待1）状态。 TCP规定，FIN报文段即使不携带数据，也要消耗一个序号。</p>
 <p><strong>第二次挥手</strong>：服务器收到FIN包后，发送一个ACK给对方并且带上自己的序列号seq，确认序号为收到序号+1（与SYN相同，一个FIN占用一个序号）。此时，服务端就进入了CLOSE-WAIT（关闭等待）状态。TCP服务器通知高层的应用进程，客户端向服务器的方向就释放了，这时候处于半关闭状态，即客户端已经没有数据要发送了，但是服务器若发送数据，客户端依然要接受。这个状态还要持续一段时间，也就是整个CLOSE-WAIT状态持续的时间。此时，客户端就进入FIN-WAIT-2（终止等待2）状态，等待服务器发送连接释放报文（在这之前还需要接收服务器发送的最后的数据）。</p>
 <p><strong>第三次挥手</strong>：服务器发送一个FIN，用来关闭服务器到客户端的数据传送，也就是告诉客户端，我的数据也发送完了，不会再给你发数据了。由于在半关闭状态，服务器很可能又发送了一些数据，假定此时的序列号为seq&#x3D;w，此时，服务器就进入了LAST-ACK（最后确认）状态，等待客户端的确认。</p>
@@ -337,7 +337,7 @@
 <li><strong>ESTABLISHED</strong>：这个容易理解了，表示连接已经建立了。(双方都已经进入)</li>
 </ol>
 <p><strong>4次挥手过程状态：（可参考下图）</strong></p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-180.png" alt="四次挥手"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-180.png" alt="四次挥手"></p>
 <ol>
 <li><strong>FIN_WAIT_1</strong>: 这个状态要好好解释一下，其实FIN_WAIT_1和FIN_WAIT_2状态的真正含义都是表示等待对方的FIN报文。而这两种状态的区别是：FIN_WAIT_1状态实际上是当SOCKET在ESTABLISHED状态时，它想主动关闭连接，向对方发送了FIN报文，此时该SOCKET即进入到FIN_WAIT_1状态。而当对方回应ACK报文后，则进入到FIN_WAIT_2状态，当然在实际的正常情况下，无论对方何种情况下，都应该马上回应ACK报文，所以FIN_WAIT_1状态一般是比较难见到的，而FIN_WAIT_2状态还有时常常可以用netstat看到。（主动方）<br>FIN_WAIT_2：上面已经详细解释了这种状态，实际上FIN_WAIT_2状态下的SOCKET，表示半连接，也即有一方要求close连接，但另外还告诉对方，我暂时还有点数据需要传送给你(ACK信息)，稍后再关闭连接。（主动方）</li>
 <li><strong>TIME_WAIT</strong>: 表示收到了对方的FIN报文，并发送出了ACK报文，就等2MSL后即可回到CLOSED可用状态了。如果FIN_WAIT_1状态下，收到了对方同时带FIN标志和ACK标志的报文时，可以直接进入到TIME_WAIT状态，而无须经过FIN_WAIT_2状态。（主动方）</li>
@@ -347,8 +347,8 @@
 <li><strong>CLOSED</strong>: 表示连接中断。</li>
 </ol>
 <p>TCP的具体状态图可参考：</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-185.png"></p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-181.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-185.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-181.png"></p>
 <h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><h3 id="序列号随机值"><a href="#序列号随机值" class="headerlink" title="序列号随机值"></a>序列号随机值</h3><p>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。如果ISN是固定的，攻击者比较容易猜出后续的确认号。因此采用类似于下面的一个公式来计算序列号。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ISN = M + F(localhost, localport, remotehost, remoteport)</span><br></pre></td></tr></table></figure>
 
@@ -356,17 +356,17 @@
 <h3 id="序列号回绕"><a href="#序列号回绕" class="headerlink" title="序列号回绕"></a>序列号回绕</h3><p>因为ISN是随机的，所以序列号容易超过2^31-1。而tcp对于丢包和乱序等问题的判断都是依赖于序列号大小比较的。此时就出现了所谓的tcp序列号回绕（sequence wraparound）问题。怎么解决？</p>
 <p>对于tcp seq场景来说，使用前后求差值来解决此问题。以无符号单字节为例：seq1&#x3D;255(FFH)，seq2&#x3D;5(5H)，从seq1到seq2，此时序列号发生了回绕现象。<br>那么seq2-seq1得到答案为6。因为无符号嘛，从255跳到0后，溢出位超出8位，然后被扔掉了，所以得到的是6。</p>
 <h3 id="连接队列"><a href="#连接队列" class="headerlink" title="连接队列"></a>连接队列</h3><p>只有准备好的请求操作系统才会告诉上层的服务程序，因此为了维护这些还未准备好的请求或者准备好了但是未被上层应用调用的请求，操作系统维护了半连接队列和全连接队列。半连接队列维护的是处于SYN_RCVD状态的请求。全连接队列维护的是已经处于ESTABLISHED状态但仍未被应用程序accept的请求。具体如下图</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/pasted-182.png" alt="接队列"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-182.png" alt="接队列"></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看是否有连接溢出</span></span><br><span class="line">netstat -s | grep LISTEN</span><br></pre></td></tr></table></figure>
 
 <p>由于资源有限，队列就不可能无限扩大，因此就会有超出队列最大长度的时候。会出现以下俩种情况</p>
 <p><strong>半连接队列满了</strong><br>在三次握手协议中，服务器维护一个半连接队列，该队列为每个客户端的SYN包开设一个条目(服务端在接收到SYN包的时候，就已经创建了request_sock结构，存储在半连接队列中)，该条目表明服务器已收到SYN包，并向客户发出确认，正在等待客户的确认包。这些条目所标识的连接在服务器处于SYN_RECV状态，当服务器收到客户的确认包时，删除该条目，服务器进入ESTABLISHED状态。</p>
 <p>目前，Linux下默认会进行5次重发SYN-ACK包，重试的间隔时间从1s开始，下次的重试间隔时间是前一次的双倍，5次的重试时间间隔为1s, 2s, 4s, 8s, 16s, 总共31s, 称为<code>指数退避</code>，第5次发出后还要等32s才知道第5次也超时了，所以总共需要 1s + 2s + 4s+ 8s+ 16s + 32s &#x3D; 63s, TCP才会把断开这个连接。由于，SYN超时需要63秒，那么就给攻击者一个攻击服务器的机会，攻击者在短时间内发送大量的SYN包给Server(俗称SYN flood攻击)，用于耗尽Server的SYN队列。对于应对SYN过多的问题，linux提供了几个TCP参数来调整应对。</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220416093916.png" alt="半连接对联参数"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220416093916.png" alt="半连接对联参数"></p>
 <p><strong>全连接队列满</strong><br>当第三次握手时，当server接收到ACK包之后，会进入一个新的叫 accept 的队列。当accept队列满了之后，即使client继续向server发送ACK的包，也会不被响应，此时ListenOverflows+1，同时server通过tcp_abort_on_overflow来决定如何返回，0表示直接丢弃该ACK，1表示发送RST通知client；相应的，client则会分别返回<code>read timeout</code> 或者 <code>connection reset by peer</code>。</p>
 <p>另外，tcp_abort_on_overflow是0的话，此时对应的请求有可能维护在半连接队列中，server过一段时间再次发送syn+ack给client（也就是重新走握手的第二步），如果client超时等待比较短，就很容易异常。而客户端收到多个SYN ACK 包，则会认为之前的ACK丢包了。于是促使客户端再次发送ACK ，在 accept队列有空闲的时候最终完成连接。若accept队列始终满员，则最终客户端收到RST包（此时服务端发送syn+ack的次数超出了tcp_synack_retries）。</p>
 <p>服务端仅仅只是创建一个定时器，以固定间隔重传syn和ack到服务端</p>
-<p><img src="https://raw.githubusercontent.com/fengxiu/img/master/20220416094500.png" alt="tcp全连接参数"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220416094500.png" alt="tcp全连接参数"></p>
 <h3 id="syn-flood攻击"><a href="#syn-flood攻击" class="headerlink" title="syn flood攻击"></a>syn flood攻击</h3><p>最基本的DoS攻击就是利用合理的服务请求来占用过多的服务资源，从而使合法用户无法得到服务的响应。syn flood属于Dos攻击的一种。</p>
 <p>如果恶意的向某个服务器端口发送大量的SYN包，则可以使服务器打开大量的半开连接，分配TCB（Transmission Control Block）, 从而消耗大量的服务器资源，同时也使得正常的连接请求无法被相应。当开放了一个TCP端口后，该端口就处于Listening状态，不停地监视发到该端口的SYN报文，一旦接收到Client发来的Syn报文，就需要为该请求分配一个TCB，通常一个TCB至少需要280个字节，在某些操作系统中TCB甚至需要1300个字节，并返回一个SYN ACK命令，立即转为SYN-RECEIVED即半开连接状态，系统会为此耗尽资源。</p>
 <p><strong>常见的防攻击方法有</strong>：</p>
