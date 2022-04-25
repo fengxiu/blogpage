@@ -20,16 +20,17 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="上一篇文章已经分析了公平锁的获取与释放，本篇文章在前文的基础上分析非公平锁的获取与释放。如果你看懂跑了前面公平锁的获取与释放主要流程，那么看懂本篇文章将会比较轻松。">
+  <meta name="description" content="上一篇文章已经分析了公平锁的获取与释放，本篇文章在前文的基础上分析非公平锁的获取与释放。如果你看懂跑了前面公平锁的获取与释放主要流程，那么看懂本篇文章将会比较轻松。 获取非公平锁非公平锁和公平锁在获取锁的方法上，流程是一样的；它们的区别主要表现在“尝试获取锁的机制不同。简单点说，公平锁在每次尝试获取锁时，都是采用公平策略(根据等待队列依次排序等待)；而非公平锁在每次尝试获取锁时，都是采用的非公平策">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java线程系列 JUC锁 04 ReentrantLock 非公平锁">
 <meta property="og:url" content="http://fengxiu.club/archives/b95fbd38.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="上一篇文章已经分析了公平锁的获取与释放，本篇文章在前文的基础上分析非公平锁的获取与释放。如果你看懂跑了前面公平锁的获取与释放主要流程，那么看懂本篇文章将会比较轻松。">
+<meta property="og:description" content="上一篇文章已经分析了公平锁的获取与释放，本篇文章在前文的基础上分析非公平锁的获取与释放。如果你看懂跑了前面公平锁的获取与释放主要流程，那么看懂本篇文章将会比较轻松。 获取非公平锁非公平锁和公平锁在获取锁的方法上，流程是一样的；它们的区别主要表现在“尝试获取锁的机制不同。简单点说，公平锁在每次尝试获取锁时，都是采用公平策略(根据等待队列依次排序等待)；而非公平锁在每次尝试获取锁时，都是采用的非公平策">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-03-18T08:27:00.000Z">
 <meta property="article:modified_time" content="2019-03-18T08:27:00.000Z">
 <meta property="article:author" content="枫秀">
+<meta property="article:tag" content="并发">
 <meta property="article:tag" content="lock">
 <meta name="twitter:card" content="summary">
 
@@ -128,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">104</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -138,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">212</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">218</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -199,7 +200,7 @@
     <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/b95fbd38.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
       <meta itemprop="name" content="枫秀">
       <meta itemprop="description" content="记录学习日志">
     </span>
@@ -280,7 +281,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.2k</span>
+              <span>6.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -300,15 +301,15 @@
 
       
         <p>上一篇文章已经分析了公平锁的获取与释放，本篇文章在前文的基础上分析非公平锁的获取与释放。如果你看懂跑了前面公平锁的获取与释放主要流程，那么看懂本篇文章将会比较轻松。</p>
+<h2 id="获取非公平锁"><a href="#获取非公平锁" class="headerlink" title="获取非公平锁"></a>获取非公平锁</h2><p>非公平锁和公平锁在获取锁的方法上，流程是一样的；它们的区别主要表现在“尝试获取锁的机制不同。简单点说，公平锁在每次尝试获取锁时，都是采用公平策略(根据等待队列依次排序等待)；而非公平锁在每次尝试获取锁时，都是采用的非公平策略(无视等待队列，直接尝试获取锁，如果锁是空闲的，即可获取状态，则获取锁)。<br>在前面的<a href="/archives/cb19bcd7.html">java线程系列 JUC锁 03 ReentrantLock公平锁</a>”中，已经详细介绍了获取公平锁的流程和机制；下面，通过代码分析以下获取非公平锁的流程。</p>
 <span id="more"></span>
 
-<h2 id="获取非公平锁"><a href="#获取非公平锁" class="headerlink" title="获取非公平锁"></a>获取非公平锁</h2><p>非公平锁和公平锁在获取锁的方法上，流程是一样的；它们的区别主要表现在“尝试获取锁的机制不同。简单点说，公平锁在每次尝试获取锁时，都是采用公平策略(根据等待队列依次排序等待)；而非公平锁在每次尝试获取锁时，都是采用的非公平策略(无视等待队列，直接尝试获取锁，如果锁是空闲的，即可获取状态，则获取锁)。<br>在前面的“<a target="_blank" rel="noopener" href="http://www.cnblogs.com/skywang12345/p/3496147.html">Java多线程系列–“JUC锁”03之 公平锁(一)</a>”中，已经详细介绍了获取公平锁的流程和机制；下面，通过代码分析以下获取非公平锁的流程。</p>
 <h3 id="lock"><a href="#lock" class="headerlink" title="lock"></a>lock</h3><p>lock()在ReentrantLock.java的NonfairSync类中实现，它的源码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">        setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        acquire(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>lock()会先通过compareAndSet(0, 1)来判断锁是不是空闲状态。是的话，当前线程直接获取锁；否则的话，调用acquire(1)获取锁,主要流程如下</p>
 <ol>
-<li>通过compareAndSetState()函数设置当前锁的状态。若锁的状态值为0，则设置锁的状态值为1。也就是获取锁成功。然后通过setExclusiveOwnerThread(Thread.currentThread())设置当前线程为锁的持有者。这样就获取锁成功。</li>
+<li>通过compareAndSetState()函数设置当前锁的状态。若锁的状态值为0，则设置锁的状态值为1。也就是获取锁成功。然后通过<code>setExclusiveOwnerThread(Thread.currentThread())</code>设置当前线程为锁的持有者,这样就获取锁成功。</li>
 <li>如果上面失败，则通过acquire(1)来获取锁</li>
 </ol>
 <p><strong>公平锁和非公平锁关于lock()的对比</strong></p>
@@ -316,7 +317,7 @@
 <li><strong>公平锁</strong>   – 公平锁的lock()函数，会直接调用acquire(1)。</li>
 <li><strong>非公平锁</strong> – 非公平锁会先判断当前锁的状态是不是空闲，是的话，就不排队，而是直接获取锁。</li>
 </ul>
-<h3 id="acquire"><a href="#acquire" class="headerlink" title="acquire()"></a><strong>acquire()</strong></h3><p>acquire()在AQS中实现的，它的源码如下：</p>
+<h3 id="acquire"><a href="#acquire" class="headerlink" title="acquire()"></a>acquire()</h3><p>acquire()在AQS中实现的，它的源码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">acquire</span><span class="params">(<span class="type">int</span> arg)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ol>
@@ -325,12 +326,12 @@
 <li>插入成功后，会使用acquireQueued来获取锁，这里获取锁只会等待当前等待节点的前继节点为head节点才会获取成功。没有获取锁，线程会进入休眠状态。如果当前线程在休眠等待过程中被打断，acquireQueue会返回true，此时当前线程会调用selfInterrupt来给自己产生一个中断。</li>
 </ol>
 <p><strong>公平锁和非公平锁关于acquire()的对比</strong></p>
-<p>公平锁和非公平锁，只有tryAcquire()函数的实现不同；即它们尝试获取锁的机制不同。这就是我们所说的它们获取锁策略的不同所在之处.在“<a target="_blank" rel="noopener" href="http://www.cnblogs.com/skywang12345/p/3496147.html">Java多线程系列–“JUC锁”03之 公平锁(一)</a>”中，已经详细介绍了acquire()涉及到的各个函数。这里仅对它们有差异的函数tryAcquire()进行说明。</p>
+<p>公平锁和非公平锁，只有tryAcquire()函数的实现不同；即它们尝试获取锁的机制不同。这就是我们所说的它们获取锁策略的不同所在之处。在前文中，已经详细介绍了acquire()涉及到的各个函数。这里仅对它们有差异的函数tryAcquire()进行说明。</p>
 <h3 id="tryAcquire"><a href="#tryAcquire" class="headerlink" title="tryAcquire"></a>tryAcquire</h3><p>非公平锁的tryAcquire()在ReentrantLock的NonfairSync类中实现，源码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">tryAcquire</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>nonfairTryAcquire()在ReentrantLock的Sync类中实现，源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">nonfairTryAcquire</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">    <span class="comment">// 获取“当前线程”</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">Thread</span> <span class="variable">current</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line">    <span class="comment">// 获取“锁”的状态</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> getState();</span><br><span class="line">    <span class="comment">// c=0意味着“锁没有被任何线程锁拥有”</span></span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 若“锁没有被任何线程锁拥有”，则通过CAS函数设置“锁”的状态为acquires。</span></span><br><span class="line">        <span class="comment">// 同时，设置“当前线程”为锁的持有者。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="comment">// 如果“锁”的持有者已经是“当前线程”，</span></span><br><span class="line">        <span class="comment">// 则将更新锁的状态。</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">nextc</span> <span class="operator">=</span> c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Maximum lock count exceeded&quot;</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sync</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">nonfairTryAcquire</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">    <span class="comment">// 获取“当前线程”</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">Thread</span> <span class="variable">current</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line">    <span class="comment">// 获取“锁”的状态</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> getState();</span><br><span class="line">    <span class="comment">// c=0意味着“锁没有被任何线程锁拥有”</span></span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 若“锁没有被任何线程锁拥有”，则通过CAS函数设置“锁”的状态为acquires。</span></span><br><span class="line">        <span class="comment">// 同时，设置“当前线程”为锁的持有者。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="comment">// 如果“锁”的持有者已经是“当前线程”，</span></span><br><span class="line">        <span class="comment">// 则将更新锁的状态。</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">nextc</span> <span class="operator">=</span> c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Maximum lock count exceeded&quot;</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>根据代码,tryAcquire()的作用就是尝试去获取锁。</p>
 <ol>
@@ -344,7 +345,7 @@
 <li>而非公平锁在尝试获取锁时，如果锁没有被任何线程持有，则不管它在CLH队列的何处，它都直接获取锁。</li>
 </ol>
 <p>至于非公平锁的释放和公平锁是一样的，这里就不具体说明，下面主要分析ReentrantLock还剩下和获取锁有关的几个函数。</p>
-<h2 id="lockInterruptibly、tryLock分析"><a href="#lockInterruptibly、tryLock分析" class="headerlink" title="lockInterruptibly、tryLock分析"></a>lockInterruptibly、tryLock分析</h2><h3 id="lockInterruptibly"><a href="#lockInterruptibly" class="headerlink" title="lockInterruptibly"></a>lockInterruptibly</h3><p>这个函数和lock区别是，他响应中断，也就是当等待获取锁的线程在等待获取锁的时候收到中断信号，此方法会抛出中断异常。具体看西面源码</p>
+<h2 id="lockInterruptibly和tryLock分析"><a href="#lockInterruptibly和tryLock分析" class="headerlink" title="lockInterruptibly和tryLock分析"></a>lockInterruptibly和tryLock分析</h2><h3 id="lockInterruptibly"><a href="#lockInterruptibly" class="headerlink" title="lockInterruptibly"></a>lockInterruptibly</h3><p>这个函数和lock区别是，他响应中断，也就是当等待获取锁的线程在等待获取锁的时候收到中断信号，此方法会抛出中断异常。具体看下面源码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">    sync.acquireInterruptibly(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// AQS</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">acquireInterruptibly</span><span class="params">(<span class="type">int</span> arg)</span></span><br><span class="line">    <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">     <span class="comment">// 如果线程的中断标志为true，则抛出异常</span></span><br><span class="line">    <span class="keyword">if</span> (Thread.interrupted())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InterruptedException</span>();</span><br><span class="line">     <span class="comment">// 尝试获取锁</span></span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg)) </span><br><span class="line">        <span class="comment">// 获取锁</span></span><br><span class="line">        doAcquireInterruptibly(arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>从上面可以看出，主要的逻辑是在AQS中的acquireInterruptibly，至于参数1和前面的公平锁的参数一样，这里就不解释。下面看看上面的具体逻辑。</p>
@@ -376,25 +377,17 @@
 
 <p>上面流程还是比较清晰，下面总结上面的流程。</p>
 <ol>
-<li><p>判断等待的时间如果小于等于0，则直接返回false</p>
-</li>
-<li><p>计算等待的截止时间，并将当前节点插入到等待队列中。</p>
-</li>
-<li><p>进入循环</p>
-<ol>
-<li><p>判断当前节点是否能成功获取锁，如果成功获取则返回true</p>
-</li>
-<li><p>计算等待的时间，如果小于0，返回失败</p>
-</li>
-<li><p>shouldParkAfterFailedAcquire判断当前节点是否阻塞，如果返回false，进入新一轮的循环。</p>
-<p>如果是，则判断还需等待的时间是否小于spinForTimeoutThreshold，如果小于则不等待，进入自旋。这是一个优化，因为线程的切换需要时间，如果阻塞的时间非常短，则可以进入自旋，从而提升整体的性能。如果大于，则进入有限时间的阻塞。</p>
-</li>
-<li><p>判断线程是否中断过，如果是，则抛出中断异常</p>
-</li>
+<li>判断等待的时间如果小于等于0，则直接返回false</li>
+<li>计算等待的截止时间，并将当前节点插入到等待队列中。</li>
+<li>进入循环<ol>
+<li>判断当前节点是否能成功获取锁，如果成功获取则返回true</li>
+<li>计算等待的时间，如果小于0，返回失败</li>
+<li>shouldParkAfterFailedAcquire判断当前节点是否阻塞，如果返回false，进入新一轮的循环。</li>
+<li>上一步如果返回true，则判断还需等待的时间是否小于spinForTimeoutThreshold，如果小于则不等待，进入自旋。这是一个优化，因为线程的切换需要时间，如果阻塞的时间非常短，则可以进入自旋，从而提升整体的性能。如果大于，则进入有限时间的阻塞。</li>
+<li>判断线程是否中断过，如果是，则抛出中断异常</li>
 </ol>
 </li>
-<li><p>进入finally，如果failed&#x3D;true，则取消当前节点。</p>
-</li>
+<li>进入finally，如果failed&#x3D;true，则取消当前节点。</li>
 </ol>
 <h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
 <li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000015558984">Java多线程进阶（一）—— J.U.C并发包概述</a>](<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000015804888">https://segmentfault.com/a/1190000015804888</a>)</li>
@@ -414,7 +407,7 @@
       <div class="popular-posts-title"><a href="/archives/aae77c7e.html" rel="bookmark">Synchronize实现原理</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/archives/51727.html" rel="bookmark">LockSupport使用介绍以及原理分析</a></div>
+      <div class="popular-posts-title"><a href="/archives/41442.html" rel="bookmark">LockSupport使用介绍以及原理分析</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/339349e1.html" rel="bookmark">Synchronize底层优化</a></div>
@@ -447,6 +440,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag"># 并发</a>
               <a href="/tags/lock/" rel="tag"># lock</a>
           </div>
 
@@ -541,14 +535,14 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">获取非公平锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lock"><span class="nav-number">1.1.</span> <span class="nav-text">lock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#acquire"><span class="nav-number">1.2.</span> <span class="nav-text">acquire()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tryAcquire"><span class="nav-number">1.3.</span> <span class="nav-text">tryAcquire</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lockInterruptibly%E3%80%81tryLock%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">lockInterruptibly、tryLock分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lockInterruptibly"><span class="nav-number">2.1.</span> <span class="nav-text">lockInterruptibly</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#doAcquireInterruptibly"><span class="nav-number">2.1.1.</span> <span class="nav-text">doAcquireInterruptibly</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tryLock"><span class="nav-number">2.2.</span> <span class="nav-text">tryLock</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tryLock-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">tryLock</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tryLock-long-timeout-TimeUnit-unit"><span class="nav-number">2.2.2.</span> <span class="nav-text">tryLock(long timeout, TimeUnit unit)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">2.3.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">获取非公平锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lock"><span class="nav-number">1.1.</span> <span class="nav-text">lock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#acquire"><span class="nav-number">1.2.</span> <span class="nav-text">acquire()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tryAcquire"><span class="nav-number">1.3.</span> <span class="nav-text">tryAcquire</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lockInterruptibly%E5%92%8CtryLock%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">lockInterruptibly和tryLock分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lockInterruptibly"><span class="nav-number">2.1.</span> <span class="nav-text">lockInterruptibly</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#doAcquireInterruptibly"><span class="nav-number">2.1.1.</span> <span class="nav-text">doAcquireInterruptibly</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tryLock"><span class="nav-number">2.2.</span> <span class="nav-text">tryLock</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tryLock-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">tryLock</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tryLock-long-timeout-TimeUnit-unit"><span class="nav-number">2.2.2.</span> <span class="nav-text">tryLock(long timeout, TimeUnit unit)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">2.3.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="枫秀"
-      src="/images/avatar.jpg">
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
   <p class="site-author-name" itemprop="name">枫秀</p>
   <div class="site-description" itemprop="description">记录学习日志</div>
 </div>
@@ -557,7 +551,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">212</span>
+          <span class="site-state-item-count">218</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -570,7 +564,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">104</span>
+        <span class="site-state-item-count">99</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -607,13 +601,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1.4m</span>
+    <span title="站点总字数">1.5m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:41</span>
+    <span title="站点阅读时长">22:16</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
