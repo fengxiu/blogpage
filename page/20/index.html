@@ -351,7 +351,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-26 00:19:50" itemprop="dateModified" datetime="2022-04-26T00:19:50+00:00">2022-04-26</time>
+                <time title="修改时间：2022-04-28 08:50:19" itemprop="dateModified" datetime="2022-04-28T08:50:19+00:00">2022-04-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -478,7 +478,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-26 00:19:50" itemprop="dateModified" datetime="2022-04-26T00:19:50+00:00">2022-04-26</time>
+                <time title="修改时间：2022-04-28 08:50:19" itemprop="dateModified" datetime="2022-04-28T08:50:19+00:00">2022-04-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -851,13 +851,6 @@
 
               <time title="创建时间：2019-01-04 16:49:00" itemprop="dateCreated datePublished" datetime="2019-01-04T16:49:00+00:00">2019-01-04</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-26 00:19:50" itemprop="dateModified" datetime="2022-04-26T00:19:50+00:00">2022-04-26</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -933,13 +926,14 @@
 <li>前言</li>
 <li>准备工作</li>
 <li>CompleteableFuture基本使用</li>
-<li>CompletableFuture 类使用示例<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3>Java 5 并发库主要关注于异步任务的处理，它采用了这样一种模式，producer 线程创建任务并且利用阻塞队列将其传递给任务的 consumer。这种模型在 Java 7 和 8 中进一步发展，并且开始支持另外一种风格的任务执行，那就是将任务的数据集分解为子集，每个子集都可以由独立且同质的子任务来负责处理。</li>
+<li>CompletableFuture 类使用示例</li>
 </ol>
-<p>这种风格的基础库也就是 fork&#x2F;join 框架，它允许程序员规定数据集该如何进行分割，并且支持将子任务提交到默认的标准线程池中，也就是通用的<strong>ForkJoinPool</strong>。Java 8 中，fork&#x2F;join 并行功能借助并行流的机制变得更加具有可用性。但是，不是所有的问题都适合这种风格的并行处理：所处理的元素必须是独立的，数据集要足够大，并且在并行加速方面，每个元素的处理成本要足够高，这样才能补偿建立 fork&#x2F;join 框架所消耗的成本。CompletableFuture 类则是 Java 8 在并行流方面的创新。</p>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Java 5 并发库主要关注于异步任务的处理，它采用了这样一种模式，producer线程创建任务并且利用阻塞队列将其传递给任务的consumer。这种模型在Java7和8中进一步发展，并且开始支持另外一种风格的任务执行，那就是将任务的数据集分解为子集，每个子集都可以由独立且同质的子任务来负责处理。</p>
+<p>这种风格的基础库也就是fork&#x2F;join框架，它允许程序员规定数据集该如何进行分割，并且支持将子任务提交到默认的标准线程池中，也就是通用的<strong>ForkJoinPool</strong>。Java8中，fork&#x2F;join并行功能借助并行流的机制变得更加具有可用性。但是，不是所有的问题都适合这种风格的并行处理：所处理的元素必须是独立的，数据集要足够大，并且在并行加速方面，每个元素的处理成本要足够高，这样才能补偿建立 fork&#x2F;join 框架所消耗的成本。CompletableFuture 类则是 Java 8 在并行流方面的创新。</p>
 <!--  more -->
 
 <h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>这里主要介绍下面我们需要使用的一些知识点，主要是为了是读者可以更好的理解。</p>
-<h4 id="异步计算"><a href="#异步计算" class="headerlink" title="异步计算"></a>异步计算</h4><p>所谓异步调用其实就是实现一个可无需等待被调用函数的返回值而让操作继续运行的方法。在 Java 语言中，简单的讲就是另启一个线程来完成调用中的部分计算，使调用继续运行或返回，而不需要等待计算结果。但调用者仍需要取线程的计算结果。</p>
+<h4 id="异步计算"><a href="#异步计算" class="headerlink" title="异步计算"></a>异步计算</h4><p>所谓异步调用其实就是实现一个可无需等待被调用函数的返回值而让操作继续运行的方法。在Java语言中，简单的讲就是另启一个线程来完成调用中的部分计算，使调用继续运行或返回，而不需要等待计算结果。但调用者仍需要取线程的计算结果。</p>
 <h4 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h4><p>回调函数比较通用的解释是，它是一个通过函数指针调用的函数。如果你把函数的指针（地址）作为参数传递给另一个函数，当这个指针被用为调用它所指向的函数时，我们就说这是回调函数。回调函数不是由该函数的实现方直接调用，而是在特定的事件或条件发生时由另外一方调用的，用于对该事件或条件进行响应。</p>
 <p>回调函数的机制：</p>
 <ol>
@@ -947,30 +941,28 @@
 <li>提供函数实现的一方在初始化时候，将回调函数的函数指针注册给调用者；</li>
 <li>当特定的事件或条件发生的时候，调用者使用函数指针调用回调函数对事件进行处理。</li>
 </ol>
-<p>回调函数通常与原始调用者处于同一层次，如图 1 所示：</p>
-<h5 id="图-1-回调函数示例图"><a href="#图-1-回调函数示例图" class="headerlink" title="图 1. 回调函数示例图"></a>图 1. 回调函数示例图</h5><p><img src="/"></p>
-<h4 id="Future接口"><a href="#Future接口" class="headerlink" title="Future接口"></a>Future接口</h4><p>JDK5 新增了 Future 接口，用于描述一个异步计算的结果。虽然 Future 以及相关使用方法提供了异步执行任务的能力，但是对于结果的获取却是很不方便，只能通过阻塞或者轮询的方式得到任务的结果。阻塞的方式显然和我们的异步编程的初衷相违背，轮询的方式又会耗费无谓的 CPU 资源，而且也不能及时地得到计算结果，为什么不能用观察者设计模式呢？即当计算结果完成及时通知监听者。</p>
-<p>有一些开源框架实现了我们的设想，例如 Netty 的 ChannelFuture 类扩展了 Future 接口，通过提供 addListener 方法实现支持回调方式的异步编程。Netty 中所有的 I&#x2F;O 操作都是异步的,这意味着任何的 I&#x2F;O 调用都将立即返回，而不保证这些被请求的 I&#x2F;O 操作在调用结束的时候已经完成。取而代之地，你会得到一个返回的 ChannelFuture 实例，这个实例将给你一些关于 I&#x2F;O 操作结果或者状态的信息。当一个 I&#x2F;O 操作开始的时候，一个新的 Future 对象就会被创建。在开始的时候，新的 Future 是未完成的状态－－它既非成功、失败，也非被取消，因为 I&#x2F;O 操作还没有结束。如果 I&#x2F;O 操作以成功、失败或者被取消中的任何一种状态结束了，那么这个 Future 将会被标记为已完成，并包含更多详细的信息（例如：失败的原因）。请注意，即使是失败和被取消的状态，也是属于已完成的状态。阻塞方式的示例代码如清单 1 所示。</p>
-<h5 id="清单-1-阻塞方式示例代码"><a href="#清单-1-阻塞方式示例代码" class="headerlink" title="清单 1. 阻塞方式示例代码"></a>清单 1. 阻塞方式示例代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`<span class="comment">// Start the connection attempt.``ChannelFuture Future = bootstrap.connect(new InetSocketAddress(host, port));``// Wait until the connection is closed or the connection attempt fails.``Future.getChannel().getCloseFuture().awaitUninterruptibly();``// Shut down thread pools to exit.``bootstrap.releaseExternalResources();`</span></span><br></pre></td></tr></table></figure>
+<h4 id="Future接口"><a href="#Future接口" class="headerlink" title="Future接口"></a>Future接口</h4><p>JDK5新增了Future接口，用于描述一个异步计算的结果。虽然Future以及相关使用方法提供了异步执行任务的能力，但是对于结果的获取却是很不方便，只能通过阻塞或者轮询的方式得到任务的结果。阻塞的方式显然和我们的异步编程的初衷相违背，轮询的方式又会耗费无谓的CPU资源，而且也不能及时地得到计算结果，为什么不能用观察者设计模式呢？即当计算结果完成及时通知监听者。</p>
+<p>有一些开源框架实现了我们的设想，例如Netty的ChannelFuture类扩展了Future接口，通过提供addListener方法实现支持回调方式的异步编程。Netty中所有的I&#x2F;O操作都是异步的,这意味着任何的I&#x2F;O调用都将立即返回，而不保证这些被请求的I&#x2F;O操作在调用结束的时候已经完成。取而代之地，你会得到一个返回的ChannelFuture实例，这个实例将给你一些关于I&#x2F;O操作结果或者状态的信息。当一个I&#x2F;O操作开始的时候，一个新的Future对象就会被创建。在开始的时候，新的Future是未完成的状态－－它既非成功、失败，也非被取消，因为I&#x2F;O操作还没有结束。如果I&#x2F;O操作以成功、失败或者被取消中的任何一种状态结束了，那么这个Future将会被标记为已完成，并包含更多详细的信息（例如：失败的原因）。请注意，即使是失败和被取消的状态，也是属于已完成的状态。阻塞方式的示例代码如清单 1 所示。</p>
+<h5 id="清单-1-阻塞方式示例代码"><a href="#清单-1-阻塞方式示例代码" class="headerlink" title="清单 1. 阻塞方式示例代码"></a>清单 1. 阻塞方式示例代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Start the connection attempt.</span></span><br><span class="line"><span class="type">ChannelFuture</span> <span class="variable">Future</span> <span class="operator">=</span> bootstrap.connect(<span class="keyword">new</span> <span class="title class_">InetSocketAddress</span>(host, port));</span><br><span class="line"><span class="comment">// Wait until the connection is closed or the connection attempt fails.</span></span><br><span class="line">Future.getChannel().getCloseFuture().awaitUninterruptibly();</span><br><span class="line"><span class="comment">// Shut down thread pools to exit.</span></span><br><span class="line">bootstrap.releaseExternalResources();</span><br></pre></td></tr></table></figure>
 
-<p>上面代码使用的是 awaitUninterruptibly 方法，源代码如清单 2 所示。</p>
+<p>上面代码使用的是awaitUninterruptibly方法，源代码如清单2所示。</p>
 <h5 id="清单-2-awaitUninterruptibly-源代码"><a href="#清单-2-awaitUninterruptibly-源代码" class="headerlink" title="清单 2. awaitUninterruptibly 源代码"></a>清单 2. awaitUninterruptibly 源代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">publicChannelFutureawaitUninterruptibly() &#123;</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">interrupted</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">        <span class="comment">//循环等待到完成</span></span><br><span class="line">        <span class="keyword">while</span> (!done) &#123;</span><br><span class="line">            checkDeadLock();</span><br><span class="line">            waiters++;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                wait();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                <span class="comment">//不允许中断</span></span><br><span class="line">                interrupted = <span class="literal">true</span>;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                waiters--;</span><br><span class="line">            &#125;</span><br><span class="line">   		 &#125;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">if</span> (interrupted) &#123;</span><br><span class="line">   		Thread.currentThread().interrupt();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h5 id="清单-3-异步非阻塞方式示例代码"><a href="#清单-3-异步非阻塞方式示例代码" class="headerlink" title="清单 3. 异步非阻塞方式示例代码"></a>清单 3. 异步非阻塞方式示例代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 尝试建立一个连接</span></span><br><span class="line"><span class="type">ChannelFuture</span> <span class="variable">Future</span> <span class="operator">=</span> bootstrap.connect(<span class="keyword">new</span> <span class="title class_">InetSocketAddress</span>(host, port));</span><br><span class="line"><span class="comment">// 注册连接完成监听器</span></span><br><span class="line">Future.addListener(<span class="keyword">new</span> <span class="title class_">ChannelFutureListener</span>()&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">operationComplete</span><span class="params">(<span class="keyword">final</span> ChannelFuture Future)</span></span><br><span class="line">        <span class="keyword">throws</span> Exception &#123;    </span><br><span class="line">        System.out.println(<span class="string">&quot;连接建立完成&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"> printTime(<span class="string">&quot;异步时间：&quot;</span>);</span><br><span class="line"><span class="comment">// 连接关闭，释放资源</span></span><br><span class="line">bootstrap.releaseExternalResources();</span><br></pre></td></tr></table></figure>
 
-<p>可以明显的看出，在异步模式下，上面这段代码没有阻塞，在执行 connect 操作后直接执行到** printTime(“异步时间： “)**，随后 connect 完成，Future 的监听函数输出 connect 操作完成。</p>
+<p>可以明显的看出，在异步模式下，上面这段代码没有阻塞，在执行 connect 操作后直接执行到**printTime(“异步时间”)**，随后connect完成，Future的监听函数输出 connect 操作完成。</p>
 <p>非阻塞则是添加监听类 ChannelFutureListener，通过覆盖 ChannelFutureListener 的 operationComplete 执行业务逻辑。</p>
 <h5 id="清单-4-异步非阻塞方式示例代码"><a href="#清单-4-异步非阻塞方式示例代码" class="headerlink" title="清单 4. 异步非阻塞方式示例代码"></a>清单 4. 异步非阻塞方式示例代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addListener</span><span class="params">(<span class="keyword">final</span> ChannelFutureListener listener)</span> &#123;``    ``<span class="keyword">if</span> (listener == <span class="literal">null</span>) &#123;``    ``<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>(<span class="string">&quot;listener&quot;</span>);``&#125;``    ``booleannotifyNow = <span class="literal">false</span>;``    ``<span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;``        ``<span class="keyword">if</span> (done) &#123;``        ``notifyNow = <span class="literal">true</span>;``    ``&#125; <span class="keyword">else</span> &#123;``        ``<span class="keyword">if</span> (firstListener == <span class="literal">null</span>) &#123;``        ``<span class="comment">//listener 链表头``        ``firstListener = listener;``    ``&#125; else &#123;``        ``if (otherListeners == null) &#123;``        ``otherListeners = new ArrayList&lt;``ChannelFutureListener``&gt;(1);``        ``&#125;``        ``//添加到 listener 链表中，以便操作完成后遍历操作``        ``otherListeners.add(listener);``    ``&#125;``    ``......``    ``if (notifyNow) &#123;``        ``//通知 listener 进行处理``        ``notifyListener(listener);``        ``&#125;``&#125;`</span></span><br></pre></td></tr></table></figure>
 
 <p>这部分代码的逻辑很简单，就是注册回调函数，当操作完成后自动调用回调函数，就达到了异步的效果。</p>
 <h3 id="CompleteableFuture基本使用"><a href="#CompleteableFuture基本使用" class="headerlink" title="CompleteableFuture基本使用"></a>CompleteableFuture基本使用</h3><p>在Java 8中, 新增加了一个包含50个方法左右的类: <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a>，提供了非常强大的Future的扩展功能，可以帮助我们简化异步编程的复杂性，提供了函数式编程的能力，可以通过回调的方式处理计算结果，并且提供了转换和组合CompletableFuture的方法。</p>
-<p>如果想使用以前阻塞或者轮询方式来使用，依然可以通过 CompletableFuture 类来实现，因为CompleteableFuture实现了 CompletionStage 和 Future 接口方，因此也支持这种方式。</p>
+<p>如果想使用以前阻塞或者轮询方式来使用，依然可以通过CompletableFuture类来实现，因为CompleteableFuture实现了CompletionStage和Future 接口方，因此也支持这种方式。</p>
 <p>CompletableFuture 类声明了 CompletionStage 接口，CompletionStage 接口实际上提供了同步或异步运行计算的舞台，所以我们可以通过实现多个 CompletionStage 命令，并且将这些命令串联在一起的方式实现多个命令之间的触发。</p>
 <h4 id="同步方式完成计算"><a href="#同步方式完成计算" class="headerlink" title="同步方式完成计算"></a>同步方式完成计算</h4><p>CompletableFuture类实现了<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletionStage.html">CompletionStage</a>和<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html">Future</a>接口，所以你还是可以像以前一样通过阻塞或者轮询的方式获得结果，尽管这种方式不推荐使用。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> T 	<span class="title function_">get</span><span class="params">()</span></span><br><span class="line"><span class="keyword">public</span> T 	<span class="title function_">get</span><span class="params">(<span class="type">long</span> timeout, TimeUnit unit)</span></span><br><span class="line"><span class="keyword">public</span> T 	<span class="title function_">getNow</span><span class="params">(T valueIfAbsent)</span></span><br><span class="line"><span class="keyword">public</span> T 	<span class="title function_">join</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
 
 <p><code>getNow</code>有点特殊，如果结果已经计算完则返回结果或者抛出异常，否则返回给定的<code>valueIfAbsent</code>值。<br><code>join</code>返回计算的结果或者抛出一个unchecked异常(CompletionException)，可以不进行捕捉，它和<code>get</code>对抛出的异常的处理有些细微的区别，你可以运行下面的代码进行比较：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>/<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">100</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// join的使用方式</span></span><br><span class="line"><span class="comment">//future.join();</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// get必须要捕捉异常，对异常进行处理</span></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">            future.get();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>/<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">100</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// join的使用方式</span></span><br><span class="line"><span class="comment">//future.join();</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// get必须要捕捉异常，对异常进行处理</span></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">        future.get();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <p>尽管Future可以代表在另外的线程中执行的一段异步代码，但是你还是可以在本身线程中执行：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> CompletableFuture&lt;Integer&gt; <span class="title function_">compute</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">final</span> CompletableFuture&lt;Integer&gt; future = <span class="keyword">new</span> <span class="title class_">CompletableFuture</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> future;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1382,7 +1374,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-26 00:19:50" itemprop="dateModified" datetime="2022-04-26T00:19:50+00:00">2022-04-26</time>
+                <time title="修改时间：2022-04-28 08:50:19" itemprop="dateModified" datetime="2022-04-28T08:50:19+00:00">2022-04-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1535,7 +1527,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-26 00:19:50" itemprop="dateModified" datetime="2022-04-26T00:19:50+00:00">2022-04-26</time>
+                <time title="修改时间：2022-04-28 08:50:19" itemprop="dateModified" datetime="2022-04-28T08:50:19+00:00">2022-04-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1748,7 +1740,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:16</span>
+    <span title="站点阅读时长">22:28</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

@@ -20,21 +20,22 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="记录学习日志">
+  <meta name="description" content="死锁的发生必须具备以下四个必要条件  互斥条件（Mutual exclusion）：资源不能被共享，只能由一个进程使用。 请求与保持条件（Hold and wait）：已经得到资源的进程可以再次申请新的资源。 不可剥夺条件（No pre-emption）：已经分配的资源不能从相应的进程中被强制地剥夺。 环路&#x2F;循环等待条件（Circular wait）：系统中若干进程组成环路，该环路中每个">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql之死锁发现与解除">
 <meta property="og:url" content="http://fengxiu.club/archives/33411.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="记录学习日志">
+<meta property="og:description" content="死锁的发生必须具备以下四个必要条件  互斥条件（Mutual exclusion）：资源不能被共享，只能由一个进程使用。 请求与保持条件（Hold and wait）：已经得到资源的进程可以再次申请新的资源。 不可剥夺条件（No pre-emption）：已经分配的资源不能从相应的进程中被强制地剥夺。 环路&#x2F;循环等待条件（Circular wait）：系统中若干进程组成环路，该环路中每个">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426223515.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426223541.png">
 <meta property="article:published_time" content="2022-04-26T08:13:43.000Z">
 <meta property="article:modified_time" content="2022-04-26T08:13:43.000Z">
 <meta property="article:author" content="枫秀">
-<meta property="article:tag" content="java">
-<meta property="article:tag" content="spring">
-<meta property="article:tag" content="分布式">
-<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="读书笔记">
+<meta property="article:tag" content="索引">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426223515.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/33411.html">
 
@@ -224,6 +225,19 @@
 
               <time title="创建时间：2022-04-26 08:13:43" itemprop="dateCreated datePublished" datetime="2022-04-26T08:13:43+00:00">2022-04-26</time>
             </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
 
           
             <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
@@ -266,7 +280,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>984</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -285,13 +299,59 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <p>死锁的发生必须具备以下四个必要条件</p>
+<ol>
+<li>互斥条件（Mutual exclusion）：资源不能被共享，只能由一个进程使用。</li>
+<li>请求与保持条件（Hold and wait）：已经得到资源的进程可以再次申请新的资源。</li>
+<li>不可剥夺条件（No pre-emption）：已经分配的资源不能从相应的进程中被强制地剥夺。</li>
+<li>环路&#x2F;循环等待条件（Circular wait）：系统中若干进程组成环路，该环路中每个进程都在等待相邻进程正占用的资源。</li>
+</ol>
+<span id="more"></span>
+
+<p>解决死锁有俩种策略，一种事先预防，一种是事后解除死锁</p>
+<h2 id="预防死锁"><a href="#预防死锁" class="headerlink" title="预防死锁"></a>预防死锁</h2><p>通过破坏四个必要条件中的一个或多个，使死锁永远无法满足。实现简单，但是由于所施加的限制条件往往太严格，可能会导致系统资源利用率和系统吞吐量降低。</p>
+<h3 id="预先资源分配法"><a href="#预先资源分配法" class="headerlink" title="预先资源分配法"></a>预先资源分配法</h3><p>一次性申请所有需要的资源，只要有一种资源不满足要求，哪怕其它需要的资源都足够，也不做任何分配。这样一来就没有“保持”资源的状态，只有“请求”资源的状态，破坏了请求与保持条件。</p>
+<h3 id="有序资源分配法"><a href="#有序资源分配法" class="headerlink" title="有序资源分配法"></a>有序资源分配法</h3><p>在申请不同类资源时，必须按指定顺序申请，破坏了环路等待条件。</p>
+<p>正例：线程A、B申请资源顺序均为R1-&gt;R2；<br>反例：A申请顺序为R1-&gt;R2，B申请顺序为R2-&gt;R1。</p>
+<h3 id="避免死锁"><a href="#避免死锁" class="headerlink" title="避免死锁"></a>避免死锁</h3><p>也是预发死锁，但不会事先去破坏死锁的必要条件，只是有人请求资源时，用某种方法防止系统进入不安全的状态（死锁），从而避免发生死锁。</p>
+<p>比如银行家算法：基本思想是分配资源之前，判断系统是否是安全的；若是，才分配。</p>
+<h2 id="检测死锁和解除"><a href="#检测死锁和解除" class="headerlink" title="检测死锁和解除"></a>检测死锁和解除</h2><p>不采取措施防止死锁产生，允许系统产生死锁，但是可以通过一些手段检测出死锁，然后将死锁解除。</p>
+<p>检测方法：</p>
+<ul>
+<li>定时检测</li>
+<li>效率低时检测</li>
+<li>进程等待时检测</li>
+</ul>
+<p>mysql采取的策略及时就是第二种，当不同的事务以不同的顺序获取某些记录的锁时 可能会发生死<br>锁.当死锁发生时InnoDB会因滚单个事务以释放掉该事务所获取的锁。</p>
+<p>我们有必要找出那些发生死锁的语句，通过优化语句来改变加锁顺序 或者建立合适的索引以改变加锁过程，从而避免死锁问题。不过，在实际应用中我们可能压根儿不知道到底是哪些语句在执行时导致了死锁，因此需要根据死锁发生时产生的死锁日志来逆向定位产生死锁的语句，然后再优化我们的业务。</p>
+<p>可以通过执行SHOW ENGINE INNODB STATUS语句来查看最近发生的一次死锁信息。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426223515.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426223541.png"></p>
+<p>通过以上日志可以分析死锁产生的原因，通过对业务代码的更改，可以解除死锁，从而提高执行效率。</p>
+
     </div>
 
     
     
     
       
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/27224.html" rel="bookmark">Innodb索引深入研究</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/63372.html" rel="bookmark">Mysql是如何执行查询</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/43453.html" rel="bookmark">Innodb行格式</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/4858.html" rel="bookmark">mysql之mvcc</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/57104.html" rel="bookmark">mysql之锁介绍</a></div>
+    </li>
+  </ul>
 
         
 
@@ -312,6 +372,10 @@
 
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+              <a href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag"># 索引</a>
+          </div>
 
         
 
@@ -401,6 +465,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E9%98%B2%E6%AD%BB%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">预防死锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E5%85%88%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">预先资源分配法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E5%BA%8F%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">有序资源分配法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E6%AD%BB%E9%94%81"><span class="nav-number">1.3.</span> <span class="nav-text">避免死锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%B5%8B%E6%AD%BB%E9%94%81%E5%92%8C%E8%A7%A3%E9%99%A4"><span class="nav-number">2.</span> <span class="nav-text">检测死锁和解除</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -472,7 +537,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:16</span>
+    <span title="站点阅读时长">22:28</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

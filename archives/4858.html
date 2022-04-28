@@ -20,21 +20,21 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="记录学习日志">
+  <meta name="description" content="InnoDB是mysql默认的存储引擎也是使用最多的存储引擎，能够满足大多数的业务需求，其中高并发的优点就是通过mvcc实现的。这篇文章就来介绍下mvcc是如何支持并发的。 MVCC全称Multi-Version Concurrency Control，MVCC是一种通过增加版本冗余数据来实现并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。 mysql中的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql之mvcc">
 <meta property="og:url" content="http://fengxiu.club/archives/4858.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="记录学习日志">
+<meta property="og:description" content="InnoDB是mysql默认的存储引擎也是使用最多的存储引擎，能够满足大多数的业务需求，其中高并发的优点就是通过mvcc实现的。这篇文章就来介绍下mvcc是如何支持并发的。 MVCC全称Multi-Version Concurrency Control，MVCC是一种通过增加版本冗余数据来实现并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。 mysql中的">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426160813.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426161609.png">
 <meta property="article:published_time" content="2022-04-26T08:13:05.000Z">
 <meta property="article:modified_time" content="2022-04-26T08:13:05.000Z">
 <meta property="article:author" content="枫秀">
-<meta property="article:tag" content="java">
-<meta property="article:tag" content="spring">
-<meta property="article:tag" content="分布式">
-<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="读书笔记">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426160813.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/4858.html">
 
@@ -224,6 +224,19 @@
 
               <time title="创建时间：2022-04-26 08:13:05" itemprop="dateCreated datePublished" datetime="2022-04-26T08:13:05+00:00">2022-04-26</time>
             </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
 
           
             <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
@@ -266,14 +279,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>3.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -285,13 +298,85 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <p>InnoDB是mysql默认的存储引擎也是使用最多的存储引擎，能够满足大多数的业务需求，其中高并发的优点就是通过mvcc实现的。这篇文章就来介绍下mvcc是如何支持并发的。</p>
+<p>MVCC全称Multi-Version Concurrency Control，MVCC是一种通过增加版本冗余数据来实现并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。</p>
+<p>mysql中的InnoDB中实现了MVCC主要是为了提高数据库的并发性能，在无锁的情况下也能处理读写并发，大大提高数据库的并发度。</p>
+<p>首先我们有一张表，业务字段如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-- id只是一个普通字段，并不是主键</span><br><span class="line">mysql&gt; select * from ajisun;</span><br><span class="line">+------+--------+--------+</span><br><span class="line">| id   | name   | city   |</span><br><span class="line">+------+--------+--------+</span><br><span class="line">| 100  | ajisun | 上海    |</span><br><span class="line">+------+--------+--------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>在介绍具体实现之前需要先介绍点补充知识，便于后面的理解，在表的每一行数据中，除正常业务涉及的字段外，InnoDB在内部向数据库表中添加三个隐藏字段:</p>
+<ul>
+<li><p>TRX_ID：事务id，一个事务每次对某条聚簇索引记录进行修改时，都会吧改事务的事务id赋值给trx_id隐藏列</p>
+</li>
+<li><p>ROLL_PTR：回滚指针，每次对某条聚簇索引记录进行修改时，都会把旧的版本写入到undo日志，这个隐藏列就相当于一个指针，可以通过它找到该记录修改前的信息</p>
+</li>
+<li><p>ROW_ID：如果数据表中没有主键，那么InnoDB会自动生成单调递增的隐藏主键（表中有主键或者非NULL的UNIQUE键时都不会包含ROW_ID列）。</p>
+</li>
+</ul>
+<p>如上面的表没有设计primary key,其中id&#x2F;name&#x2F;city是我们的业务字段,<br>那么加上隐藏字段应该如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426160813.png"></p>
+<h2 id="版本链"><a href="#版本链" class="headerlink" title="版本链"></a>版本链</h2><p>每对记录进行一次改动，都会记录一条undo日志。每条undo日志都有一个roll_pointer属性，通过这个属性可以将这些undo日志串成一个链表，最后就形成这条记录的不同时期版本的链条，也就是所谓的版本链，如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426161609.png"></p>
+<p>当进行insert操作的时候，对应的undo日志上没有roll_pointer属性，毕竟其不存在更早的版本，产生的undo log只有在事务回滚的时候需要，如果不回滚在事务提交之后就会被删除。</p>
+<p>当进行update和delete的时候，产生的undo log不仅仅在事务回滚的时候需要，在快照读的时候也是需要的，所以不会立即删除，只有等不再用到这个日志的时候才会被mysql purge线程统一处理掉（delete操作也只是打一个删除标记，并不是真正的删除）。</p>
+<h2 id="ReadView"><a href="#ReadView" class="headerlink" title="ReadView"></a>ReadView</h2><p>对于使用READ UNCOMMITTED隔离级别的事务来说，由于可以读到未提交事务修改<br>过的记录，所以直接读取记录的最新版本就好了，对于使用SERIALIZABLE隔离级别的事<br>务来说，设计InnoDB的大叔规定使用加锁的方式来访问记录;对于使用READ COMMITTED 和REPEATABLE READ隔离级别的事务来说，都必须保证读到已经提交的事务修改过的记录。就是说假如另一个事务已经修改了记录但是尚未提交，则不能直接读取最新版本的记录。核心问题就是需要判断版本链中的哪个版本是当前事务可见的。为此，设计InnoDB的大叔提出了<br>ReadView (有的地方翻译成”一致性视图）的概念。</p>
+<p>ReadView主要包含4个比较重要的内容：</p>
+<ul>
+<li>m_ids：在生成ReadView时，当前系统中活跃的读写事务的事务id列表</li>
+<li>min_trx_id：在生成ReadView时，当前系统中活跃的读写事务中最小的事务id; 也就<br>ids中的最小值。</li>
+<li>max_trx_id：在生成ReadView时，系统应该分配给下一个事务的事务id。</li>
+<li>creator_trx_id：生成改ReadView的事务的事务id。</li>
+</ul>
+<p>访问某条记录的时候就是根据这四个字段来判断记录的某个版本是否可见，判断规则如下：</p>
+<ul>
+<li>如果被访问记录的版本事务ID与ReadView中的creator_trx_id值相同，那么表示当前事务访问的是自己修改过的记录，那么该版本对当前事务可见；</li>
+<li>如果被访问版本的trx_ID小于ReadView中的min_limit_id的值，那么表示生成该版本的事务在当前事务生成ReadView前已经提交，所以该版本可以被当前事务访问。</li>
+<li>如果被访问版本的事务ID大于等于ReadView中的max_trx_id值，那么表示生成该版本的事务在当前事务生成ReadView后才开启，所以该版本不可以被当前事务访问。</li>
+<li>如果被访问版本的事务ID在ReadView的max_trx_id和min_trx_id之间，那就需要判断一下版本的事务ID是不是在m_ids列表中，如果在，说明创建 ReadView时生成该版本的事务还是活跃的，该版本不可以被访问；如果不在，说明创建 ReadView时生成该版本的事务已经被提交，该版本可以被访问。</li>
+</ul>
+<p>如果某个版本对当前事务不可见，那么顺着版本链找到下个版本记录，然后继续上面的对比规则，直到找到版本链中的最后一个版本，如果最后一个版本都不可见，那么该条记录对此事务完全不可见，也就查不到这个记录。</p>
+<h2 id="RR-x2F-RC下快照读区别"><a href="#RR-x2F-RC下快照读区别" class="headerlink" title="RR&#x2F;RC下快照读区别"></a>RR&#x2F;RC下快照读区别</h2><p>先说结论：READ-COMMITTED(RC)和REPEATABLE-READ(RR)级别下ReadView不同原因就是生成的时机不同</p>
+<p>在RC级别下，事务中，每次快照读都会新生成一个快照和ReadView,这就是我们在RC级别下的事务中可以看到别的事务提交的更新的原因。</p>
+<p>在RR级别下的某个事务的对某条记录的第一次快照读会创建ReadView,生成的时候ReadView中就记录了其四个属性，包括活跃事务列表，此后在调用快照读的时候，还是使用的是同一个ReadView，不会重新生成,所以只要当前事务在其他事务提交更新之前使用过快照读，那么之后的快照读使用的都是同一个ReadView,所以对之后的修改不可见。</p>
+<p>在READ-UNCOMMITTED隔离级别下，可以读取到其他事务未提交的数据，直接读最新的就行了，不存在快照读ReadView。</p>
+<p>在SERIALIZABLE隔离级别下，通过加锁的方式让所有sql都串行化执行了，也是读最新的，不存在快照读ReadView。</p>
+<h2 id="幻读是否解决"><a href="#幻读是否解决" class="headerlink" title="幻读是否解决"></a>幻读是否解决</h2><p>先介绍俩个概念：</p>
+<p><strong>当前读</strong><br>当前读获取的数据是最新数据，而且在读取时不能被其他修改的，所以会对读取的记录加锁来控制。如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from ajisun where id &gt; 1 lock in share mode;</span><br><span class="line">// 或者</span><br><span class="line">select * from ajisun where id &gt;1 for update;</span><br></pre></td></tr></table></figure>
+
+<p><strong>快照读</strong><br>简单的select查询就是快照读，不加锁非阻塞读，降低数据库的开销。</p>
+<p>但是快照读在隔离级别是串行化级别是没有意义的，因为串行化的sql都是排队执行的，不存在并发，所以就会变成当前读。</p>
+<p>快照读，顾名思义读取的是一份快照数据，所以读到的并不一定是最新数据，可能是历史数据。</p>
+<p>在RR级别下，通过MVCC可以解决快照读情形的幻读问题，但是这里有个隐藏的问题，比如开启事务t1，这时候先读取出数据，然后事务T2开启，执行插入操作，这时交替到t1事务，执行条件修改操作，也会把t2事务新插入的操作进行修改，但是后面在执行select，还是不会看到这条新的语句。如果是当前读，则会看到这条语句。</p>
+<p>但是好像mysql会根据是否加锁的情形，来更改select是快照读还是当前读，所以如果后面的一条select语句被自动修改成当前读，则也会看到新的语句。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>1.<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5MDYzMzM5MA==&mid=2247484049&idx=1&sn=6c5c4c8cf2a089535c40ac4617387218&chksm=cfd8ef50f8af66463764ff186e72a236bf6a833da321c77b2ae40a3b26f96e8f43e1050fc773#rd">MySQL进阶系列：多版本并发控制mvcc的实现</a><br>2. <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/T65f4XhznoBxbs1Nv6DzQQ">MySQL如何解决幻读</a></p>
+
     </div>
 
     
     
     
       
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/43453.html" rel="bookmark">Innodb行格式</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/27224.html" rel="bookmark">Innodb索引深入研究</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/33411.html" rel="bookmark">mysql之死锁发现与解除</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/57104.html" rel="bookmark">mysql之锁介绍</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/63372.html" rel="bookmark">Mysql是如何执行查询</a></div>
+    </li>
+  </ul>
 
         
 
@@ -312,6 +397,9 @@
 
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+          </div>
 
         
 
@@ -404,6 +492,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%88%E6%9C%AC%E9%93%BE"><span class="nav-number">1.</span> <span class="nav-text">版本链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ReadView"><span class="nav-number">2.</span> <span class="nav-text">ReadView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RR-x2F-RC%E4%B8%8B%E5%BF%AB%E7%85%A7%E8%AF%BB%E5%8C%BA%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">RR&#x2F;RC下快照读区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%BB%E8%AF%BB%E6%98%AF%E5%90%A6%E8%A7%A3%E5%86%B3"><span class="nav-number">4.</span> <span class="nav-text">幻读是否解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -475,7 +564,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:16</span>
+    <span title="站点阅读时长">22:28</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

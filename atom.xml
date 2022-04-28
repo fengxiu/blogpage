@@ -6,7 +6,7 @@
   <link href="http://fengxiu.club/atom.xml" rel="self"/>
   
   <link href="http://fengxiu.club/"/>
-  <updated>2022-04-26T08:13:43.000Z</updated>
+  <updated>2022-04-28T08:50:19.670Z</updated>
   <id>http://fengxiu.club/</id>
   
   <author>
@@ -17,69 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>mysql之死锁发现与解除</title>
-    <link href="http://fengxiu.club/archives/33411.html"/>
-    <id>http://fengxiu.club/archives/33411.html</id>
-    <published>2022-04-26T08:13:43.000Z</published>
-    <updated>2022-04-26T08:13:43.000Z</updated>
-    
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>mysql之锁介绍</title>
-    <link href="http://fengxiu.club/archives/57104.html"/>
-    <id>http://fengxiu.club/archives/57104.html</id>
-    <published>2022-04-26T08:13:29.000Z</published>
-    <updated>2022-04-26T08:13:29.000Z</updated>
-    
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>mysql之mvcc</title>
-    <link href="http://fengxiu.club/archives/4858.html"/>
-    <id>http://fengxiu.club/archives/4858.html</id>
-    <published>2022-04-26T08:13:05.000Z</published>
-    <updated>2022-04-26T08:13:05.000Z</updated>
-    
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>外观模式</title>
-    <link href="http://fengxiu.club/archives/f7de8aa8.html"/>
-    <id>http://fengxiu.club/archives/f7de8aa8.html</id>
-    <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;外观模式&quot;&gt;&lt;a href=&quot;#外观模式&quot; class=&quot;headerlink&quot; title=&quot;外观模式&quot;&gt;&lt;/a&gt;外观模式&lt;/h1&gt;&lt;p&gt;外观模式是一种结构型设计模式， 能为程序库、 框架或其他复杂类提供一个简单的接口。&lt;/p&gt;
-&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;假设你必须在代码中使用某个复杂的库或框架中的众多对象。 正常情况下， 你需要负责所有对象的初始化工作、 管理其依赖关系并按正确的顺序执行方法等。&lt;/p&gt;
-&lt;p&gt;最终， 程序中类的业务逻辑将与第三方类的实现细节紧密耦合， 使得理解和维护代码的工作很难进行。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="设计模式" scheme="http://fengxiu.club/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
-    
-    
-  </entry>
-  
-  <entry>
     <title>适配器模式</title>
     <link href="http://fengxiu.club/archives/f5c535ea.html"/>
     <id>http://fengxiu.club/archives/f5c535ea.html</id>
     <published>2021-08-28T10:09:53.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.670Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;适配器模式&quot;&gt;&lt;a href=&quot;#适配器模式&quot; class=&quot;headerlink&quot; title=&quot;适配器模式&quot;&gt;&lt;/a&gt;适配器模式&lt;/h1&gt;&lt;p&gt;适配器模式是一种结构型设计模式， 它能使接口不兼容的对象能够相互合作。&lt;/p&gt;
@@ -99,7 +41,7 @@
     <link href="http://fengxiu.club/archives/52bb366.html"/>
     <id>http://fengxiu.club/archives/52bb366.html</id>
     <published>2019-04-02T10:49:22.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.670Z</updated>
     
     
       
@@ -123,7 +65,7 @@
     <link href="http://fengxiu.club/archives/8650cc91.html"/>
     <id>http://fengxiu.club/archives/8650cc91.html</id>
     <published>2019-04-02T11:27:29.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.670Z</updated>
     
     
       
@@ -143,11 +85,74 @@
   </entry>
   
   <entry>
+    <title>LVS、Nginx及HAProxy工作原理简介</title>
+    <link href="http://fengxiu.club/archives/3c2eb649.html"/>
+    <id>http://fengxiu.club/archives/3c2eb649.html</id>
+    <published>2019-07-20T12:22:32.000Z</published>
+    <updated>2022-04-28T08:50:19.666Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;当前大多数的互联网系统都使用了服务器集群技术，集群是将相同服务部署在多台服务器上构成一个集群整体对外提供服务，这些集群可以是 Web 应用服务器集群，也可以是数据库服务器集群，还可以是分布式缓存服务器集群等等。&lt;br&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/fengxiu/img/640.webp&quot; alt=&quot;640&quot;&gt;&lt;br&gt;在实际应用中，在 Web服务器集群之前总会有一台负载均衡服务器，负载均衡设备的任务就是作为Web 服务器流量的入口，挑选最合适的一台 Web 服务器，将客户端的请求转发给它处理，实现客户端到真实服务端的透明转发。&lt;/p&gt;
+&lt;p&gt;最近几年很火的「云计算」以及分布式架构，本质上也是将后端服务器作为计算资源、存储资源，由某台管理服务器封装成一个服务对外提供，客户端不需要关心真正提供服务的是哪台机器，在它看来，就好像它面对的是一台拥有近乎无限能力的服务器，而本质上，真正提供服务的，是后端的集群。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="架构" scheme="http://fengxiu.club/categories/%E6%9E%B6%E6%9E%84/"/>
+    
+    
+    <category term="代理" scheme="http://fengxiu.club/tags/%E4%BB%A3%E7%90%86/"/>
+    
+    <category term="负载均衡" scheme="http://fengxiu.club/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Zuul2：Netflix通往异步、非阻塞系统之路</title>
+    <link href="http://fengxiu.club/archives/ad8701ca.html"/>
+    <id>http://fengxiu.club/archives/ad8701ca.html</id>
+    <published>2019-07-12T16:02:36.000Z</published>
+    <updated>2022-04-28T08:50:19.666Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文翻译自&lt;a href=&quot;https://medium.com/netflix-techblog/zuul-2-the-netflix-journey-to-asynchronous-non-blocking-systems-45947377fb5c&quot;&gt;Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;前面在学习Spring Cloud中，了解到zuul这个应用网关，但是由于当时看到的是zuul1，使用的Servlet方式实现，所以整体性能很低。不过Netflix实际上升级了zuul，使用了netty来改造网关，也就是现在网关底层使用的是异步非阻塞的架构。下面我们就一起来拜读下他们的改造路程。&lt;br&gt;翻译如下：&lt;/p&gt;
+&lt;p&gt;我们最近对我们的云网关Zuul进行了重大架构改造。Zuul2的功能与其前任相同 - 作为Netflix服务器基础设施的前门，处理来自全球所有Netflix用户的流量。它还可以路由请求，支持开发人员的测试和调试，深入了解我们的整体服务运行状况，保护Netflix免受攻击，并在AWS区域出现问题时将流量引导至其他云区域。 Zuul 2和原始版本之间的主要架构差异是Zuul2使用Netty在异步和非阻塞框架上运行。在过去几个月投入生产之后，主要优势（我们在开始这项工作时所期望的一个优势）是它为设备和Web浏览器提供了在Netflix规模上持久连接回Netflix的能力。拥有超过8300万会员，每个会员都有多个连接设备，这是一个巨大的挑战。通过与我们的云基础架构保持持久连接，我们可以实现许多有趣的产品功能和创新，减少整体设备请求，提高设备性能，更好地理解和调试客户体验。&lt;/p&gt;
+&lt;p&gt;我们还希望Zuul2在延迟，吞吐量和成本方面提供弹性优势和性能改进。但正如您将在本文中了解到的那样，我们的愿望与结果不同。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="架构" scheme="http://fengxiu.club/categories/%E6%9E%B6%E6%9E%84/"/>
+    
+    
+    <category term="zuul2" scheme="http://fengxiu.club/tags/zuul2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>外观模式</title>
+    <link href="http://fengxiu.club/archives/f7de8aa8.html"/>
+    <id>http://fengxiu.club/archives/f7de8aa8.html</id>
+    <published>2021-08-28T10:09:53.000Z</published>
+    <updated>2022-04-28T08:50:19.666Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;外观模式&quot;&gt;&lt;a href=&quot;#外观模式&quot; class=&quot;headerlink&quot; title=&quot;外观模式&quot;&gt;&lt;/a&gt;外观模式&lt;/h1&gt;&lt;p&gt;外观模式是一种结构型设计模式， 能为程序库、 框架或其他复杂类提供一个简单的接口。&lt;/p&gt;
+&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;假设你必须在代码中使用某个复杂的库或框架中的众多对象。 正常情况下， 你需要负责所有对象的初始化工作、 管理其依赖关系并按正确的顺序执行方法等。&lt;/p&gt;
+&lt;p&gt;最终， 程序中类的业务逻辑将与第三方类的实现细节紧密耦合， 使得理解和维护代码的工作很难进行。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="设计模式" scheme="http://fengxiu.club/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+  </entry>
+  
+  <entry>
     <title>HTTP 管道化(pipeline)</title>
     <link href="http://fengxiu.club/archives/6fbc205f.html"/>
     <id>http://fengxiu.club/archives/6fbc205f.html</id>
     <published>2019-03-10T14:46:00.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;什么是http管道化&quot;&gt;&lt;a href=&quot;#什么是http管道化&quot; class=&quot;headerlink&quot; title=&quot;什么是http管道化&quot;&gt;&lt;/a&gt;什么是http管道化&lt;/h2&gt;&lt;p&gt;pipeline机制是在&lt;strong&gt;一条connection&lt;/strong&gt;上多个http request不需要等待response就可以连续发送的技术。之前的request请求需要等待response返回后才能发起下一个request，而pipeline则废除了这项限制，新的request可以不必等待之前request的response返回就可以立即发送：&lt;/p&gt;
@@ -173,7 +178,7 @@
     <link href="http://fengxiu.club/archives/37f5aa4d.html"/>
     <id>http://fengxiu.club/archives/37f5aa4d.html</id>
     <published>2019-03-10T22:46:00.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;HTTP-Keep-Alive是什么？如何工作？&quot;&gt;&lt;a href=&quot;#HTTP-Keep-Alive是什么？如何工作？&quot; class=&quot;headerlink&quot; title=&quot;HTTP Keep-Alive是什么？如何工作？&quot;&gt;&lt;/a&gt;HTTP Keep-Alive是什么？如何工作？&lt;/h1&gt;&lt;p&gt;在http早期，每个http请求都要求打开一个tpc socket连接，并且使用一次之后就断开这个tcp连接。使用keep-alive可以改善这种状态，即在一次TCP连接中可以持续发送多份数据而不会断开连接。通过使用keep-alive机制，可以减少tcp连接建立次数，也意味着可以减少TIME_WAIT状态连接，以此提高性能和提高http服务器的吞吐率(更少的tcp连接意味着更少的系统内核调用,socket的accept()和close()调用)。&lt;/p&gt;
@@ -195,7 +200,7 @@
     <link href="http://fengxiu.club/archives/ce94709.html"/>
     <id>http://fengxiu.club/archives/ce94709.html</id>
     <published>2019-04-18T22:56:16.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
     <summary type="html">&lt;p&gt;本文主要讨论HTTP协议中的&lt;strong&gt;Transfer-Encoding&lt;/strong&gt;。Transfer-Encoding，是一个 HTTP 头部字段，字面意思是「传输编码」。实际上，HTTP协议中还有另外一个头部与编码有关：Content-Encoding（内容编码）。Content-Encoding通常用于对实体内容进行压缩编码，目的是优化传输，例如用gzip压缩文本文件，能大幅减小体积。内容编码通常是选择性的，例如&lt;code&gt;jpg/png&lt;/code&gt;这类文件一般不开启，因为图片格式已经是高度压缩过的，再压一遍没什么效果不说还浪费CPU。&lt;/p&gt;
@@ -217,7 +222,7 @@
     <link href="http://fengxiu.club/archives/e20a716d.html"/>
     <id>http://fengxiu.club/archives/e20a716d.html</id>
     <published>2019-04-18T22:46:30.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
     <summary type="html">&lt;p&gt;&lt;code&gt;Accept-Encoding&lt;/code&gt;和&lt;code&gt;Content-Encoding&lt;/code&gt;是HTTP中用来对「采用何种编码格式传输正文」进行协定的一对头部字段。它的工作原理是这样：浏览器发送请求时，通过Accept-Encoding带上自己支持的内容编码格式列表；服务端从中挑选一种用来对正文进行编码，并通过&lt;code&gt;Content-Encoding&lt;/code&gt;响应头指明选定的格式；浏览器拿到响应正文后，依据&lt;code&gt;Content-Encoding&lt;/code&gt;进行解压。当然，服务端也可以返回未压缩的正文，但这种情况不允许返回&lt;code&gt;Content-Encoding&lt;/code&gt;。这个过程就是HTTP的内容编码机制。&lt;/p&gt;
@@ -243,7 +248,7 @@
     <link href="http://fengxiu.club/archives/41df0a9f.html"/>
     <id>http://fengxiu.club/archives/41df0a9f.html</id>
     <published>2019-03-10T07:25:00.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
       
@@ -270,7 +275,7 @@
     <link href="http://fengxiu.club/archives/cb0c26ea.html"/>
     <id>http://fengxiu.club/archives/cb0c26ea.html</id>
     <published>2019-03-10T11:23:00.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Http的演进之路之五&quot;&gt;&lt;a href=&quot;#Http的演进之路之五&quot; class=&quot;headerlink&quot; title=&quot;Http的演进之路之五&quot;&gt;&lt;/a&gt;Http的演进之路之五&lt;/h1&gt;&lt;h2 id=&quot;声明，此系列文章转载自lonnieZ-http的演进之路&quot;&gt;&lt;a href=&quot;#声明，此系列文章转载自lonnieZ-http的演进之路&quot; class=&quot;headerlink&quot; title=&quot;声明，此系列文章转载自lonnieZ http的演进之路&quot;&gt;&lt;/a&gt;声明，此系列文章转载自&lt;a href=&quot;https://www.zhihu.com/people/lonniez/activities&quot;&gt;lonnieZ http的演进之路&lt;/a&gt;&lt;/h2&gt;&lt;h2 id=&quot;SPDY&quot;&gt;&lt;a href=&quot;#SPDY&quot; class=&quot;headerlink&quot; title=&quot;SPDY&quot;&gt;&lt;/a&gt;&lt;strong&gt;SPDY&lt;/strong&gt;&lt;/h2&gt;&lt;p&gt;在上面的章节中我们介绍了HTTP协议的一些特点，包括长连接、pipeline、并行连接等。2012年Google推出了SPDY（speedy，翻译为“快速的”）协议，旨在根本上解决HTTP协议中存在的一些问题、提升HTTP的传输效率。而随后诞生的HTTP&amp;#x2F;2也继承了SPDY的很多特性。因此，在介绍HTTP&amp;#x2F;2之前，有必要先简单了解一下SPDY的基本特征。首先，我们看一下SPDY的协议栈。由下图可见，SPDY位于HTTP和SSL之间，它属于应用层协议，当发现对端不支持SPDY的情况下，仍然可以延用HTTP&amp;#x2F;HTTPS协议，因此它可以最大程度的兼容HTTP协议。&lt;/p&gt;</summary>
@@ -291,7 +296,7 @@
     <link href="http://fengxiu.club/archives/cd15eee9.html"/>
     <id>http://fengxiu.club/archives/cd15eee9.html</id>
     <published>2019-03-10T12:23:00.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Http的演进之路之六&quot;&gt;&lt;a href=&quot;#Http的演进之路之六&quot; class=&quot;headerlink&quot; title=&quot;Http的演进之路之六&quot;&gt;&lt;/a&gt;Http的演进之路之六&lt;/h1&gt;&lt;h2 id=&quot;声明，此系列文章转载自lonnieZ-http的演进之路&quot;&gt;&lt;a href=&quot;#声明，此系列文章转载自lonnieZ-http的演进之路&quot; class=&quot;headerlink&quot; title=&quot;声明，此系列文章转载自lonnieZ http的演进之路&quot;&gt;&lt;/a&gt;声明，此系列文章转载自&lt;a href=&quot;https://www.zhihu.com/people/lonniez/activities&quot;&gt;lonnieZ http的演进之路&lt;/a&gt;&lt;/h2&gt;&lt;h2 id=&quot;Http-x2F-2&quot;&gt;&lt;a href=&quot;#Http-x2F-2&quot; class=&quot;headerlink&quot; title=&quot;Http&amp;#x2F;2&quot;&gt;&lt;/a&gt;&lt;strong&gt;Http&amp;#x2F;2&lt;/strong&gt;&lt;/h2&gt;&lt;p&gt;鉴于SPDY的成功，HTTP&amp;#x2F;2的开发计划也呼之欲出并且众望所归的采用了SPDY作为整个方案的蓝图进行开发。由&lt;a href=&quot;http://link.zhihu.com/?target=https://www.ietf.org/&quot;&gt;IETF&lt;/a&gt;推动，Google等公司重点参与并于2015年3月公布了&lt;a href=&quot;http://link.zhihu.com/?target=http://http2.github.io/http2-spec/&quot;&gt;草案&lt;/a&gt;。其最终RFC可以参考&lt;a href=&quot;http://link.zhihu.com/?target=https://tools.ietf.org/html/rfc7540&quot;&gt;这里&lt;/a&gt;。&lt;/p&gt;
@@ -313,7 +318,7 @@
     <link href="http://fengxiu.club/archives/f1718313.html"/>
     <id>http://fengxiu.club/archives/f1718313.html</id>
     <published>2019-04-29T14:54:01.000Z</published>
-    <updated>2022-04-26T00:19:50.341Z</updated>
+    <updated>2022-04-28T08:50:19.666Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;跨域资源共享(CORS)是一种机制，它使用额外的HTTP头来告诉浏览器让运行在一个origin(domain) 上的Web应用被准许访问来自不同源服务器上的指定的资源。当一个资源从与该资源本身所在的服务器不同的域、协议或端口请求一个资源时，资源会发起一个跨域HTTP请求。&lt;/p&gt;
@@ -334,14 +339,77 @@
   </entry>
   
   <entry>
-    <title>配置虚拟主机</title>
-    <link href="http://fengxiu.club/archives/74b15736.html"/>
-    <id>http://fengxiu.club/archives/74b15736.html</id>
-    <published>2019-03-09T13:21:00.000Z</published>
-    <updated>2022-04-26T00:19:50.337Z</updated>
+    <title>inux 查看文件命令</title>
+    <link href="http://fengxiu.club/archives/b4c41cf9.html"/>
+    <id>http://fengxiu.club/archives/b4c41cf9.html</id>
+    <published>2021-07-28T10:09:53.000Z</published>
+    <updated>2022-04-28T08:50:19.662Z</updated>
     
     
-    <summary type="html">&lt;h1 id=&quot;配置虚拟主机&quot;&gt;&lt;a href=&quot;#配置虚拟主机&quot; class=&quot;headerlink&quot; title=&quot;配置虚拟主机&quot;&gt;&lt;/a&gt;配置虚拟主机&lt;/h1&gt;&lt;p&gt;本节主要讲解如果使用&lt;strong&gt;nginx配置多个虚拟主机&lt;/strong&gt;,也就是我们通常说的配置域名.接下来我们配置两个域名&lt;code&gt;a.zhangke.com，b.zhangke.com&lt;/code&gt;。&lt;/p&gt;</summary>
+    <summary type="html">&lt;h1 id=&quot;linux-查看文件命令&quot;&gt;&lt;a href=&quot;#linux-查看文件命令&quot; class=&quot;headerlink&quot; title=&quot;linux 查看文件命令&quot;&gt;&lt;/a&gt;linux 查看文件命令&lt;/h1&gt;&lt;p&gt;当我们在进行调试的时候，经常需要查看各种日志文件，这时候熟悉linux下一些常用的查看文件命令是非常重要的，本篇文章专门整理了这些常用的命令，主要有下面几个。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;tail&lt;/li&gt;
+&lt;li&gt;cat&lt;/li&gt;
+&lt;li&gt;more&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;tail命令&quot;&gt;&lt;a href=&quot;#tail命令&quot; class=&quot;headerlink&quot; title=&quot;tail命令&quot;&gt;&lt;/a&gt;tail命令&lt;/h2&gt;&lt;p&gt;ltail命令用途是依照要求将指定的文件的最后部分输出到标准设备，通常是终端，通俗讲来，就是把某个文件的最后几行显示到终端上，假设该文件有更新，tail会自己主动刷新，确保你看到最新的文件内容。&lt;/p&gt;
+&lt;h3 id=&quot;tail命令语法&quot;&gt;&lt;a href=&quot;#tail命令语法&quot; class=&quot;headerlink&quot; title=&quot;tail命令语法&quot;&gt;&lt;/a&gt;tail命令语法&lt;/h3&gt;&lt;p&gt;tail [ -f ] [ -c Number | -n Number | -m Number | -b Number | -k Number ]  [-r]  [ File ]&lt;/p&gt;
+&lt;p&gt;参数解释：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;-f 该参数用于监视File文件动态增长。&lt;/li&gt;
+&lt;li&gt;-c Number 从 Number 字节位置读取指定文件&lt;/li&gt;
+&lt;li&gt;-n Number 从 Number 行位置读取指定文件。&lt;/li&gt;
+&lt;li&gt;-m Number 从 Number 多字节字符位置读取指定文件，比方你的文件假设包括中文字，假设指定-c参数，可能导致截断，但使用-m则会避免该问题。&lt;/li&gt;
+&lt;li&gt;-b Number 从 Number 表示的512字节块位置读取指定文件。&lt;/li&gt;
+&lt;li&gt;-k Number 从 Number 表示的1KB块位置读取指定文件。&lt;/li&gt;
+&lt;li&gt;-r 这个会似的按照现实内容相反的顺序现实，具体见下面例子 &lt;/li&gt;
+&lt;li&gt;File 指定操作的目标文件名称&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;上述命令中，都涉及到number，假设不指定，默认显示10行。Number前面可使用正负号，表示该偏移从顶部还是从尾部开始计算。这个具体看下面例子。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="linux" scheme="http://fengxiu.club/categories/linux/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ubuntu安装字体</title>
+    <link href="http://fengxiu.club/archives/dd3a9eb3.html"/>
+    <id>http://fengxiu.club/archives/dd3a9eb3.html</id>
+    <published>2019-05-14T15:51:23.000Z</published>
+    <updated>2022-04-28T08:50:19.662Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;最近在学习使用latex，需要一些windows下面特有的字体，因此需要安装这些字体到ubuntu下面。本篇文章将主要记录我在ubuntu中安装windows中的字体过程。也适用于安装其他的字体。另外这个安装过程适用于以Debian为基础的系统。&lt;/p&gt;
+&lt;!--</summary>
+        
+      
+    
+    
+    
+    <category term="linux" scheme="http://fengxiu.club/categories/linux/"/>
+    
+    
+    <category term="字体" scheme="http://fengxiu.club/tags/%E5%AD%97%E4%BD%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>location的作用</title>
+    <link href="http://fengxiu.club/archives/764b901a.html"/>
+    <id>http://fengxiu.club/archives/764b901a.html</id>
+    <published>2019-03-09T12:33:00.000Z</published>
+    <updated>2022-04-28T08:50:19.662Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;location的作用&quot;&gt;&lt;a href=&quot;#location的作用&quot; class=&quot;headerlink&quot; title=&quot;location的作用&quot;&gt;&lt;/a&gt;location的作用&lt;/h2&gt;&lt;p&gt;location指令的作用是根据用户请求URI来执行不同的应用，location会根据用户请求网站URL进行匹配定位到某个location区块。 如果匹配成功将会处理location块的规则。&lt;/p&gt;
+&lt;h2 id=&quot;location的语法规则如下&quot;&gt;&lt;a href=&quot;#location的语法规则如下&quot; class=&quot;headerlink&quot; title=&quot;location的语法规则如下&quot;&gt;&lt;/a&gt;location的语法规则如下&lt;/h2&gt;&lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;location  =     /uri&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   ┬      ┬       ┬&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   │      │       │&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   │      │       │&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   │      │       │&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   │      │       │&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   │      │       └─────────────── 前缀|正则&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   │      └──────────────────── 可选的修饰符（用于匹配模式及优先级）&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   └───────────────────────── 必须&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
     
     
     
@@ -353,88 +421,63 @@
   </entry>
   
   <entry>
-    <title>latex之插入图片</title>
-    <link href="http://fengxiu.club/archives/cd65b57.html"/>
-    <id>http://fengxiu.club/archives/cd65b57.html</id>
-    <published>2019-12-26T09:08:11.000Z</published>
-    <updated>2022-04-26T00:19:50.337Z</updated>
+    <title>nginx之负载均衡策略总结</title>
+    <link href="http://fengxiu.club/archives/2fee60ee.html"/>
+    <id>http://fengxiu.club/archives/2fee60ee.html</id>
+    <published>2019-04-08T20:25:46.000Z</published>
+    <updated>2022-04-28T08:50:19.662Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;!--  TODO:添加latex图片使用   </summary>
-        
-      
+    <summary type="html">&lt;p&gt;在nginx中，负载均衡策略主要由以下几种，轮询、加权轮询、ip_hash、least_conn、fair和url_hash。下面将分别介绍每一种。&lt;/p&gt;</summary>
     
     
     
-    <category term="tex" scheme="http://fengxiu.club/categories/tex/"/>
+    <category term="nginx" scheme="http://fengxiu.club/categories/nginx/"/>
     
     
-  </entry>
-  
-  <entry>
-    <title>latex之列表使用</title>
-    <link href="http://fengxiu.club/archives/dd2855a.html"/>
-    <id>http://fengxiu.club/archives/dd2855a.html</id>
-    <published>2019-12-26T09:08:11.000Z</published>
-    <updated>2022-04-26T00:19:50.337Z</updated>
+    <category term="nginx" scheme="http://fengxiu.club/tags/nginx/"/>
     
+    <category term="upstream" scheme="http://fengxiu.club/tags/upstream/"/>
     
-    <summary type="html">&lt;p&gt;列表就是将所要表达的内容分为若干个条目并按一定的顺序排列，达到简明、直观的效果。在论文的写作中会经常使用到列表。LaTeX 中常见的列表环境有 enumerate、itemize 和description。这三种列表环境的主要区别是列表项标签的不同。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="tex" scheme="http://fengxiu.club/categories/tex/"/>
-    
+    <category term="负载均衡" scheme="http://fengxiu.club/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"/>
     
   </entry>
   
   <entry>
-    <title>字体</title>
-    <link href="http://fengxiu.club/archives/5a8a6c8d.html"/>
-    <id>http://fengxiu.club/archives/5a8a6c8d.html</id>
-    <published>2020-03-31T04:30:35.000Z</published>
-    <updated>2022-04-26T00:19:50.337Z</updated>
+    <title>nginx快速入门之配置篇</title>
+    <link href="http://fengxiu.club/archives/e5c7e91b.html"/>
+    <id>http://fengxiu.club/archives/e5c7e91b.html</id>
+    <published>2019-03-09T06:47:00.000Z</published>
+    <updated>2022-04-28T08:50:19.662Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;!-- TODO添加字体 --&gt;
-&lt;p&gt;TTF（TrueType Font）是Apple公司和Microsoft公司共同推出的字体文件格式，随着windows的流行，已经变成最常用的一种字体文件表示方式。&lt;br&gt;而OTF（OpenType Font）是 TTF 的升级版，而</summary>
-        
-      
+    <summary type="html">&lt;h1 id=&quot;nginx快速入门之配置篇&quot;&gt;&lt;a href=&quot;#nginx快速入门之配置篇&quot; class=&quot;headerlink&quot; title=&quot;nginx快速入门之配置篇&quot;&gt;&lt;/a&gt;nginx快速入门之配置篇&lt;/h1&gt;&lt;h2 id=&quot;nginx-conf-配置结构&quot;&gt;&lt;a href=&quot;#nginx-conf-配置结构&quot; class=&quot;headerlink&quot; title=&quot;nginx.conf 配置结构&quot;&gt;&lt;/a&gt;nginx.conf 配置结构&lt;/h2&gt;&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;... &lt;span class=&quot;comment&quot;&gt;#全局块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;section&quot;&gt;events&lt;/span&gt; &amp;#123; &lt;span class=&quot;comment&quot;&gt;#events块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attribute&quot;&gt;http&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;#http块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ... &lt;span class=&quot;comment&quot;&gt;#http全局块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;#server块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ... &lt;span class=&quot;comment&quot;&gt;#server全局块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;section&quot;&gt;location&lt;/span&gt; [PATTERN] &lt;span class=&quot;comment&quot;&gt;#location块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;section&quot;&gt;location&lt;/span&gt; [PATTERN] &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;section&quot;&gt;server&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ... &lt;span class=&quot;comment&quot;&gt;#http全局块&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
     
     
     
-    <category term="tex" scheme="http://fengxiu.club/categories/tex/"/>
+    <category term="nginx" scheme="http://fengxiu.club/categories/nginx/"/>
     
     
-    <category term="字体" scheme="http://fengxiu.club/tags/%E5%AD%97%E4%BD%93/"/>
+    <category term="nginx" scheme="http://fengxiu.club/tags/nginx/"/>
     
   </entry>
   
   <entry>
-    <title>一致性hash</title>
-    <link href="http://fengxiu.club/archives/5cd14851.html"/>
-    <id>http://fengxiu.club/archives/5cd14851.html</id>
-    <published>2019-03-11T02:40:00.000Z</published>
-    <updated>2022-04-26T00:19:50.337Z</updated>
+    <title>配置虚拟主机</title>
+    <link href="http://fengxiu.club/archives/74b15736.html"/>
+    <id>http://fengxiu.club/archives/74b15736.html</id>
+    <published>2019-03-09T13:21:00.000Z</published>
+    <updated>2022-04-28T08:50:19.662Z</updated>
     
     
-    <summary type="html">&lt;h1 id=&quot;一致性hash&quot;&gt;&lt;a href=&quot;#一致性hash&quot; class=&quot;headerlink&quot; title=&quot;一致性hash&quot;&gt;&lt;/a&gt;一致性hash&lt;/h1&gt;&lt;p&gt;首先我们通过一个例子看看普通的hash算法在应用中有哪些不足，最后来讲解本文重点要讲解的问题，一致性hash。&lt;/p&gt;
-&lt;p&gt;我们在使用Redis的时候，为了保证Redis的高可用，提高Redis的读写性能，最简单的方式我们会做主从复制，组成Master-Master或者Master-Slave的形式，或者搭建Redis集群，进行数据的读写分离，类似于数据库的主从复制和读写分离。如下所示：&lt;/p&gt;</summary>
+    <summary type="html">&lt;h1 id=&quot;配置虚拟主机&quot;&gt;&lt;a href=&quot;#配置虚拟主机&quot; class=&quot;headerlink&quot; title=&quot;配置虚拟主机&quot;&gt;&lt;/a&gt;配置虚拟主机&lt;/h1&gt;&lt;p&gt;本节主要讲解如果使用&lt;strong&gt;nginx配置多个虚拟主机&lt;/strong&gt;,也就是我们通常说的配置域名.接下来我们配置两个域名&lt;code&gt;a.zhangke.com，b.zhangke.com&lt;/code&gt;。&lt;/p&gt;</summary>
     
     
     
-    <category term="分布式" scheme="http://fengxiu.club/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    <category term="nginx" scheme="http://fengxiu.club/categories/nginx/"/>
     
     
-    <category term="hash" scheme="http://fengxiu.club/tags/hash/"/>
+    <category term="nginx" scheme="http://fengxiu.club/tags/nginx/"/>
     
   </entry>
   

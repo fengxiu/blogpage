@@ -222,6 +222,19 @@
 
               <time title="创建时间：2022-04-26 08:13:43" itemprop="dateCreated datePublished" datetime="2022-04-26T08:13:43+00:00">2022-04-26</time>
             </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
 
           
   
@@ -257,7 +270,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>984</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -276,7 +289,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <p>死锁的发生必须具备以下四个必要条件</p>
+<ol>
+<li>互斥条件（Mutual exclusion）：资源不能被共享，只能由一个进程使用。</li>
+<li>请求与保持条件（Hold and wait）：已经得到资源的进程可以再次申请新的资源。</li>
+<li>不可剥夺条件（No pre-emption）：已经分配的资源不能从相应的进程中被强制地剥夺。</li>
+<li>环路&#x2F;循环等待条件（Circular wait）：系统中若干进程组成环路，该环路中每个进程都在等待相邻进程正占用的资源。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/33411.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -321,6 +348,19 @@
 
               <time title="创建时间：2022-04-26 08:13:29" itemprop="dateCreated datePublished" datetime="2022-04-26T08:13:29+00:00">2022-04-26</time>
             </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
 
           
   
@@ -356,14 +396,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>2.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -375,7 +415,60 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <p>本文还未整理完成，目前主要整理的是mysql中锁的种类，以及基本的使用方式。</p>
+<h2 id="一致性读"><a href="#一致性读" class="headerlink" title="一致性读"></a>一致性读</h2><p>事务利用MVCC进行操作称为一致性读（Consistent Rcad)。或者一致性无锁读(有的资料也称之为快照读)。所有普通的SELECT语句在READ COMMITED、<br>REPEARABLE READ隔离级别下都算是一致性读，一致性读并不会对表中 的任何记录进行加锁操作 其他事务可以自由地对表中的记录进行改动。</p>
+<h2 id="共享锁和独占锁"><a href="#共享锁和独占锁" class="headerlink" title="共享锁和独占锁"></a>共享锁和独占锁</h2><ul>
+<li>共享锁（Shared Lock）简称S锁.在事务要读取一条记录时 需要先获取该记录的锁</li>
+<li>独占锁（Exclusive Lock）也常称为排他锁，简称X锁。在事务要改动一条记录时需要先获取该记录 锁。</li>
+</ul>
+<p>锁的兼容情况</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426172230.png"></p>
+<p>锁定读的语句</p>
+<p>读取记录添加S锁</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select ... LOCK IN SHARE MODE</span><br></pre></td></tr></table></figure>
+
+<p>读取添加X锁</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT ... FRO UPDATE</span><br></pre></td></tr></table></figure>
+
+<h2 id="意向锁"><a href="#意向锁" class="headerlink" title="意向锁"></a>意向锁</h2><p>意向锁，主要用来判断当前表是否被加锁，不会对修改读取有任何阻塞操作。</p>
+<p>主要有俩种</p>
+<ul>
+<li>意向共享锁( Intention Shared Lock ）简称IS，当事务准备在某条记录上加锁时<br>需要先在表级别加IS锁</li>
+<li>意向独占锁(Intention Exclusive Lock) 简称IX锁，当事务准备在某条记录上加<br>时，需要先在表级别一个IX锁。</li>
+</ul>
+<p>他们俩都是表级锁，它们的提出仅仅为了在之后加表级别的S锁和X锁时可以快速判断表中的记录是否被上锁，以避免用遍历的方式来查看表中有没有上锁的记录:也就是说其实IS锁和IX锁是兼容的IX锁和IX锁是兼容的。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426172737.png"></p>
+<h2 id="InnoDB中的锁"><a href="#InnoDB中的锁" class="headerlink" title="InnoDB中的锁"></a>InnoDB中的锁</h2><p>首先会有上面介绍的表级别的共享锁、独占锁，以及意向锁。</p>
+<h3 id="表级别的AUTO-INC锁"><a href="#表级别的AUTO-INC锁" class="headerlink" title="表级别的AUTO-INC锁"></a>表级别的AUTO-INC锁</h3><p>系统自动给AUTO_INCREMENT修饰的列进行递增赋值的实现方式主要有下面两个</p>
+<ul>
+<li><p>采用AUTO-INC锁，也就是在执行插入语句时就加一个表级别的AUTO-INC锁，然<br>后为每条待插入记录的AUTO_INCREMENT修饰的列分配递增的值。在该语句执行<br>结束后，再把AUTO-INC锁释放掉。这样一来，一个事务在持有AUTO-INC锁的过程<br>中，其他事务的插入语句都要被阻塞，从而保证一个语句中分配的递增值是连续的。</p>
+<p>  如果我们的插入语句在执行前并不确定县体要插入多少条记录，一般是使用AUTO-INC锁为AUTO_INCREMENT修饰的列生成对应的值。</p>
+</li>
+<li><p>采用一个轻量级的锁，在为插入语句生成AUTO_INCREMENT修饰的列的值时获取这个轻量级锁 然后在生成本次插入语句需要用到的AUTO_INCREMENT修饰的值之后，就把该轻量级锁释放掉 而不需要等到整个插入语句执行完后才释放锁</p>
+<p>  如果我们的插入语句在执行前就可以确定具体要插入多少条记录，那一般采用轻量级锁的方式对AUTO_INCREMENT修饰的列进行赋值。这种方式可以避免锁定，可以提升插入性能。</p>
+</li>
+</ul>
+<h3 id="InnoDB行级锁"><a href="#InnoDB行级锁" class="headerlink" title="InnoDB行级锁"></a>InnoDB行级锁</h3><p><strong>Record Lock</strong>：</p>
+<p>记录锁，把锁加载一条记录上，这种锁有S锁和X锁之分，和上面介绍的s锁和x锁一样。</p>
+<p><strong>Gap Lock</strong><br>在REPEATABLE READ隔离级别下是可以在很大程度上解决幻读现象。解决方案有两种：使用MVCC方案解决;使用加锁方案解决。但是在使用加锁方案解决时有个大问题，就是事务在第一次执行读取操作时那些幻影记录尚不存在无法给这些幻影记录加上记录锁。因此设计gap锁，这种锁类型的官方名称为LOCK_GAP，也可以简称为gap锁。比如为number值为8的那条记录加一个gap锁。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426204555.png"></p>
+<p>上图为number值为8的记录加了gap锁，这意味着不允许别的事务在number值为8的记录前面的问隙插入新记录，其实就是number列的值在区间（3，8）的新记录是不允许立即插入的.比如有另外一个事务想插入一条numbe值为4的新记录，首先要定位到该条新记录的下-条记录，也就是number值为8的记录，而这条记录上又有一个gao锁，所以就会阻塞插入操作直到拥有这个gap锁的事务提交了之后将该gap锁释放掉，其它事务才可以插入number列的值在区间(3 8)中的新记录。</p>
+<p>这个gap锁的提出仅仅是为了防止插入幻影记录而提出的。虽然gap锁有共享gap锁和独占gap锁这样的说法，但是它们起到的作用都是相同的。而且如果对一条记录加了gap锁(无论是共享gap锁还是独占gap锁)并不会限制其他事务对这条记录加记录锁或者继续加gap锁。再强调一遍gap锁的作用仅仅是为了防止插入幻影记录而已.</p>
+<p>不知道大家是否发现了一个问题。给一条记录加gap锁只是不允许其他事务向这条记录前面的间隙插入新记录，那对于最后一条记录之后的间隙，这里时利用数据页里的两条伪记录。</p>
+<ul>
+<li>Infimum记录： 表示该页面中最小的记录</li>
+<li>Supremum记录：表示该页面中最大的记录</li>
+</ul>
+<p>如果范围区间包括负无穷或者正无穷，就是给这俩条记录加上gap锁防止插入。</p>
+<p><strong>next-key lock</strong><br>这个是gap锁以及航所的合体，既可以给某条记录加锁也可以给这条记录之前的区间加锁。</p>
+<p><strong>Insert Tntention Lock</strong><br>一个事务在插入一条记录时，需要判断插入位置是否已被别的事务加了gap锁，如果有的话 插入操作需要等待，直到拥有gap锁的那个事务提交为止。但是InnoDB规定事务在等待时也需要在内存中生成一个锁结构，说明有事务想在某个问隙中插入新记录，但是现在处于等待状态。这种锁命名为Insert Tntention Lock。也可以称为插入意向锁。</p>
+<p><strong>隐式锁</strong><br>在内存中生成锁结构并且维护它们并不是一件零成本的事情，设计InnoDB的大叔出于勤俭节约的精神，提出了一个隐式锁的概念。比如一般情况下执行的INSERT语句是不需要在内存中生成锁结构的〈当然，如果即将插入的间隙已经被其他事务加了gap锁，那么本次INSERT操作会阻塞，并且当前事务会在该间隙上加一个插入意向锁)。但是这可能导致一些问题，比方说一个事务首先插入了一条记录（此时并没有与该记录关联的锁结构)，然后另一个事务执行的操作会导致修改这条记录，那么就有可能出现赃读的现象。这时InnoDB的做法是，帮助前一个事务建立一个X锁，并且是不阻塞的锁，而事务本身也会建立一个锁，但是处于阻塞状态，等待前一条记录释放。</p>
+<h2 id="加锁的情况"><a href="#加锁的情况" class="headerlink" title="加锁的情况"></a>加锁的情况</h2><h3 id="普通的SELECT语句"><a href="#普通的SELECT语句" class="headerlink" title="普通的SELECT语句"></a>普通的SELECT语句</h3><p>在不通的隔离级别下，普通的SELECT语句具有不通的表现，具体如下</p>
+<p>在READ UNCOMMITED隔离级别下，不加锁，直接读取记录的最新版本；可能出现赃读、不可重复读和幻读现象</p>
+<p>在READ COMMITED隔离级别下，不加锁；每次执行普通的SELECT语句时都会生成一个ReadView，这样避免了赃读现象，但没有避免不可重复读和幻读显现</p>
+<p>在REPEATABLE READ隔离级别下，不加锁;只在第一次执行普通的SELECT语句时生成一个 ReadView，这样就把脏读、不可重复读和幻读现象都避免了.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426222232.png"></p>
+<p>暂未完结</p>
+
       
     </div>
 
@@ -420,6 +513,19 @@
 
               <time title="创建时间：2022-04-26 08:13:05" itemprop="dateCreated datePublished" datetime="2022-04-26T08:13:05+00:00">2022-04-26</time>
             </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
 
           
   
@@ -455,14 +561,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>3.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -474,7 +580,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <p>InnoDB是mysql默认的存储引擎也是使用最多的存储引擎，能够满足大多数的业务需求，其中高并发的优点就是通过mvcc实现的。这篇文章就来介绍下mvcc是如何支持并发的。</p>
+<p>MVCC全称Multi-Version Concurrency Control，MVCC是一种通过增加版本冗余数据来实现并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。</p>
+<p>mysql中的InnoDB中实现了MVCC主要是为了提高数据库的并发性能，在无锁的情况下也能处理读写并发，大大提高数据库的并发度。</p>
+<p>首先我们有一张表，业务字段如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-- id只是一个普通字段，并不是主键</span><br><span class="line">mysql&gt; select * from ajisun;</span><br><span class="line">+------+--------+--------+</span><br><span class="line">| id   | name   | city   |</span><br><span class="line">+------+--------+--------+</span><br><span class="line">| 100  | ajisun | 上海    |</span><br><span class="line">+------+--------+--------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/4858.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1440,7 +1558,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:16</span>
+    <span title="站点阅读时长">22:28</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
