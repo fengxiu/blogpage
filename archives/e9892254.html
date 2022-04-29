@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="概述本文主要讲解事务四大特性ACID中的隔离性，这里简单介绍什么是隔离性，接着介绍隔离性级别以及每种隔离性会带来的相应的读的问题，最后简单介绍数据库是如何实现事务的隔离性。  什么是隔离性 隔离性级别 隔离性级别的实现方式简介  什么是隔离性在数据库系统中会存在多个事务可能并发执行，系统保证，对于任何一对事务T1和T2，在T1看来，T2或者在T1开始之前就已经完成执行，或者在T1完成之后开始执行。">
+  <meta name="description" content="本文主要讲解事务四大特性ACID中的隔离性，这里简单介绍什么是隔离性，接着介绍隔离性级别以及每种隔离性会带来的相应的读的问题，最后简单介绍数据库是如何实现事务的隔离性。  什么是隔离性 隔离性级别 隔离性级别的实现方式简介  什么是隔离性在数据库系统中会存在多个事务可能并发执行，系统保证，对于任何一对事务T1和T2，在T1看来，T2或者在T1开始之前就已经完成执行，或者在T1完成之后开始执行。因此">
 <meta property="og:type" content="article">
 <meta property="og:title" content="事务隔离性简介">
 <meta property="og:url" content="http://fengxiu.club/archives/e9892254.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="概述本文主要讲解事务四大特性ACID中的隔离性，这里简单介绍什么是隔离性，接着介绍隔离性级别以及每种隔离性会带来的相应的读的问题，最后简单介绍数据库是如何实现事务的隔离性。  什么是隔离性 隔离性级别 隔离性级别的实现方式简介  什么是隔离性在数据库系统中会存在多个事务可能并发执行，系统保证，对于任何一对事务T1和T2，在T1看来，T2或者在T1开始之前就已经完成执行，或者在T1完成之后开始执行。">
+<meta property="og:description" content="本文主要讲解事务四大特性ACID中的隔离性，这里简单介绍什么是隔离性，接着介绍隔离性级别以及每种隔离性会带来的相应的读的问题，最后简单介绍数据库是如何实现事务的隔离性。  什么是隔离性 隔离性级别 隔离性级别的实现方式简介  什么是隔离性在数据库系统中会存在多个事务可能并发执行，系统保证，对于任何一对事务T1和T2，在T1看来，T2或者在T1开始之前就已经完成执行，或者在T1完成之后开始执行。因此">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-03-21T03:50:00.000Z">
-<meta property="article:modified_time" content="2022-04-28T08:50:19.662Z">
+<meta property="article:modified_time" content="2019-03-21T03:50:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="事务">
 <meta name="twitter:card" content="summary">
@@ -138,7 +138,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">221</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">222</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -221,13 +221,6 @@
 
               <time title="创建时间：2019-03-21 03:50:00" itemprop="dateCreated datePublished" datetime="2019-03-21T03:50:00+00:00">2019-03-21</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-28 08:50:19" itemprop="dateModified" datetime="2022-04-28T08:50:19+00:00">2022-04-28</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -302,7 +295,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文主要讲解事务四大特性ACID中的隔离性，这里简单介绍什么是隔离性，接着介绍隔离性级别以及每种隔离性会带来的相应的读的问题，最后简单介绍数据库是如何实现事务的隔离性。</p>
+        <p>本文主要讲解事务四大特性ACID中的隔离性，这里简单介绍什么是隔离性，接着介绍隔离性级别以及每种隔离性会带来的相应的读的问题，最后简单介绍数据库是如何实现事务的隔离性。</p>
 <ol>
 <li>什么是隔离性</li>
 <li>隔离性级别</li>
@@ -348,8 +341,7 @@
 </tr>
 </tbody></table>
 <p>在这个例子中，事务2回滚后就没有id是1，age是21的数据了。所以，事务一读到了一条脏数据。</p>
-<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>发生在已提交读隔离级别</strong></p>
-<p>不可重复读，是指在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。比如事务T1读取某一数据，事务T2读取并修改了该数据，T1为了对读取值进行检验而再次读取该数据，便得到了不同的结果。</p>
+<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>发生在已提交读隔离级别</strong><br>不可重复读，是指在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。比如事务T1读取某一数据，事务T2读取并修改了该数据，T1为了对读取值进行检验而再次读取该数据，便得到了不同的结果。</p>
 <p>一种更易理解的说法是：在一个事务内，多次读同一个数据。在这个事务还没有结束时，另一个事务也访问该同一数据。那么，在第一个事务的两次读数据之间。由于第二个事务的修改，那么第一个事务读到的数据可能不一样，这样就发生了在一个事务内两次读到的数据是不一样的，因此称为不可重复读，即原始读取不可重复。</p>
 <p><strong>举例说明：</strong></p>
 <p>在基于锁的并发控制中“不可重复读(non-repeatable read)”现象发生在当执行SELECT 操作时没有获得读锁(read locks)或者SELECT操作执行完后马上释放了读锁； 多版本并发控制中当没有要求一个提交冲突的事务回滚也会发生“不可重复读(non-repeatable read)”现象。</p>
@@ -546,7 +538,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%9A%94%E7%A6%BB%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">什么是隔离性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%80%A7%E7%BA%A7%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">隔离性级别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%8F%E8%AF%BB"><span class="nav-number">3.1.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="nav-number">3.2.</span> <span class="nav-text">不可重复读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BB%E8%AF%BB"><span class="nav-number">3.3.</span> <span class="nav-text">幻读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%80%A7%E7%BA%A7%E5%88%AB%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F%E7%AE%80%E4%BB%8B"><span class="nav-number">4.</span> <span class="nav-text">隔离性级别的实现方式简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%9A%94%E7%A6%BB%E6%80%A7"><span class="nav-number">1.</span> <span class="nav-text">什么是隔离性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%80%A7%E7%BA%A7%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">隔离性级别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%8F%E8%AF%BB"><span class="nav-number">2.1.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="nav-number">2.2.</span> <span class="nav-text">不可重复读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BB%E8%AF%BB"><span class="nav-number">2.3.</span> <span class="nav-text">幻读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%80%A7%E7%BA%A7%E5%88%AB%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F%E7%AE%80%E4%BB%8B"><span class="nav-number">3.</span> <span class="nav-text">隔离性级别的实现方式简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -562,7 +554,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">221</span>
+          <span class="site-state-item-count">222</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
