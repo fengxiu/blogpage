@@ -140,7 +140,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">100</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -150,7 +150,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">222</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">223</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -372,8 +372,8 @@
 <p>连接各个节点的工作可以使用<code>CLUSTER MEET</code>命令来完成，该命令的格式如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CLUSTER MEET &lt;ip&gt; &lt;port</span><br></pre></td></tr></table></figure>
 
-<p>向一个节点node发送CLUSTER MEET命令，可以让node节点与ip和port所指定的节点进行握手（handshake），当握手成功时，node节点就会将ip和port所指定的节点添加到node节点当前所在的集群中。</p>
-<p>加入加点的通信过程如下图</p>
+<p>向一个节点node发送<code>CLUSTER MEET</code>命令，可以让node节点与ip和port所指定的节点进行握手（handshake），当握手成功时，node节点就会将ip和port所指定的节点添加到node节点当前所在的集群中。</p>
+<p>加入节点的通信过程如下图</p>
 <p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220425154813.png" alt="节点通信图"></p>
 <p>上图客户端向加点A发送加入节点B的命令，节点A与节点B进行通信，正常交换完成，会将节点B加入到集群，之后节点A会将节点B的信息通过Gossip协议传播给集群中的其他节点，让其他节点也与节点B进行握手，最终，经过一段时间之后，节点B会被集群中的所有节点认识。</p>
 <h3 id="槽指派"><a href="#槽指派" class="headerlink" title="槽指派"></a>槽指派</h3><p>Redis集群通过分片的方式来保存数据库中的键值对：集群的整个数据库被分为16384个槽（slot），数据库中的每个键都属于这16384个槽的其中一个，集群中的每个节点可以处理0个或最多16384个槽。 当数据库中的16384个槽都有节点在处理时，集群处于上线状态（ok）；相反地，如果数据库中有任何一个槽没有得到处理，那么集群处于下线状态（fail）。 </p>
@@ -441,6 +441,7 @@
 <li>redis的集群主节点数量基本不可能超过1000个。<br>  集群节点越多，心跳包的消息体内携带的数据越多。如果节点过1000个，也会导致网络拥堵。因此redis作者，不建议redis cluster节点数量超过1000个。那么，对于节点数在1000以内的redis cluster集群，16384个槽位够用了。没有必要拓展到65536个。</li>
 <li>槽位越小，节点少的情况下，压缩比高<br>  Redis主节点的配置信息中，它所负责的哈希槽是通过一张bitmap的形式来保存的，在传输过程中，会对bitmap进行压缩，但是如果bitmap的填充率<code>slots / N</code>很高的话(N表示节点数)，bitmap的压缩率就很低。如果节点数很少，而哈希槽数量很多的话，bitmap的压缩率就很低。文件压缩率指的是，文件压缩前后的大小比。</li>
 </ol>
+<p>详细的可以参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/rjzheng/p/11430592.html">为什么redis集群有16384个槽</a></p>
 <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
 <li><p>数据迁移问题：<br>  Redis集群可以进行节点的动态扩容缩容，这一过程目前还处于半自动状态，需要人工介入。在扩缩容的时候，需要进行数据迁移。而Redis为了保证迁移的一致性，迁移所有操作都是同步操作，执行迁移时，两端的Redis均会进入时长不等的阻塞状态，对于小Key，该时间可以忽略不计，但如果一旦Key的内存使用过大，严重的时候会接触发集群内的故障转移，造成不必要的切换。</p>
 </li>
@@ -631,7 +632,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">222</span>
+          <span class="site-state-item-count">223</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -644,7 +645,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
