@@ -131,17 +131,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">50</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">48</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">223</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">224</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -283,7 +283,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.4k</span>
+              <span>7.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -303,16 +303,9 @@
 
       
         <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Copy-On-Write简称COW，是一种用于程序设计中的优化策略。其基本思路是，从一开始大家都在共享同一个内容，当某个人想要修改这个内容的时候，才会真正把内容Copy出去形成一个新的内容然后再改，这是一种延时懒惰策略。从JDK1.5开始Java并发包里提供了两个使用CopyOnWrite机制实现的并发容器,它们是CopyOnWriteArrayList和CopyOnWriteArraySet。CopyOnWrite容器非常有用，可以在非常多的并发场景中使用到。</p>
-<ol>
-<li>CopyOnWriteArrayList简介</li>
-<li>CopyOnWriteArrayList源码分析</li>
-<li>CopyOnWriteArrayList简单使用</li>
-<li>CopyOnWriteArrayList使用注意事项</li>
-<li>CopyOnWriteArraySet分析</li>
-</ol>
 <span id="more"></span>
 
-<h2 id="1-CopyOnWriteArrayList简介"><a href="#1-CopyOnWriteArrayList简介" class="headerlink" title="1. CopyOnWriteArrayList简介"></a>1. CopyOnWriteArrayList简介</h2><p>CopyOnWrite容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。这样做的好处是我们可以对CopyOnWrite容器进行并发的读，而不需要加锁，因为当前容器不会添加任何元素。所以CopyOnWrite容器也是一种读写分离的思想，读和写不同的容器。</p>
+<h2 id="CopyOnWriteArrayList简介"><a href="#CopyOnWriteArrayList简介" class="headerlink" title="CopyOnWriteArrayList简介"></a>CopyOnWriteArrayList简介</h2><p>CopyOnWrite容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。这样做的好处是我们可以对CopyOnWrite容器进行并发的读，而不需要加锁，因为当前容器不会添加任何元素。所以CopyOnWrite容器也是一种读写分离的思想，读和写不同的容器。</p>
 <p>类图如下</p>
 <p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-163.png" alt="upload successful"></p>
 <p>从类图可以看出，CopyOnWriteArrayList是List的一种，从名字其实也可以猜到，他是线程安全的ArrrayList，底层的实现也是数组，这个后面会详细介绍。</p>
@@ -510,7 +503,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-CopyOnWriteArrayList%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">1. CopyOnWriteArrayList简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">2.源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#add-%E6%93%8D%E4%BD%9C"><span class="nav-number">3.1.</span> <span class="nav-text">add 操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#remove%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C"><span class="nav-number">3.2.</span> <span class="nav-text">remove删除操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get%E6%93%8D%E4%BD%9C"><span class="nav-number">3.3.</span> <span class="nav-text">get操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-number">3.4.</span> <span class="nav-text">迭代器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">3. 简单使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">5.</span> <span class="nav-text">5. 使用注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CopyOnWrite%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">5.0.1.</span> <span class="nav-text">CopyOnWrite的应用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CopyOnWrite%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">5.0.2.</span> <span class="nav-text">CopyOnWrite的缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-CopyOnWriteArraySet%E5%88%86%E6%9E%90"><span class="nav-number">6.</span> <span class="nav-text">6. CopyOnWriteArraySet分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CopyOnWriteArrayList%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">CopyOnWriteArrayList简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">2.源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#add-%E6%93%8D%E4%BD%9C"><span class="nav-number">3.1.</span> <span class="nav-text">add 操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#remove%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C"><span class="nav-number">3.2.</span> <span class="nav-text">remove删除操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get%E6%93%8D%E4%BD%9C"><span class="nav-number">3.3.</span> <span class="nav-text">get操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-number">3.4.</span> <span class="nav-text">迭代器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">3. 简单使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">5.</span> <span class="nav-text">5. 使用注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CopyOnWrite%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">5.0.1.</span> <span class="nav-text">CopyOnWrite的应用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CopyOnWrite%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">5.0.2.</span> <span class="nav-text">CopyOnWrite的缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-CopyOnWriteArraySet%E5%88%86%E6%9E%90"><span class="nav-number">6.</span> <span class="nav-text">6. CopyOnWriteArraySet分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -526,20 +519,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">223</span>
+          <span class="site-state-item-count">224</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">97</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -582,7 +575,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:28</span>
+    <span title="站点阅读时长">22:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

@@ -129,17 +129,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">50</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">48</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">223</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">224</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -192,6 +192,148 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/272a8849.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/272a8849.html" class="post-title-link" itemprop="url">java集合系列11之LinkedHashMap和LinkedHashSet源码解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-04 20:58:00" itemprop="dateCreated datePublished" datetime="2019-03-04T20:58:00+00:00">2019-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/collections/" itemprop="url" rel="index"><span itemprop="name">collections</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/272a8849.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/272a8849.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/272a8849.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/272a8849.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本文首先对LinkedHashMap整体进行分析，然后在介绍LinkedHashSet，其实它只是针对LinkedHashMap的简单封装。类图如下<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220420174910.png" alt="uml图"></p>
+<p>LinkedHashMap实现了Map接口，即允许放入key为null的元素，也允许插入value为null的元素。从名字上可以看出该容器是linked list和HashMap的混合体，也就是说它同时满足HashMap和linked list的某些特性。可将LinkedHashMap看作采用linked list增强的HashMap。<br>存储结构如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220420175640.png" alt="整体结构"></p>
+<p>事实上LinkedHashMap是HashMap的直接子类，二者唯一的区别是LinkedHashMap在HashMap的基础上，采用双向链表(doubly-linked list)的形式将所有entry连接起来，这样是为保证元素的迭代顺序跟插入顺序相同。上图给出了LinkedHashMap的结构图，主体部分跟HashMap完全一样，多了header指向双向链表的头部(是一个哑元)，该双向链表的迭代顺序就是entry的插入顺序。</p>
+<p>除了可以保迭代历顺序，这种结构还有一个好处 : 迭代LinkedHashMap时不需要像HashMap那样遍历整个table，而只需要直接遍历header指向的双向链表即可，也就是说LinkedHashMap的迭代时间就只跟entry的个数相关，而跟table的大小无关。</p>
+<p>首先看下LinkedHashMap的重要参数和构造函数，源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 指向链表的头部</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">transient</span> LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 指向链表的尾部</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">transient</span> LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 链表的插入顺序，如果是false，则按照插入顺序，如果是true按照访问顺序。</span></span><br><span class="line"><span class="comment"> * 注意这里时final，一旦定义不能修改</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> accessOrder;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">LinkedHashMap</span><span class="params">(<span class="type">int</span> initialCapacity,</span></span><br><span class="line"><span class="params">                  <span class="type">float</span> loadFactor,</span></span><br><span class="line"><span class="params">                  <span class="type">boolean</span> accessOrder)</span> &#123;</span><br><span class="line"><span class="built_in">super</span>(initialCapacity, loadFactor);</span><br><span class="line"><span class="built_in">this</span>.accessOrder = accessOrder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除了加入以上三个属性，还扩展了节点的结构用来支持链表,主要是加入了获取其前节点以及节点的数据，具体代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Entry</span>&lt;K,V&gt; <span class="keyword">extends</span> <span class="title class_">HashMap</span>.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(<span class="type">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            <span class="built_in">super</span>(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>插入</strong></p>
+<p>下面来看下创建过程，整体的创建过程和HashMap一直，只是在创建节点时会有增加了链接其它节点的功能，</p>
+<p>首选是覆盖HashMap中的创建修改节点的，从而保证每次添加和修改节点时能够加入LinkedHashMap的链表功能。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 创建新节点</span></span><br><span class="line">Node&lt;K,V&gt; <span class="title function_">newNode</span><span class="params">(<span class="type">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> &#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 取代新节点</span></span><br><span class="line">Node&lt;K,V&gt; <span class="title function_">replacementNode</span><span class="params">(Node&lt;K,V&gt; p, Node&lt;K,V&gt; next)</span> &#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; q = (LinkedHashMap.Entry&lt;K,V&gt;)p;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; t =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>.Entry&lt;K,V&gt;(q.hash, q.key, q.value, next);</span><br><span class="line">    transferLinks(q, t);</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">TreeNode&lt;K,V&gt; <span class="title function_">newTreeNode</span><span class="params">(<span class="type">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> &#123;</span><br><span class="line">    TreeNode&lt;K,V&gt; p = <span class="keyword">new</span> <span class="title class_">TreeNode</span>&lt;K,V&gt;(hash, key, value, next);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">TreeNode&lt;K,V&gt; <span class="title function_">replacementTreeNode</span><span class="params">(Node&lt;K,V&gt; p, Node&lt;K,V&gt; next)</span> &#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; q = (LinkedHashMap.Entry&lt;K,V&gt;)p;</span><br><span class="line">    TreeNode&lt;K,V&gt; t = <span class="keyword">new</span> <span class="title class_">TreeNode</span>&lt;K,V&gt;(q.hash, q.key, q.value, next);</span><br><span class="line">    transferLinks(q, t);</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">transferLinks</span><span class="params">(LinkedHashMap.Entry&lt;K,V&gt; src,</span></span><br><span class="line"><span class="params">                            LinkedHashMap.Entry&lt;K,V&gt; dst)</span> &#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; b = dst.before = src.before;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; a = dst.after = src.after;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="literal">null</span>)</span><br><span class="line">        head = dst;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b.after = dst;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="literal">null</span>)</span><br><span class="line">        tail = dst;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        a.before = dst;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">linkNodeLast</span><span class="params">(LinkedHashMap.Entry&lt;K,V&gt; p)</span> &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; last = tail;</span><br><span class="line">        tail = p;</span><br><span class="line">        <span class="keyword">if</span> (last == <span class="literal">null</span>)</span><br><span class="line">            head = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来的插入操作和HashMap是一致的，有区别的点是在插入的过程中，会根据前面设置的accessOrder来调整LinkedHashMap链表的顺序，原理是扩展了HashMap的俩个函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在插入完成后，判断是否需要移除某些节点，</span></span><br><span class="line"><span class="comment">// 根据源码可以得出，是不会执行到if中</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">afterNodeInsertion</span><span class="params">(<span class="type">boolean</span> evict)</span> &#123; <span class="comment">// possibly remove eldest</span></span><br><span class="line">  LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">  <span class="keyword">if</span> (evict &amp;&amp; (first = head) != <span class="literal">null</span> &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">      <span class="type">K</span> <span class="variable">key</span> <span class="operator">=</span> first.key;</span><br><span class="line">      removeNode(hash(key), key, <span class="literal">null</span>, <span class="literal">false</span>, <span class="literal">true</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 主要用于扩展，什么时机删除</span></span><br><span class="line"><span class="keyword">protected</span> <span class="type">boolean</span> <span class="title function_">removeEldestEntry</span><span class="params">(Map.Entry&lt;K,V&gt; eldest)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 根据是否按照访问顺序进行排序</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> &#123; <span class="comment">// move node to last</span></span><br><span class="line">  LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">  <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">      LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">          (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">      p.after = <span class="literal">null</span>;</span><br><span class="line">      <span class="keyword">if</span> (b == <span class="literal">null</span>)</span><br><span class="line">          head = a;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">          b.after = a;</span><br><span class="line">      <span class="keyword">if</span> (a != <span class="literal">null</span>)</span><br><span class="line">          a.before = b;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">          last = b;</span><br><span class="line">      <span class="keyword">if</span> (last == <span class="literal">null</span>)</span><br><span class="line">          head = p;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">          p.before = last;</span><br><span class="line">          last.after = p;</span><br><span class="line">      &#125;</span><br><span class="line">      tail = p;</span><br><span class="line">      ++modCount;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面可以看出，LinkedHashMap和HashMap的插入基本一致，只是会在插入的每个节点中保持一条链表，链表的顺序可以根据插入或者访问顺序，在创建对象的时候就定义下来。</p>
+<p><strong>访问</strong><br>访问源码如下，主要还是使用了HashMap中定义的函数，在访问完成后，会根据accessOrder来调整链表的顺序</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> V <span class="title function_">get</span><span class="params">(Object key)</span> &#123;</span><br><span class="line">    Node&lt;K,V&gt; e;</span><br><span class="line">    <span class="keyword">if</span> ((e = getNode(hash(key), key)) == <span class="literal">null</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (accessOrder)</span><br><span class="line">        afterNodeAccess(e);</span><br><span class="line">    <span class="keyword">return</span> e.value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>移除</strong><br>在LinkedHashMap中没有定义remove方法，直接使用的是HashMap中的方法，区别是移除后，LinkeHashMap又多了一步，afterNodeRemoval，具体定义如下，其实就是删除节点之间的连接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">afterNodeRemoval</span><span class="params">(Node&lt;K,V&gt; e)</span> &#123; <span class="comment">// unlink</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">    p.before = p.after = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="literal">null</span>)</span><br><span class="line">        head = a;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b.after = a;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="literal">null</span>)</span><br><span class="line">        tail = b;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        a.before = b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h2><p>LinkedHashSet是对LinkedHashMap的简单包装，对LinkedHashSet的函数调用都会转换成合适的LinkedHashMap方法，因此LinkedHashSet的实现非常简单，这里不再赘述。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LinkedHashSet</span>&lt;E&gt;</span><br><span class="line">    <span class="keyword">extends</span> <span class="title class_">HashSet</span>&lt;E&gt;</span><br><span class="line">    <span class="keyword">implements</span> <span class="title class_">Set</span>&lt;E&gt;, Cloneable, java.io.Serializable &#123;</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">    <span class="comment">// LinkedHashSet里面有一个LinkedHashMap</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LinkedHashSet</span><span class="params">(<span class="type">int</span> initialCapacity, <span class="type">float</span> loadFactor)</span> &#123;</span><br><span class="line">        map = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;(initialCapacity, loadFactor);</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// ......</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">add</span><span class="params">(E e)</span> &#123;<span class="comment">//简单的方法转换</span></span><br><span class="line">        <span class="keyword">return</span> map.put(e, PRESENT)==<span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="LinkedHashMap经典用法"><a href="#LinkedHashMap经典用法" class="headerlink" title="LinkedHashMap经典用法"></a>LinkedHashMap经典用法</h2><p>LinkedHashMap除了可以保证迭代顺序外，还有一个非常有用的用法: 可以轻松实现一个采用了FIFO替换策略的缓存。具体说来，LinkedHashMap有一个子类方法<code>protected boolean removeEldestEntry(Map.Entry&lt;K,V&gt; eldest)</code>，该方法的作用是告诉Map是否要删除最老的Entry，所谓最老就是当前Map中最早插入的Entry，如果该方法返回true，最老的那个元素就会被删除。在每次插入新元素的之后LinkedHashMap会自动询问removeEldestEntry()是否要删除最老的元素。这样只需要在子类中重载该方法，当元素个数超过一定数量时让removeEldestEntry()返回true，就能够实现一个固定大小的FIFO策略的缓存。示例代码如下: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** 一个固定大小的FIFO替换策略的缓存 */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FIFOCache</span>&lt;K, V&gt; <span class="keyword">extends</span> <span class="title class_">LinkedHashMap</span>&lt;K, V&gt;&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> cacheSize;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">FIFOCache</span><span class="params">(<span class="type">int</span> cacheSize)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.cacheSize = cacheSize;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当Entry个数超过cacheSize时，删除最老的Entry</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">boolean</span> <span class="title function_">removeEldestEntry</span><span class="params">(Map.Entry&lt;K,V&gt; eldest)</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> size() &gt; cacheSize;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1504,131 +1646,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/2d62f277.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/2d62f277.html" class="post-title-link" itemprop="url">java集合系列01之 总体框架</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-04 09:08:00" itemprop="dateCreated datePublished" datetime="2019-03-04T09:08:00+00:00">2019-03-04</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/collections/" itemprop="url" rel="index"><span itemprop="name">collections</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/2d62f277.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/2d62f277.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/2d62f277.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/2d62f277.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>829</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>集合框架是Java提供的工具包，包含了一些常用的数据结构：集合、链表、队列、栈、数组、映射等，方便我们日常开发。Java集合工具包位置是java.util.*。</p>
-<p>Java集合主要可以划分为4个部分：列表（List）、集合（Set）、映射（Map）、工具类。</p>
-<p>下图是java集合的整体框架图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/Collection.png" alt="collection"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-154.png" alt="集合"></p>
-<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/collections/index.html">java集合具体的官方描述在这</a></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/archives/2d62f277.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1700,20 +1717,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">223</span>
+          <span class="site-state-item-count">224</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">97</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1756,7 +1773,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:28</span>
+    <span title="站点阅读时长">22:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

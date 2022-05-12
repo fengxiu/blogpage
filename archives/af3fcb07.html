@@ -20,21 +20,18 @@
     var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine | disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1},"valine":{"text":"评论","order":-2}}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="翻译自[https:&#x2F;&#x2F;www.oracle.com&#x2F;webfolder&#x2F;technetwork&#x2F;tutorials&#x2F;obe&#x2F;java&#x2F;G1GettingStarted&#x2F;index.html#overview](Getting Started with the G1 Garbage Collector) 概述目标本教程介绍了如何使用G1垃圾收集器以及如何将其与Hotspot JVM一起使用的基础知">
+  <meta name="description" content="参考 G1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="G1">
 <meta property="og:url" content="http://fengxiu.club/archives/af3fcb07.html">
 <meta property="og:site_name" content="枫秀学习日志">
-<meta property="og:description" content="翻译自[https:&#x2F;&#x2F;www.oracle.com&#x2F;webfolder&#x2F;technetwork&#x2F;tutorials&#x2F;obe&#x2F;java&#x2F;G1GettingStarted&#x2F;index.html#overview](Getting Started with the G1 Garbage Collector) 概述目标本教程介绍了如何使用G1垃圾收集器以及如何将其与Hotspot JVM一起使用的基础知">
+<meta property="og:description" content="参考 G1">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://fengxiu.club/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/HeapStructure.png">
-<meta property="og:image" content="http://fengxiu.club/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/Slide9.png">
 <meta property="article:published_time" content="2019-09-06T11:26:42.000Z">
-<meta property="article:modified_time" content="2022-05-07T01:20:08.370Z">
+<meta property="article:modified_time" content="2019-09-06T11:26:42.000Z">
 <meta property="article:author" content="枫秀">
-<meta property="article:tag" content="GC">
+<meta property="article:tag" content="垃圾回收">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://fengxiu.club/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/HeapStructure.png">
 
 <link rel="canonical" href="http://fengxiu.club/archives/af3fcb07.html">
 
@@ -131,17 +128,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">50</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">48</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">223</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">224</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -224,13 +221,6 @@
 
               <time title="创建时间：2019-09-06 11:26:42" itemprop="dateCreated datePublished" datetime="2019-09-06T11:26:42+00:00">2019-09-06</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -286,14 +276,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
+              <span>4</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -305,54 +295,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>翻译自[<a target="_blank" rel="noopener" href="https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/G1GettingStarted/index.html#overview]">https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/G1GettingStarted/index.html#overview]</a>(Getting Started with the G1 Garbage Collector)</p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><strong>目标</strong><br>本教程介绍了如何使用G1垃圾收集器以及如何将其与Hotspot JVM一起使用的基础知识。您将了解G1收集器内部如何运行，如何切换使用G1的关键命令，以及用于记录其操作的选项。</p>
-<p><strong>简介</strong><br>本OBE涵盖了Java中Java虚拟机（JVM）G1垃圾收集（GC）的基础知识。在OBE的第一部分中，提供了JVM的概述以及垃圾收集和性能的介绍。下一批学生将了解CMS收集器如何与Hotspot JVM配合使用。接下来，逐步指导将垃圾收集与Hotspot JVM一起使用时垃圾收集的工作原理。接下来，提供了一个部分，其中包含G1垃圾收集器可用的垃圾收集命令行选项。最后，您将了解用于G1收集器的日志记录选项。</p>
-<span id="more"></span>
-<p><strong>硬件和软件要求</strong><br>以下是硬件和软件要求列表：</p>
-<ul>
-<li>运行Windows XP或更高版本，Mac OS X或Linux的PC。请注意，此操作已在Windows 7中完成，尚未在所有平台上进行测试。但是，一切都应该在OS X或Linux上正常工作。另外，具有多于一个芯的机器也是优选的。</li>
-<li>Java 7 Update 9或更高版本</li>
-<li>最新的Java 7演示和示例Zip文件</li>
-</ul>
-<p><strong>先决条件</strong><br>在开始本教程之前，您应该：</p>
-<ul>
-<li>如果尚未这样做，请下载并安装最新版本的Java JDK（JDK 7 u9或更高版本）。</li>
-<li>Java 7 JDK下载从同一位置下载并安装Demos and Samples zip文件。解压缩文件并将内容放在目录中。例如：C：\ javademos</li>
-</ul>
-<p><strong>性能基础知识</strong><br>通常，在调优Java应用程序时，重点是两个主要目标之一：响应性或吞吐量。随着教程的进展，我们将回顾这些概念。<br><strong>响应</strong><br>响应性是指应用程序或系统对请求的数据进行响应的速度。例子包括：</p>
-<ul>
-<li>桌面UI响应事件的速度有多快</li>
-<li>网站返回页面的速度有多快返回</li>
-<li>数据库查询的速度有多快<br>对于专注于响应性的应用程序，大型暂停时间是不可接受的。重点是在短时间内做出回应。</li>
-</ul>
-<p><strong>吞吐量</strong><br>吞吐量侧重于在特定时间段内最大化应用程序的工作量。如何衡量吞吐量的示例包括：</p>
-<ul>
-<li>在给定时间内完成的交易数量。</li>
-<li>批处理程序可在一小时内完成的作业数。</li>
-<li>可以在一小时内完成的数据库查询数。<br>对于专注于吞吐量的应用程序，高暂停时间是可接受的由于高吞吐量应用程序在较长时间内专注于基准测试，因此不需要考虑快速响应时间。</li>
-</ul>
-<h2 id="G1-垃圾收集器"><a href="#G1-垃圾收集器" class="headerlink" title="G1 垃圾收集器"></a>G1 垃圾收集器</h2><h3 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h3><p>Garbage-First（G1）收集器是一种服务器式（Server-style）垃圾收集器，适用于具有大内存的多处理器机器。它以高可能性满足垃圾收集（GC）暂停时间目标，同时实现高吞吐量。Oracle JDK 7 Update 4及更高版本完全支持G1垃圾收集器。G1收集器专为以下应用而设计：</p>
-<ul>
-<li>可以与CMS收集器等应用程序线程同时运行。</li>
-<li>紧凑的自由空间，没有长时间的GC引起的暂停时间</li>
-<li>需要更多可预测的GC暂停持续时间。</li>
-<li>不想牺牲很多吞吐量性能。</li>
-<li>不需要更大的Java堆。</li>
-</ul>
-<p>G1计划作为Concurrent Mark-Sweep Collector（CMS）的长期替代品。将G1与CMS进行比较，存在差异，使G1成为更好的解决方案。一个区别是G1是压缩收集器。G1足够紧凑以完全避免使用细粒度的自由列表进行分配，而是依赖于区域。这大大简化了收集器的各个部分，并且主要消除了潜在的碎片问题。此外，G1提供比CMS收集器更可预测的垃圾收集暂停，并允许用户指定所需的暂停目标。</p>
-<h3 id="G1操作概览"><a href="#G1操作概览" class="headerlink" title="G1操作概览"></a>G1操作概览</h3><p>旧的垃圾收集器（串行，并行，CMS）都将堆构建为三个部分：年轻代，旧代和永久生成固定内存大小。旧的垃圾收集器（串行，并行，CMS）都将堆构建为三个部分：年轻代，旧代和永久生成固定内存大小。<br><img src="/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/HeapStructure.png" alt="HeapStructure"><br>所有内存对象都以这三个部分之一结束。<br>G1收集器采用不同的方法。<br><img src="/sourcehttps:/cdn.jsdelivr.net/gh/fengxiu/img/Slide9.png" alt="Slide9"><br>堆被分区为一组大小相等的堆区域，每个区域都是一个连续的虚拟内存区域。某些区域集具有与旧收集器中相同的角色（eden，survivor，old），但它们没有固定的大小。这为内存使用提供了更大的灵活性。</p>
-<p>执行垃圾收集时，G1以类似于CMS收集器的方式运行。G1执行并发全局标记阶段以确定整个堆中对象的活跃度。在标记阶段完成之后，G1知道哪些区域基本上是空的。它首先收集在这些区域，这通常会产生大量的自由空间。这就是为什么这种垃圾收集方法称为Garbage-First。顾名思义，G1将其集合和压缩活动集中在堆的可能充满可回收对象的区域，即垃圾。G1使用暂停预测模型来满足用户定义的暂停时间目标，并根据指定的暂停时间目标选择要收集的区域数。</p>
-<p>由G1确定为回收成熟的区域是使用疏散（evacuation）收集的垃圾。G1将对象从堆的一个或多个区域复制到堆上的单个区域，并且在此过程中压缩并释放内存。这种疏散在多处理器上并行执行，以减少暂停时间并提高吞吐量。因此，对于每次垃圾收集，G1会持续工作以减少碎片，在用户定义的暂停时间内工作。这超出了以前两种方法的能力。CMS（Concurrent Mark Sweep）垃圾收集器不进行压缩。ParallelOld垃圾收集仅执行整堆压缩，这会导致相当长的暂停时间。</p>
-<p>值得注意的是G1不是实时收集器。它以高概率但不是绝对确定性满足设定的暂停时间目标。基于先前集合的数据，G1估计可以在用户指定的目标时间内收集多少个区域。因此，收集器具有收集区域的成本的相当准确的模型，并且它使用该模型来确定在停留在暂停时间目标内时要收集哪些区域和多少区域。<br>注意：G1具有并发（与应用程序线程一起运行，例如，细化，标记，清理）和并行（多线程，例如，STW）阶段。完全垃圾收集仍然是单线程的，但如果正确调整，您的应用程序应该避免使用完整的GC。</p>
-<h3 id="G1-FootPrint"><a href="#G1-FootPrint" class="headerlink" title="G1 FootPrint"></a>G1 FootPrint</h3><p>如果从ParallelOldGC或CMS收集器迁移到G1，您可能会看到更大的JVM进程大小。这主要与“统计”数据结构有关，<br>例如 Remembered Sets and Collection Sets。<br><strong>Remembered Sets</strong>或RSet跟踪对象引用到给定区域。堆中每个区域有一个RSet。RSet支持并行和独立收集区域。RSets的总体footprint影响小于5％。<br><strong>Collection Sets</strong>或CSets将在GC中收集的区域集。在GC期间，CSet中的所有实时数据都被撤离（复制&#x2F;移动）。区域集可以是Eden, survivor, and&#x2F;or old generation。CSets对JVM的大小影响不到1％。</p>
-<h3 id="推荐的G1用例"><a href="#推荐的G1用例" class="headerlink" title="推荐的G1用例"></a>推荐的G1用例</h3><p>G1的第一个重点是为运行需要具有有限GC延迟的大堆的应用程序的用户提供解决方案。这意味着堆大小约为6GB或更大，稳定且可预测的暂停时间低于0.5秒。<br>如果应用程序具有以下一个或多个特征，那么今天使用CMS或ParallelOldGC垃圾收集器运行的应用程序将有利于切换到G1。</p>
-<ul>
-<li>Full GC持续时间太长或太频繁。</li>
-<li>对象分配率或促销率差异很大。</li>
-<li>不期望的长垃圾收集或压实暂停（超过0.5到1秒）</li>
-</ul>
-<p>注意：如果您使用的是CMS或ParallelOldGC，并且您的应用程序没有经历长时间的垃圾收集暂停，那么与您当前的收集器保持联系是可以的。更改为G1收集器不是使用最新JDK的必要条件。</p>
+        <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://pdai.tech/md/java/jvm/java-jvm-gc-g1.html">G1</a></li>
+</ol>
 
     </div>
 
@@ -364,6 +309,18 @@
   <ul class="popular-posts">
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/f857a2aa.html" rel="bookmark">GC日志详解1之serial</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/34947.html" rel="bookmark">JVM之安全点</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/f1158e94.html" rel="bookmark">什么是GC</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/d20aa128.html" rel="bookmark">垃圾回收算法</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/1d97a19.html" rel="bookmark">垃圾回收器</a></div>
     </li>
   </ul>
 
@@ -387,7 +344,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/GC/" rel="tag"># GC</a>
+              <a href="/tags/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/" rel="tag"># 垃圾回收</a>
           </div>
 
         
@@ -481,7 +438,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">G1 垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">G1垃圾收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G1%E6%93%8D%E4%BD%9C%E6%A6%82%E8%A7%88"><span class="nav-number">2.2.</span> <span class="nav-text">G1操作概览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G1-FootPrint"><span class="nav-number">2.3.</span> <span class="nav-text">G1 FootPrint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E7%9A%84G1%E7%94%A8%E4%BE%8B"><span class="nav-number">2.4.</span> <span class="nav-text">推荐的G1用例</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -497,20 +454,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">223</span>
+          <span class="site-state-item-count">224</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">97</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -553,7 +510,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:28</span>
+    <span title="站点阅读时长">22:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

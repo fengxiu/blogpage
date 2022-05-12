@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-24.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-25.png">
 <meta property="article:published_time" content="2019-01-15T03:38:00.000Z">
-<meta property="article:modified_time" content="2022-05-07T01:20:08.374Z">
+<meta property="article:modified_time" content="2019-01-15T03:38:00.000Z">
 <meta property="article:author" content="枫秀">
 <meta property="article:tag" content="spring源码解析">
 <meta name="twitter:card" content="summary">
@@ -133,17 +133,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">50</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">48</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">223</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">224</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -226,13 +226,6 @@
 
               <time title="创建时间：2019-01-15 03:38:00" itemprop="dateCreated datePublished" datetime="2019-01-15T03:38:00+00:00">2019-01-15</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -312,20 +305,20 @@
 
 <h2 id="什么是循环依赖"><a href="#什么是循环依赖" class="headerlink" title="什么是循环依赖"></a>什么是循环依赖</h2><p>循环依赖其实就是循环引用，就是两个或者两个以上的 bean 互相引用对方，最终形成一个闭环，如 A 依赖 B，B 依赖 C，C 依赖 A，如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-13.png" alt="upload successful"></p>
-<p>循环依赖 其实就是一个死循环的过程，在初始化 A 的时候发现引用了 B，这时就会去初始化 B，然后又发现 B 引用 C，跑去初始化 C，初始化 C 的时候发现引用了 A，则又会去初始化 A，依次循环永不退出，除非有终结条件。</p>
+<p>循环依赖其实就是一个死循环的过程，在初始化A的时候发现引用了B，这时就会去初始化B，然后又发现B引用C，跑去初始化 C，初始化 C 的时候发现引用了 A，则又会去初始化 A，依次循环永不退出，除非有终结条件。</p>
 <p>Spring 循环依赖的场景有两种：</p>
 <ol>
 <li>构造器的循环依赖</li>
-<li>field 属性的循环依赖</li>
+<li>field属性的循环依赖</li>
 </ol>
-<p>对于构造器的循环依赖，Spring 是无法解决的，只能抛出 BeanCurrentlyInCreationException 异常表示循环依赖，所以下面我们分析的都是基于 field 属性的循环依赖。</p>
+<p>对于构造器的循环依赖，Spring是无法解决的，只能抛出BeanCurrentlyInCreationException异常表示循环依赖，所以下面我们分析的都是基于 field 属性的循环依赖。</p>
 <p>Spring 只解决 scope 为 singleton 的循环依赖，对于scope 为 prototype 的 bean Spring 无法解决，直接抛出 BeanCurrentlyInCreationException 异常。为什么 Spring 不处理 prototype bean，其实如果理解 Spring 是如何解决 singleton bean 的循环依赖就明白了。这里先卖一个关子，我们先来关注 Spring 是如何解决 singleton bean 的循环依赖的。</p>
 <h2 id="解决循环依赖"><a href="#解决循环依赖" class="headerlink" title="解决循环依赖"></a>解决循环依赖</h2><p>我们先从加载 bean 最初始的方法 <code>doGetBean()</code> 开始。</p>
 <p>在 <code>doGetBean()</code> 中，首先会根据 beanName 从单例 bean 缓存中获取，如果不为空则直接返回。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">sharedInstance</span> <span class="operator">=</span> getSingleton(beanName);</span><br></pre></td></tr></table></figure>
 
 <p>调用 <code>getSingleton()</code> 方法从单例缓存中获取，如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">getSingleton</span><span class="params">(String beanName, <span class="type">boolean</span> allowEarlyReference)</span> &#123;</span><br><span class="line">    <span class="type">Object</span> <span class="variable">singletonObject</span> <span class="operator">=</span> <span class="built_in">this</span>.singletonObjects.get(beanName);</span><br><span class="line">    <span class="keyword">if</span> (singletonObject == <span class="literal">null</span> &amp;&amp; isSingletonCurrentlyInCreation(beanName)) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.singletonObjects) &#123;</span><br><span class="line">            singletonObject = <span class="built_in">this</span>.earlySingletonObjects.get(beanName);</span><br><span class="line">            <span class="keyword">if</span> (singletonObject == <span class="literal">null</span> &amp;&amp; allowEarlyReference) &#123;</span><br><span class="line">                ObjectFactory&lt;?&gt; singletonFactory = </span><br><span class="line">                    <span class="built_in">this</span>.singletonFactories.get(beanName);</span><br><span class="line">                <span class="keyword">if</span> (singletonFactory != <span class="literal">null</span>) &#123;</span><br><span class="line">                    singletonObject = singletonFactory.getObject();</span><br><span class="line">                    <span class="built_in">this</span>.earlySingletonObjects.put(beanName, singletonObject);</span><br><span class="line">                    <span class="built_in">this</span>.singletonFactories.remove(beanName);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> singletonObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">getSingleton</span><span class="params">(String beanName, <span class="type">boolean</span> allowEarlyReference)</span> &#123;</span><br><span class="line">    <span class="type">Object</span> <span class="variable">singletonObject</span> <span class="operator">=</span> <span class="built_in">this</span>.singletonObjects.get(beanName);</span><br><span class="line">    <span class="keyword">if</span> (singletonObject == <span class="literal">null</span> &amp;&amp; isSingletonCurrentlyInCreation(beanName)) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.singletonObjects) &#123;</span><br><span class="line">            singletonObject = <span class="built_in">this</span>.earlySingletonObjects.get(beanName);</span><br><span class="line">            <span class="keyword">if</span> (singletonObject == <span class="literal">null</span> &amp;&amp; allowEarlyReference) &#123;</span><br><span class="line">                ObjectFactory&lt;?&gt; singletonFactory = <span class="built_in">this</span>.singletonFactories.get(beanName);</span><br><span class="line">                <span class="keyword">if</span> (singletonFactory != <span class="literal">null</span>) &#123;</span><br><span class="line">                    singletonObject = singletonFactory.getObject();</span><br><span class="line">                    <span class="built_in">this</span>.earlySingletonObjects.put(beanName, singletonObject);</span><br><span class="line">                    <span class="built_in">this</span>.singletonFactories.remove(beanName);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> singletonObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这个方法主要是从三个缓存中获取，分别是：singletonObjects、earlySingletonObjects、singletonFactories，三者定义如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Cache of singleton objects: bean name --&gt; bean instance */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; singletonObjects = <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;(<span class="number">256</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Cache of singleton factories: bean name --&gt; ObjectFactory */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(<span class="number">16</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Cache of early singleton objects: bean name --&gt; bean instance */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; earlySingletonObjects = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(<span class="number">16</span>);</span><br></pre></td></tr></table></figure>
@@ -336,23 +329,23 @@
 <li>singletonFactories ： 单例对象工厂的cache</li>
 <li>earlySingletonObjects ：提前暴光的单例对象的Cache</li>
 </ul>
-<p>他们就是 Spring 解决 singleton bean 的关键因素所在，我称他们为三级缓存，第一级为 singletonObjects，第二级为 earlySingletonObjects，第三级为 singletonFactories。这里我们可以通过 <code>getSingleton()</code> 看到他们是如何配合的，这分析该方法之前，提下其中的 <code>isSingletonCurrentlyInCreation()</code> 和 <code>allowEarlyReference</code>。</p>
+<p>他们就是Spring解决singleton bean的关键因素所在，我称他们为三级缓存，第一级为singletonObjects，第二级为earlySingletonObjects，第三级为singletonFactories。这里我们可以通过 <code>getSingleton()</code> 看到他们是如何配合的，这分析该方法之前，提下其中的<code>isSingletonCurrentlyInCreation()</code>和<code>allowEarlyReference</code>。</p>
 <ul>
-<li><code>isSingletonCurrentlyInCreation()</code>：判断当前 singleton bean 是否处于创建中。bean 处于创建中也就是说 bean 在初始化但是没有完成初始化，前面我们在从缓存从获取单例对象也提到过这个方法。这样的过程其实和 Spring 解决 bean 循环依赖的理念相辅相成，因为 Spring 解决 singleton bean 的核心就在于提前曝光 bean。</li>
-<li>allowEarlyReference：从字面意思上面理解就是允许提前拿到引用。其实真正的意思是是否允许从 singletonFactories 缓存中通过 <code>getObject()</code> 拿到对象，为什么会有这样一个字段呢？原因就在于 singletonFactories 才是 Spring 解决 singleton bean 的诀窍所在，这个我们后续分析。</li>
+<li><code>isSingletonCurrentlyInCreation()</code>：判断当前singleton bean 是否处于创建中。bean处于创建中也就是说bean在初始化但是没有完成初始化，前面我们在从缓存从获取单例对象也提到过这个方法。这样的过程其实和Spring解决bean循环依赖的理念相辅相成，因为Spring解决singleton bean的核心就在于提前曝光bean。</li>
+<li>allowEarlyReference：从字面意思上面理解就是允许提前拿到引用。其实真正的意思是是否允许从singletonFactories缓存中通过 <code>getObject()</code> 拿到对象，为什么会有这样一个字段呢？原因就在于 singletonFactories才是Spring解决singleton bean的诀窍所在，这个我们后续分析。</li>
 </ul>
-<p><code>getSingleton()</code> 整个过程如下：首先从一级缓存 singletonObjects 获取，如果没有且当前指定的 beanName 正在创建，就再从二级缓存中 earlySingletonObjects 获取，如果还是没有获取到且运行 singletonFactories 通过 <code>getObject()</code> 获取，则从三级缓存 singletonFactories 获取，如果获取到则通过其 <code>getObject()</code> 获取对象，并将其加入到二级缓存 earlySingletonObjects 中 从三级缓存 singletonFactories 删除，如下：</p>
+<p><code>getSingleton()</code>整个过程如下：首先从一级缓存singletonObjects获取，如果没有且当前指定的beanName正在创建，就再从二级缓存中earlySingletonObjects获取，如果还是没有获取到且运行singletonFactories 通过 <code>getObject()</code> 获取，则从三级缓存 singletonFactories 获取，如果获取到则通过其 <code>getObject()</code> 获取对象，并将其加入到二级缓存 earlySingletonObjects 中 从三级缓存 singletonFactories 删除，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">singletonObject = singletonFactory.getObject();</span><br><span class="line"><span class="built_in">this</span>.earlySingletonObjects.put(beanName, singletonObject);</span><br><span class="line"><span class="built_in">this</span>.singletonFactories.remove(beanName);</span><br></pre></td></tr></table></figure>
 
 <p>这样就从三级缓存升级到二级缓存了。</p>
 <p>上面是从缓存中获取，但是缓存中的数据从哪里添加进来的呢？一直往下跟会发现在 <code>doCreateBean()</code> ( AbstractAutowireCapableBeanFactory ) 中，有这么一段代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">boolean</span> <span class="variable">earlySingletonExposure</span> <span class="operator">=</span> (mbd.isSingleton() </span><br><span class="line">                                  &amp;&amp; <span class="built_in">this</span>.allowCircularReferences </span><br><span class="line">                                  &amp;&amp; isSingletonCurrentlyInCreation(beanName));</span><br><span class="line"><span class="keyword">if</span> (earlySingletonExposure) &#123;</span><br><span class="line">    addSingletonFactory(beanName, () -&gt; getEarlyBeanReference(beanName, mbd, bean));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">boolean</span> <span class="variable">earlySingletonExposure</span> <span class="operator">=</span> (mbd.isSingleton() &amp;&amp; <span class="built_in">this</span>.allowCircularReferences </span><br><span class="line">                                  &amp;&amp; isSingletonCurrentlyInCreation(beanName));</span><br><span class="line"><span class="keyword">if</span> (earlySingletonExposure) &#123;</span><br><span class="line">    addSingletonFactory(beanName, () -&gt; getEarlyBeanReference(beanName, mbd, bean));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>如果 <code>earlySingletonExposure == true</code> 的话，则调用 <code>addSingletonFactory()</code> 将他们添加到缓存中，但是一个 bean 要具备如下条件才会添加至缓存中：</p>
+<p>如果<code>earlySingletonExposure == true</code>的话，则调用<code>addSingletonFactory()</code>将他们添加到缓存中，但是一个bean要具备如下条件才会添加至缓存中：</p>
 <ul>
 <li>单例</li>
-<li>运行提前暴露 bean</li>
-<li>当前 bean 正在创建中</li>
+<li>运行提前暴露bean</li>
+<li>当前bean正在创建中</li>
 </ul>
 <p>经过上面分析，我们了解添加addSingletonFactory满足什么条件才能调用，但是调用addSingletonFactory起到什么作用呢，我们还是以最简单AB循环依赖为例，类A中含有属性类B，类B中又含有属性A，那么初始化BeanA的过程入下图</p>
 <p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-23.png" alt="upload successful"></p>
@@ -360,19 +353,19 @@
 <p><code>addSingletonFactory()</code> 代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">addSingletonFactory</span><span class="params">(String beanName,</span></span><br><span class="line"><span class="params">                                   ObjectFactory&lt;?&gt; singletonFactory)</span> &#123;</span><br><span class="line">    Assert.notNull(singletonFactory, <span class="string">&quot;Singleton factory must not be null&quot;</span>);</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>.singletonObjects) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">this</span>.singletonObjects.containsKey(beanName)) &#123;</span><br><span class="line">            <span class="built_in">this</span>.singletonFactories.put(beanName, singletonFactory);</span><br><span class="line">            <span class="built_in">this</span>.earlySingletonObjects.remove(beanName);</span><br><span class="line">            <span class="built_in">this</span>.registeredSingletons.add(beanName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>从这段代码我们可以看出 singletonFactories 这个三级缓存才是解决 Spring Bean 循环依赖的诀窍所在。同时这段代码发生在 <code>createBeanInstance()</code> 方法之后，也就是说这个 bean 其实已经被创建出来了，但是它还不是很完美（没有进行属性填充和初始化），但是对于其他依赖它的对象而言已经足够了（可以根据对象引用定位到堆中对象），能够被认出来了，所以 Spring 在这个时候选择将该对象提前曝光出来让大家认识认识。</p>
+<p>从这段代码我们可以看出singletonFactories这个三级缓存才是解决 Spring Bean 循环依赖的诀窍所在。同时这段代码发生在<code>createBeanInstance()</code>方法之后，也就是说这个bean其实已经被创建出来了，但是它还不是很完美（没有进行属性填充和初始化），但是对于其他依赖它的对象而言已经足够了（可以根据对象引用定位到堆中对象），能够被认出来了，所以Spring在这个时候选择将该对象提前曝光出来让大家认识认识。</p>
 <p><strong>getEarlyBeanReference</strong>如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">getEarlyBeanReference</span><span class="params">(String beanName,</span></span><br><span class="line"><span class="params">                    RootBeanDefinition mbd, Object bean)</span> &#123;</span><br><span class="line">    <span class="type">Object</span> <span class="variable">exposedObject</span> <span class="operator">=</span> bean;</span><br><span class="line">    <span class="keyword">if</span> (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;</span><br><span class="line">        <span class="keyword">for</span> (BeanPostProcessor bp : getBeanPostProcessors()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (bp <span class="keyword">instanceof</span> SmartInstantiationAwareBeanPostProcessor) &#123;</span><br><span class="line">                <span class="type">SmartInstantiationAwareBeanPostProcessor</span> <span class="variable">ibp</span> <span class="operator">=</span> </span><br><span class="line">                    (SmartInstantiationAwareBeanPostProcessor) bp;</span><br><span class="line">                exposedObject = ibp.getEarlyBeanReference(exposedObject, beanName);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> exposedObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">getEarlyBeanReference</span><span class="params">(String beanName, RootBeanDefinition mbd, Object bean)</span> &#123;</span><br><span class="line">    <span class="type">Object</span> <span class="variable">exposedObject</span> <span class="operator">=</span> bean;</span><br><span class="line">    <span class="keyword">if</span> (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;</span><br><span class="line">        <span class="keyword">for</span> (BeanPostProcessor bp : getBeanPostProcessors()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (bp <span class="keyword">instanceof</span> SmartInstantiationAwareBeanPostProcessor) &#123;</span><br><span class="line">                <span class="type">SmartInstantiationAwareBeanPostProcessor</span> <span class="variable">ibp</span> <span class="operator">=</span> </span><br><span class="line">                    (SmartInstantiationAwareBeanPostProcessor) bp;</span><br><span class="line">                exposedObject = ibp.getEarlyBeanReference(exposedObject, beanName);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> exposedObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-25.png" alt="upload successful"></p>
-<p>介绍到这里我们发现三级缓存 singletonFactories 和 二级缓存 earlySingletonObjects 中的值都有出处了，那一级缓存在哪里设置的呢？在类 DefaultSingletonBeanRegistry 中可以发现这个 <code>addSingleton()</code> 方法，源码如下：</p>
+<p>介绍到这里我们发现三级缓存singletonFactories和二级缓存 earlySingletonObjects 中的值都有出处了，那一级缓存在哪里设置的呢？在类 DefaultSingletonBeanRegistry 中可以发现这个 <code>addSingleton()</code> 方法，源码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">addSingleton</span><span class="params">(String beanName, Object singletonObject)</span> &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>.singletonObjects) &#123;</span><br><span class="line">        <span class="built_in">this</span>.singletonObjects.put(beanName, singletonObject);</span><br><span class="line">        <span class="built_in">this</span>.singletonFactories.remove(beanName);</span><br><span class="line">        <span class="built_in">this</span>.earlySingletonObjects.remove(beanName);</span><br><span class="line">        <span class="built_in">this</span>.registeredSingletons.add(beanName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>添加至一级缓存，同时从二级、三级缓存中删除。这个方法在我们创建 bean 的链路中有哪个地方引用呢？其实在前面博客已经提到过了，在 <code>doGetBean()</code> 处理不同 scope 时，如果是 singleton，则调用 <code>getSingleton()</code>，如下：</p>
+<p>添加至一级缓存，同时从二级、三级缓存中删除。这个方法在我们创建bean的链路中有哪个地方引用呢？其实在前面博客已经提到过了，在<code>doGetBean()</code>处理不同scope时，如果是singleton，则调用<code>getSingleton()</code>，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Object <span class="title function_">getSingleton</span><span class="params">(String beanName, ObjectFactory&lt;?&gt; singletonFactory)</span> &#123;</span><br><span class="line">    Assert.notNull(beanName, <span class="string">&quot;Bean name must not be null&quot;</span>);</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>.singletonObjects) &#123;</span><br><span class="line">        <span class="type">Object</span> <span class="variable">singletonObject</span> <span class="operator">=</span> <span class="built_in">this</span>.singletonObjects.get(beanName);</span><br><span class="line">        <span class="keyword">if</span> (singletonObject == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">//....</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                singletonObject = singletonFactory.getObject();</span><br><span class="line">                newSingleton = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//.....</span></span><br><span class="line">            <span class="keyword">if</span> (newSingleton) &#123;</span><br><span class="line">                addSingleton(beanName, singletonObject);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> singletonObject;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>至此，Spring 关于 singleton bean 循环依赖已经分析完毕了。所以我们基本上可以确定 Spring 解决循环依赖的方案了：Spring 在创建 bean 的时候并不是等它完全完成，而是在创建过程中将创建中的 bean 的ObjectFactory 提前曝光（即加入到 singletonFactories 缓存中），这样一旦下一个 bean 创建的时候需要依赖 bean ，则直接使用 ObjectFactory 的 <code>getObject()</code> 获取了，也就是 <code>getSingleton()</code> 中的代码片段了。</p>
-<p>到这里，关于 Spring 解决 bean 循环依赖就已经分析完毕了。最后来描述下就上面那个循环依赖 Spring 解决的过程：首先 A 完成初始化第一步并将自己提前曝光出来（通过 ObjectFactory 将自己提前曝光），在初始化的时候，发现自己依赖对象 B，此时就会去尝试 get(B)，这个时候发现 B 还没有被创建出来，然后 B 就走创建流程，在 B 初始化的时候，同样发现自己依赖 C，C 也没有被创建出来，这个时候 C 又开始初始化进程，但是在初始化的过程中发现自己依赖 A，于是尝试 get(A)，这个时候由于 A 已经添加至缓存中（一般都是添加至三级缓存 singletonFactories ），通过 ObjectFactory 提前曝光，所以可以通过 <code>ObjectFactory.getObject()</code> 拿到 A 对象，C 拿到 A 对象后顺利完成初始化，然后将自己添加到一级缓存中，回到 B ，B 也可以拿到 C 对象，完成初始化，A 可以顺利拿到 B 完成初始化。到这里整个链路就已经完成了初始化过程了。</p>
+<p>至此，Spring 关于 singleton bean 循环依赖已经分析完毕了。所以我们基本上可以确定 Spring 解决循环依赖的方案了：Spring在创建bean的时候并不是等它完全完成，而是在创建过程中将创建中的bean 的ObjectFactory提前曝光（即加入到singletonFactories缓存中），这样一旦下一个bean创建的时候需要依赖bean ，则直接使用ObjectFactory的<code>getObject()</code>获取了，也就是<code>getSingleton()</code>中的代码片段了。</p>
+<p>到这里，关于 Spring 解决 bean 循环依赖就已经分析完毕了。最后来描述下就上面那个循环依赖 Spring 解决的过程：首先A完成初始化第一步并将自己提前曝光出来（通过 ObjectFactory 将自己提前曝光），在初始化的时候，发现自己依赖对象B，此时就会去尝试get(B)，这个时候发现 B 还没有被创建出来，然后B就走创建流程，在 B 初始化的时候，同样发现自己依赖 C，C也没有被创建出来，这个时候C又开始初始化进程，但是在初始化的过程中发现自己依赖A，于是尝试 get(A)，这个时候由于A已经添加至缓存中（一般都是添加至三级缓存singletonFactories ），通过 ObjectFactory提前曝光，所以可以通过 <code>ObjectFactory.getObject()</code> 拿到A对象，C拿到A对象后顺利完成初始化，然后将自己添加到一级缓存中，回到B ，B也可以拿到C对象，完成初始化，A可以顺利拿到B 完成初始化。到这里整个链路就已经完成了初始化过程了。</p>
 <p>通过上面的介绍，你或与已经明白了，为什么Prototype scope范围内的bean不处理循环依赖，是因为这种类型的bean不能缓存，也就不能提前曝光，所以也就没有办法成功创建其中任何一个bean，就无法打破这个环。</p>
 
     </div>
@@ -530,20 +523,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">223</span>
+          <span class="site-state-item-count">224</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">97</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -586,7 +579,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:28</span>
+    <span title="站点阅读时长">22:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

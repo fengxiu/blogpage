@@ -128,17 +128,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">50</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">48</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">223</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">224</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -232,6 +232,10 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/java/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/spring/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
                 </span>
             </span>
 
@@ -331,7 +335,7 @@
 <p>比较常用的还有下面几个类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ConditionalOnWebApplication</span> : web环境</span><br><span class="line"><span class="meta">@ConditionalOnNotWebApplication</span> : 条件是当前不是web应用</span><br><span class="line"><span class="meta">@ConditionalOnProperty</span> : 检查特定属性是否已经配置了特定值</span><br><span class="line"><span class="meta">@ConditionalOnResource</span> : 检查特定的资源是否已经在类路径下</span><br><span class="line"><span class="meta">@ConditionalOnMissingClass</span> : 不包含某个类</span><br><span class="line"><span class="meta">@ConditionalOnSingleCandidate</span>: 表示只能有一个候选bean，如果超过一个，可以使用<span class="meta">@Primary</span>指定首选，这样才不会抛出异常</span><br></pre></td></tr></table></figure>
 
-<h3 id="spring-factories-不要遗漏"><a href="#spring-factories-不要遗漏" class="headerlink" title="spring.factories 不要遗漏"></a>spring.factories 不要遗漏</h3><p>我们需要实现自定义自动装配，就需要自定义 spring.factories 参数。所以，我们需要在 <code>src/main/resources/ META-INF/spring.factories </code>中配置信息，值得注意的是，这个文件要自己创建。</p>
+<h3 id="spring-factories-不要遗漏"><a href="#spring-factories-不要遗漏" class="headerlink" title="spring.factories 不要遗漏"></a>spring.factories 不要遗漏</h3><p>我们需要实现自定义自动装配，就需要自定义spring.factories 参数。所以，我们需要在 <code>src/main/resources/ META-INF/spring.factories </code>中配置信息，值得注意的是，这个文件要自己创建。</p>
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CUSTOM</span></span><br><span class="line"><span class="string">org.springframework.boot.autoconfigure.EnableAutoConfiguration=\</span></span><br><span class="line"><span class="string">替换成你当前的包名.AuthorAutoConfiguration表示的是</span></span><br></pre></td></tr></table></figure>
 
 <p>如果你知道SPI，那么就能很容易的理解这段代码，其实就是指定需要加载的类，只不过这个是spring自己实现的一套类似于SPI的标准。spring启动时，会自动解析这个文件。根据条件加载对应的自动配置类。</p>
@@ -358,9 +362,11 @@
 <p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html#configuration-metadata-additional-metadata">spring boot 官网配置元数据</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/L_Sail/article/details/70342023">配置元数据</a></p>
 <p>另外我们有一些参数可能在配置的时候不需要，并且也很少用到，或者有一些需要废除的配置选项，可以创建如下文件<code>src/main/resources/ META-INF/additional-spring-configuration-metadata.json</code>,然后按照上面的格式写上对应的信息。</p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://juejin.im/post/586a6bc4da2f600055be89be">Spring Boot 揭秘与实战 自己实现一个简单的自动配置模块</a></p>
-<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html#configuration-metadata-additional-metadata">spring boot 官网配置元数据</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/L_Sail/article/details/70342023">配置元数据</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/586a6bc4da2f600055be89be">Spring Boot揭秘与实战 自己实现一个简单的自动配置模块</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html#configuration-metadata-additional-metadata">spring boot 官网配置元数据</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/L_Sail/article/details/70342023">配置元数据</a></li>
+</ol>
 
     </div>
 
@@ -370,6 +376,9 @@
       
   <div class="popular-posts-header">相关文章推荐</div>
   <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/54f801f1.html" rel="bookmark">SpringBoot源码分析之spring-boot-loader可执行文件解析</a></div>
+    </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/archives/31404d27.html" rel="bookmark">Springboot启动详解</a></div>
     </li>
@@ -505,20 +514,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">223</span>
+          <span class="site-state-item-count">224</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">97</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -561,7 +570,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:28</span>
+    <span title="站点阅读时长">22:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

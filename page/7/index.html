@@ -129,17 +129,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">101</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">50</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">48</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">223</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">224</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -192,6 +192,138 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/59504c8e.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/59504c8e.html" class="post-title-link" itemprop="url">Java并发编程JUC总结</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-07 09:45:06" itemprop="dateCreated datePublished" datetime="2019-07-07T09:45:06+00:00">2019-07-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-12 11:50:16" itemprop="dateModified" datetime="2022-05-12T11:50:16+00:00">2022-05-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/juc/" itemprop="url" rel="index"><span itemprop="name">juc</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/59504c8e.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/59504c8e.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/59504c8e.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/59504c8e.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>学习了一段时间JUC，也就是java对并发做的一些工具类，但是虽然学习完了，但是还是觉得没有在脑子中形成一个系统，所以这里对我学习的并发包做一个整理和总结，一方面是对自己学习的总结，另一方面也是帮助自己以后能够快速的进行查阅。</p>
+<h2 id="JSR-166及J-U-C"><a href="#JSR-166及J-U-C" class="headerlink" title="JSR 166及J.U.C"></a>JSR 166及J.U.C</h2><h3 id="什么是JSR"><a href="#什么是JSR" class="headerlink" title="什么是JSR"></a>什么是JSR</h3><p>JSR，全称 Java Specification Requests， 即Java规范提案， 主要是用于向JCP(Java Community Process)提出新增标准化技术规范的正式请求。每次JAVA版本更新都会有对应的JSR更新，比如在Java 8版本中，其新特性Lambda表达式对应的是JSR 335，新的日期和时间API对应的是JSR 310。</p>
+<h3 id="什么是JSR-166"><a href="#什么是JSR-166" class="headerlink" title="什么是JSR 166"></a>什么是JSR 166</h3><p>当然，本文的关注点仅仅是JSR 166，它是一个关于Java并发编程的规范提案，在JDK中，该规范由java.util.concurrent包实现，是在JDK 5.0的时候被引入的；</p>
+<p>另外JDK6引入Deques、Navigable collections，对应的是JSR 166x，JDK7引入fork-join框架，用于并行执行任务，对应的是JSR 166y。</p>
+<h3 id="什么是J-U-C"><a href="#什么是J-U-C" class="headerlink" title="什么是J.U.C"></a>什么是J.U.C</h3><p>即java.util.concurrent的缩写，该包参考自EDU.oswego.cs.dl.util.concurrent，是JSR 166标准规范的一个实现；</p>
+<h3 id="膜拜"><a href="#膜拜" class="headerlink" title="膜拜"></a>膜拜</h3><p>那么，JSR 166以及J.U.C包的作者是谁呢，没错，就是Doug Lea大神，挺牛逼的，大神级别任务，贴张照片膜拜下。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/879896-20160624160226063-830249727.jpg" alt="879896-20160624160226063-830249727"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/59504c8e.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -467,7 +599,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
+                <time title="修改时间：2022-05-12 11:50:16" itemprop="dateModified" datetime="2022-05-12T11:50:16+00:00">2022-05-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -722,7 +854,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
+                <time title="修改时间：2022-05-12 11:50:16" itemprop="dateModified" datetime="2022-05-12T11:50:16+00:00">2022-05-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -846,7 +978,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
+                <time title="修改时间：2022-05-12 11:50:16" itemprop="dateModified" datetime="2022-05-12T11:50:16+00:00">2022-05-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -973,7 +1105,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
+                <time title="修改时间：2022-05-12 11:50:16" itemprop="dateModified" datetime="2022-05-12T11:50:16+00:00">2022-05-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1102,7 +1234,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
+                <time title="修改时间：2022-05-12 11:50:16" itemprop="dateModified" datetime="2022-05-12T11:50:16+00:00">2022-05-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1222,7 +1354,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-07 01:20:08" itemprop="dateModified" datetime="2022-05-07T01:20:08+00:00">2022-05-07</time>
+                <time title="修改时间：2022-05-12 11:50:16" itemprop="dateModified" datetime="2022-05-12T11:50:16+00:00">2022-05-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1316,261 +1448,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/bda9e2c7.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/bda9e2c7.html" class="post-title-link" itemprop="url">Java8元空间</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-04-22 16:50:11" itemprop="dateCreated datePublished" datetime="2019-04-22T16:50:11+00:00">2019-04-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/bda9e2c7.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/bda9e2c7.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/bda9e2c7.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/bda9e2c7.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本文主要讲解Java8中JVM的一个更新，就是持久代的移除。将会介绍为什么需要移除持久代以及它的替代者：元空间(Metaspace)。</p>
-<h2 id="持久代"><a href="#持久代" class="headerlink" title="持久代"></a>持久代</h2><p>绝大部分Java程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是JVM规范，而后者则是JVM规范的一种实现，并且只有HotSpot才有 “PermGen space”，而对于其他类型的虚拟机，如JRockit（Oracle）、J9（IBM）并没有“PermGen space”。由于方法区主要存储类的相关信息，所以对于动态生成类的情况比较容易出现永久代的内存溢出。最典型的场景就是，在jsp页面比较多的情况，容易出现永久代内存溢出。我们现在通过动态生成类来模拟 “PermGen space”的内存溢出：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码段1</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 持续创建新的class</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PermGenOomMock</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        List&lt;ClassLoader&gt; classLoaderList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;ClassLoader&gt;();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            url = <span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;/tmp&quot;</span>).toURI().toURL();</span><br><span class="line">            URL[] urls = &#123;url&#125;;</span><br><span class="line">            <span class="keyword">while</span> (<span class="literal">true</span>)&#123;</span><br><span class="line">                <span class="type">ClassLoader</span> <span class="variable">loader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URLClassLoader</span>(urls);</span><br><span class="line">                classLoaderList.add(loader);</span><br><span class="line">                loader.loadClass(<span class="string">&quot;com.paddx.test.memory.Test&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>运行结果如下<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/820406-20160327005846979-1124627174.png" alt="820406-20160327005846979-1124627174"><br>本例中使用的JDK版本是1.7，指定的PermGen区的大小为8M。通过每次生成不同URLClassLoader对象来加载Test类，从而生成不同的类对象，这样就能看到我们熟悉的 “java.lang.OutOfMemoryError: PermGen space “异常。这里之所以采用JDK 1.7，是因为在JDK1.8 中， HotSpot已经没有 “PermGen space”这个区间了，取而代之是一个叫做Metaspace（元空间）的东西。<br>其实，移除永久代的工作从JDK1.7就开始了。JDK1.7中，存储在永久代的部分数据就已经转移到了Java Heap或者是 Native Heap。但永久代仍存在于JDK1.7中，并没完全移除，譬如符号引用(Symbols)转移到了native heap；字面量(interned strings)转移到了java heap；类的静态变量(class statics)转移到了java heap。</p>
-<!-- more  -->
-
-<p>java 6中JVM的内存结构如下：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/java_memory_permGen.png" alt="java_memory_permGen"></p>
-<p>持久代中包含了虚拟机中所有可通过反射获取到的数据，比如Class和Method对象。不同的Java虚拟机之间可能会进行类共享，因此持久代又分为只读区和读写区。</p>
-<p>JVM用于描述应用程序中用到的类和方法的元数据也存储在持久代中。JVM运行时会用到多少持久代的空间取决于应用程序用到了多少类。除此之外，Java SE库中的类和方法也都存储在这里。</p>
-<p>如果JVM发现有的类已经不再需要了，它会去回收（卸载）这些类，将它们的空间释放出来给其它类使用。Full GC会进行持久代的回收。</p>
-<ul>
-<li>Java堆中用到的JVM类的元数据。</li>
-<li>Java类对应的HotSpot虚拟机中的内部表示也存储在这里。</li>
-<li>类的层级信息，字段，名字。</li>
-<li>方法的编译信息及字节码。</li>
-<li>变量</li>
-<li>常量池和符号解析</li>
-</ul>
-<h3 id="持久代的大小"><a href="#持久代的大小" class="headerlink" title="持久代的大小"></a>持久代的大小</h3><ul>
-<li><p>它的上限是MaxPermSize，默认是64M - 85M</p>
-</li>
-<li><p>Java堆中的连续区域：如果存储在非连续的堆空间中的话，要定位出老年代和新生代中的对象引用是非常复杂并且耗时。卡表（card table），是一种记忆集（Remembered Set），它用来记录某个内存代中普通对象指针（oops）的修改。</p>
-</li>
-<li><p><strong>持久代用完后，会抛出OutOfMemoryError “PermGen space”异常。</strong>解决方案：</p>
-<ul>
-<li>应用程序清理引用来触发类卸载；</li>
-<li>增加MaxPermSize的大小。</li>
-</ul>
-</li>
-<li><p>需要多大的持久代空间取决于类的数量，方法的大小，以及常量池的大小。</p>
-</li>
-</ul>
-<h3 id="为什么移除持久代"><a href="#为什么移除持久代" class="headerlink" title="为什么移除持久代"></a>为什么移除持久代</h3><ul>
-<li><p>它的大小是在启动时固定死的——很难进行调优。<br>-XX:MaxPermSize</p>
-</li>
-<li><p>HotSpot的内部类型也是Java对象：它可能会在Full GC中被移动，同时它对应用不透明，且是非强类型，难以跟踪调试，还需要存储元数据的元数据信息（meta-metadata）。</p>
-</li>
-<li><p>简化Full GC：每一个回收器有专门的元数据迭代器。</p>
-</li>
-<li><p>可以在GC不进行暂停的情况下并发地释放类数据。</p>
-</li>
-<li><p>使得原来受限于持久代的一些改进未来有可能实现</p>
-</li>
-</ul>
-<h2 id="元空间"><a href="#元空间" class="headerlink" title="元空间"></a>元空间</h2><p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/jvm_metapsace.png" alt="jvm_metapsace"><br>持久代的空间被彻底地删除了，它被一个叫元空间的区域所替代了。持久代删除了之后，很明显，JVM会忽略PermSize和MaxPermSize这两个参数，还有就是你再也看不到java.lang.OutOfMemoryError: PermGen error的异常。</p>
-<p>JDK 8的HotSpot JVM现在使用的是本地内存来表示类的元数据，这个区域就叫做元空间。</p>
-<p><strong>元空间的特点：</strong></p>
-<ul>
-<li>充分利用了Java语言规范中的好处：类及相关的元数据的生命周期与类加载器的一致。</li>
-<li>每个加载器有专门的存储空间</li>
-<li>只进行线性分配</li>
-<li>不会单独回收某个类(除了RedefineClasses和类加载失败)</li>
-<li>省掉了GC扫描及压缩的时间</li>
-<li>元空间里的对象的位置是固定的</li>
-<li>当类加载器被GC发现死亡时，进行集体回收</li>
-</ul>
-<p><strong>元空间的内存分配模型：</strong></p>
-<ul>
-<li>绝大多数的类元数据的空间都从本地内存中分配</li>
-<li>用来描述类元数据的类也被删除了</li>
-<li>可以给元数据分配多个虚拟映射内存空间。</li>
-<li>给每个类加载器分配一个内存块的列表。<br>1. 块的大小取决于类加载器的类型;<br>2. sun&#x2F;反射&#x2F;代理对应的类加载器的块会小一些</li>
-<li>归还内存块，释放内存块列表</li>
-<li>一旦元空间的数据被清空了，虚拟内存的空间会被回收掉</li>
-<li>减少碎片的策略</li>
-</ul>
-<p>我们来看下JVM是如何给元数据分配虚拟内存的空间的<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/metaspace_allocation_java_latte.png" alt="metaspace_allocation_java_latte"></p>
-<p>你可以看到虚拟内存空间是如何分配的(vs1,vs2,vs3) ，以及类加载器的内存块是如何分配的。CL是Class Loader的缩写。</p>
-<p><strong>理解_mark和_klass指针</strong><br>要想理解下面这张图，你得搞清楚这些指针都是什么东西。<br>JVM中，每个对象都有一个指向它自身类的指针，不过这个指针只是指向具体的实现类，而不是接口或者抽象类。</p>
-<p><strong>对于32位的JVM:</strong><br>_mark : 4字节常量<br>_klass: 指向类的4字节指针 对象的内存布局中的第二个字段( _klass，在32位JVM中，相对对象在内存中的位置的偏移量是4，64位的是8)指向的是内存中对象的类定义。</p>
-<p><strong>64位的JVM：</strong><br>_mark : 8字节常量<br>_klass: 指向类的8字节的指针<br>开启了指针压缩的64位JVM： _mark : 8字节常量，_klass: 指向类的4字节的指针</p>
-<h3 id="java对象的内存布局"><a href="#java对象的内存布局" class="headerlink" title="java对象的内存布局"></a>java对象的内存布局</h3><p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/java_object_layout_java_latte.png" alt="java_object_layout_java_latte"><br><strong>类指针压缩空间（Compressed Class Pointer Space）</strong><br>只有是64位平台上启用了类指针压缩才会存在这个区域。对于64位平台，为了压缩JVM对象中的_klass指针的大小，引入了类指针压缩空间（Compressed Class Pointer Space）。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/compressed_class_pointer_space_java_latte.png" alt="compressed_class_pointer_space_java_latte"><br><strong>类指针压缩空间（Compressed Class Pointer Space）</strong><br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/java_object_layout_compressed_java_latte.png" alt="java_object_layout_compressed_java_latte"><br><strong>指针压缩概要</strong><br>64位平台上默认打开。</p>
-<ul>
-<li>使用-XX:+UseCompressedOops压缩对象指针 “oops”指的是普通对象指针(“ordinary” object pointers)。 Java堆中对象指针会被压缩成32位。 使用堆基地址（如果堆在低26G内存中的话，基地址为0）</li>
-<li>使用-XX:+UseCompressedClassPointers选项来压缩类指针</li>
-<li>对象中指向类元数据的指针会被压缩成32位</li>
-<li>类指针压缩空间会有一个基地址</li>
-</ul>
-<p><strong>元空间和类指针压缩空间的区别</strong></p>
-<ul>
-<li><p>类指针压缩空间只包含类的元数据，</p>
-<ul>
-<li>比如InstanceKlass, ArrayKlass <ul>
-<li>仅当打开了UseCompressedClassPointers选项才生效 </li>
-<li>为了提高性能，Java中的虚方法表也存放到这里 </li>
-<li>这里到底存放哪些元数据的类型，目前仍在减少</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>元空间包含类的其它比较大的元数据，比如方法，字节码，常量池等。</p>
-</li>
-</ul>
-<h2 id="元空间的调优"><a href="#元空间的调优" class="headerlink" title="元空间的调优"></a>元空间的调优</h2><p>使用-XX:MaxMetaspaceSize参数可以设置元空间的最大值，默认是没有上限的，也就是说你的系统内存上限是多少它就是多少。-XX:MetaspaceSize选项指定的是元空间的初始大小，如果没有指定的话，元空间会根据应用程序运行时的需要动态地调整大小。</p>
-<p><strong>MaxMetaspaceSize的调优</strong></p>
-<ul>
-<li>-XX:MaxMetaspaceSize&#x3D;{unlimited}</li>
-<li>元空间的大小受限于你机器的内存</li>
-<li>限制类的元数据使用的内存大小，以免出现虚拟内存切换以及本地内存分配失败。<ul>
-<li>如果怀疑有类加载器出现泄露，应当使用这个参数；</li>
-<li>32位机器上，如果地址空间可能会被耗尽，也应当设置这个参数。</li>
-</ul>
-</li>
-<li>元空间的初始大小是21M——这是GC的初始的高水位线，超过这个大小会进行Full GC来进行类的回收。</li>
-<li>如果启动后GC过于频繁，请将该值设置得大一些</li>
-<li>可以设置成和持久代一样的大小，以便推迟GC的执行时间</li>
-</ul>
-<p><strong>CompressedClassSpaceSize的调优</strong></p>
-<ul>
-<li>只有当-XX:+UseCompressedClassPointers开启了才有效</li>
-<li>-XX:CompressedClassSpaceSize&#x3D;1G</li>
-<li>由于这个大小在启动的时候就固定了的，因此最好设置得大点。</li>
-<li>没有使用到的话不要进行设置</li>
-<li>JVM后续可能会让这个区可以动态的增长。不需要是连续的区域，只要从基地址可达就行；可能会将更多的类元信息放回到元空间中；未来会基于PredictedLoadedClassCount的值来自动的设置该空间的大小</li>
-</ul>
-<p><strong>元空间的一些工具</strong></p>
-<ul>
-<li>jmap -permstat改成了jmap -clstats。它用来打印Java堆的类加载器的统计数据。对每一个类加载器，会输出它的名字，是否存活，地址，父类加载器，以及它已经加载的类的数量及大小。除此之外，驻留的字符串（intern）的数量及大小也会打印出来。</li>
-<li>jstat -gc，这个命令输出的是元空间的信息而非持久代的</li>
-<li>jcmd GC.class_stats提供类元数据大小的详细信息。使用这个功能启动程序时需要加上-XX:+UnlockDiagnosticVMOptions选项。</li>
-</ul>
-<p><strong>提高GC的性能</strong><br>如果你理解了元空间的概念，很容易发现GC的性能得到了提升。</p>
-<ul>
-<li>Full GC中，元数据指向元数据的那些指针都不用再扫描了。很多复杂的元数据扫描的代码（尤其是CMS里面的那些）都删除了。</li>
-<li>元空间只有少量的指针指向Java堆。这包括：类的元数据中指向java&#x2F;lang&#x2F;Class实例的指针;数组类的元数据中，指向java&#x2F;lang&#x2F;Class集合的指针。</li>
-<li>没有元数据压缩的开销</li>
-<li>减少了根对象的扫描（不再扫描虚拟机里面的已加载类的字典以及其它的内部哈希表）</li>
-<li>减少了Full GC的时间</li>
-<li>G1回收器中，并发标记阶段完成后可以进行类的卸载</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>Hotspot中的元数据现在存储到了元空间里。mmap中的内存块的生命周期与类加载器的一致。</li>
-<li>类指针压缩空间（Compressed class pointer space）目前仍然是固定大小的，但它的空间较大</li>
-<li>可以进行参数的调优，不过这不是必需的。</li>
-<li>未来可能会增加其它的优化及新特性。比如，应用程序类数据共享；新生代GC优化，G1回收器进行类的回收；减少元数据的大小，以及JVM内部对象的内存占用量。</li>
-</ul>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a target="_blank" rel="noopener" href="http://it.deepinmind.com/gc/2014/05/14/metaspace-in-java-8.html">Java 8的元空间</a></li>
-<li><a target="_blank" rel="noopener" href="http://java-latte.blogspot.com/2014/03/metaspace-in-java-8.html">Metaspace in Java 8</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xrq730/p/8688203.html">Java虚拟机16：Metaspace</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/paddix/p/5309550.html">java持久代</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1642,20 +1519,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">223</span>
+          <span class="site-state-item-count">224</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">97</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1698,7 +1575,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:28</span>
+    <span title="站点阅读时长">22:26</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
