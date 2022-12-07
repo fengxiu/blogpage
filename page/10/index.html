@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">97</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">98</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">224</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">225</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -192,6 +192,138 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/d42e6e40.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/archives/d42e6e40.html" class="post-title-link" itemprop="url">Servlet简介以及简单使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-24 20:30:34" itemprop="dateCreated datePublished" datetime="2019-03-24T20:30:34+00:00">2019-03-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-07 03:18:22" itemprop="dateModified" datetime="2022-12-07T03:18:22+00:00">2022-12-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/javaweb/" itemprop="url" rel="index"><span itemprop="name">javaweb</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/javaweb/servlet/" itemprop="url" rel="index"><span itemprop="name">servlet</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/d42e6e40.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/d42e6e40.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/d42e6e40.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/d42e6e40.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Servlet简介"><a href="#Servlet简介" class="headerlink" title="Servlet简介"></a>Servlet简介</h2><p>如果你打开Java EE官方文档，你就会看看Servlet其实就是一个接口，只不过这个接口是由Java委员会预先定义好的，如果你想使用java开发web程序，就必须遵守这个约定。按照一种约定俗成的称呼习惯，通常我们也把实现了servlet接口的java程序，称之为Servlet。所以Servlet没什么神秘的，你可以简单的把它当做一个普通的类，只不过这个类实现了Servlet接口。</p>
+<p>本文会按照如下思路来进行讲解，首先写一个Servlet版的Hello World，然后介绍servlet的运行流程以及生命周期，为后面文章打下基础。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/archives/d42e6e40.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -503,7 +635,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-15 05:14:30" itemprop="dateModified" datetime="2022-05-15T05:14:30+00:00">2022-05-15</time>
+                <time title="修改时间：2022-12-07 03:18:22" itemprop="dateModified" datetime="2022-12-07T03:18:22+00:00">2022-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -636,7 +768,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-15 05:14:30" itemprop="dateModified" datetime="2022-05-15T05:14:30+00:00">2022-05-15</time>
+                <time title="修改时间：2022-12-07 03:18:22" itemprop="dateModified" datetime="2022-12-07T03:18:22+00:00">2022-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -771,7 +903,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-15 05:14:30" itemprop="dateModified" datetime="2022-05-15T05:14:30+00:00">2022-05-15</time>
+                <time title="修改时间：2022-12-07 03:18:22" itemprop="dateModified" datetime="2022-12-07T03:18:22+00:00">2022-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -908,7 +1040,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-15 05:14:30" itemprop="dateModified" datetime="2022-05-15T05:14:30+00:00">2022-05-15</time>
+                <time title="修改时间：2022-12-07 03:18:22" itemprop="dateModified" datetime="2022-12-07T03:18:22+00:00">2022-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1175,7 +1307,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-15 05:14:30" itemprop="dateModified" datetime="2022-05-15T05:14:30+00:00">2022-05-15</time>
+                <time title="修改时间：2022-12-07 03:18:22" itemprop="dateModified" datetime="2022-12-07T03:18:22+00:00">2022-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1302,7 +1434,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-15 05:14:30" itemprop="dateModified" datetime="2022-05-15T05:14:30+00:00">2022-05-15</time>
+                <time title="修改时间：2022-12-07 03:18:22" itemprop="dateModified" datetime="2022-12-07T03:18:22+00:00">2022-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1530,233 +1662,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/e9892254.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
-      <meta itemprop="name" content="枫秀">
-      <meta itemprop="description" content="记录学习日志">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫秀学习日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/archives/e9892254.html" class="post-title-link" itemprop="url">事务隔离性简介</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-21 03:50:00" itemprop="dateCreated datePublished" datetime="2019-03-21T03:50:00+00:00">2019-03-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/archives/e9892254.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/e9892254.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/archives/e9892254.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/e9892254.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本文主要讲解事务四大特性ACID中的隔离性，这里简单介绍什么是隔离性，接着介绍隔离性级别以及每种隔离性会带来的相应的读的问题，最后简单介绍数据库是如何实现事务的隔离性。</p>
-<ol>
-<li>什么是隔离性</li>
-<li>隔离性级别</li>
-<li>隔离性级别的实现方式简介</li>
-</ol>
-<h2 id="什么是隔离性"><a href="#什么是隔离性" class="headerlink" title="什么是隔离性"></a>什么是隔离性</h2><p>在数据库系统中会存在多个事务可能并发执行，系统保证，对于任何一对事务T1和T2，在T1看来，T2或者在T1开始之前就已经完成执行，或者在T1完成之后开始执行。因此，每个事务都感觉不到系统中有其他事务在并发的执行。这就是事务的隔离性</p>
-<!--  more  -->
-<h2 id="隔离性级别"><a href="#隔离性级别" class="headerlink" title="隔离性级别"></a>隔离性级别</h2><ul>
-<li>可串行化（serializable）：通常保证可串行化调度。</li>
-<li>可重复读（repeatable read）：只允许读取已提交数据，而且在一个事务俩次读取一个数据项期间，其他事务不得更新该数据。但该事务不要求与其他事务可串行化。</li>
-<li>已提交度（read committed）：只允许读取已提交数据，但不要求可重复读。比如，在事务俩次读取一个数据项期间，另一个事务更新了该数据并提交。</li>
-<li>未提交读（read uncommitted）：允许读取未提交数据。</li>
-</ul>
-<p>以上所有的隔离级别都不允许脏写：如果一个数据项已经被另外一个尚未提交或终止的事务写入，则不允许对该数据项执行写操作。另外上面四中隔离性界别，从下到上，性能越来越低，并发度越来越差。</p>
-<p>下面介绍每种隔离级别带来的问题，</p>
-<h3 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h3><p><strong>发生在未提交读隔离级别</strong></p>
-<p>脏读又称无效数据的读出，是指在数据库访问中，事务T1将某一值修改，然后事务T2读取该值，此后T1因为某种原因撤销对该值的修改，这就导致了T2所读取到的数据是无效的。</p>
-<p>脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交(commit)到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据。因为这个数据是还没有提交的数据，那么另外一个事务读到的这个数据是脏数据，依据脏数据所做的操作可能是不正确的。</p>
-<p><strong>举例说明：</strong></p>
-<p>在下面的例子中，事务2修改了一行，但是没有提交，事务1读了这个没有提交的数据。现在如果事务2回滚了刚才的修改或者做了另外的修改的话，事务1中查到的数据就是不正确的了。</p>
-<table>
-<thead>
-<tr>
-<th align="center">事务1</th>
-<th align="center">事务2</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>SELECT age FROM users WHERE id = 1;</code> <br/><code>/* will read 20 */</code></td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">-</td>
-<td align="center"><code>UPDATE users SET age = 21 WHERE id = 1;</code><br />  <code>/* No commit here */</code></td>
-</tr>
-<tr>
-<td align="center"><code>SELECT age FROM users WHERE id = 1;</code> <br /><code>/* will read 21 */</code></td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">-</td>
-<td align="center"><code>ROLLBACK;</code> <br /><code>/* lock-based DIRTY READ */</code></td>
-</tr>
-</tbody></table>
-<p>在这个例子中，事务2回滚后就没有id是1，age是21的数据了。所以，事务一读到了一条脏数据。</p>
-<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>发生在已提交读隔离级别</strong><br>不可重复读，是指在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。比如事务T1读取某一数据，事务T2读取并修改了该数据，T1为了对读取值进行检验而再次读取该数据，便得到了不同的结果。</p>
-<p>一种更易理解的说法是：在一个事务内，多次读同一个数据。在这个事务还没有结束时，另一个事务也访问该同一数据。那么，在第一个事务的两次读数据之间。由于第二个事务的修改，那么第一个事务读到的数据可能不一样，这样就发生了在一个事务内两次读到的数据是不一样的，因此称为不可重复读，即原始读取不可重复。</p>
-<p><strong>举例说明：</strong></p>
-<p>在基于锁的并发控制中“不可重复读(non-repeatable read)”现象发生在当执行SELECT 操作时没有获得读锁(read locks)或者SELECT操作执行完后马上释放了读锁； 多版本并发控制中当没有要求一个提交冲突的事务回滚也会发生“不可重复读(non-repeatable read)”现象。</p>
-<table>
-<thead>
-<tr>
-<th align="center">事务一</th>
-<th align="center">事务二</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>SELECT * FROM users WHERE id = 1;</code></td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">-</td>
-<td align="center"><code>UPDATE users SET age = 21 WHERE id = 1;</code> <br /><code>COMMIT;</code></td>
-</tr>
-<tr>
-<td align="center"><code>SELECT * FROM users WHERE id = 1;</code> <br /><code>COMMIT; </code> &#96;</td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<p>在这个例子中，事务2提交成功，因此他对id为1的行的修改就对其他事务可见了。但是事务1在此前已经从这行读到了另外一个age的值。</p>
-<h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p>幻读是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，比如这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一样.一般解决幻读的方法是增加范围锁RangeS，锁定检锁范围为只读，这样就避免了幻读。　　</p>
-<blockquote>
-<p>幻读(phantom read)”是不可重复读(Non-repeatable reads)的一种特殊场景：当事务没有获取范围锁的情况下执行SELECT … WHERE操作可能会发生“幻影读(phantom read)”。</p>
-</blockquote>
-<p><strong>举例说明：</strong></p>
-<p>当事务1两次执行SELECT … WHERE检索一定范围内数据的操作中间，事务2在这个表中创建了(如INSERT)了一行新数据，这条新数据正好满足事务1的“WHERE”子句。</p>
-<table>
-<thead>
-<tr>
-<th align="center">事务一</th>
-<th align="center">事务二</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>SELECT * FROM usersWHERE age BETWEEN 10 AND 30;</code></td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">-</td>
-<td align="center"><code>INSERT INTO users VALUES ( 3, &#39;Bob&#39;, 27 );</code> <br /><code>COMMIT;</code></td>
-</tr>
-<tr>
-<td align="center"><code>SELECT * FROM usersWHERE age BETWEEN 10 AND 30;</code></td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<p>在这个例子中，事务一执行了两次相同的查询操作。但是两次操作中间事务二向数据库中增加了一条符合事务一的查询条件的数据，导致幻读。</p>
-<h2 id="隔离性级别的实现方式简介"><a href="#隔离性级别的实现方式简介" class="headerlink" title="隔离性级别的实现方式简介"></a>隔离性级别的实现方式简介</h2><p>在数据库中使用<strong>并发控制机制</strong>来保证事务的隔离性，使用并发控制的目的是为了提高事务的并发性，从而提数据库的整体性能。具体的实现有以下几种形式。</p>
-<p><strong>锁</strong></p>
-<p>一个数据库可以封锁其访问的数据项，而不用封锁整个数据库。这种策略下，事务必须在足够长的时间内持有锁来保证可串行化。但是这一周期又要足够短致使不会过度影响性能。在封锁协议中，俩阶段封锁协议就是一种简单且广泛的确保可串行化的封锁协议：简单的说就是，俩阶段封锁要求一个事务封锁有俩个阶段，一个阶段只获得锁但不释放锁，第二个阶段只释放锁但不获得锁。</p>
-<p>当我们有俩种锁，则封锁的结果可以将进一步得到改善：读锁和写锁，</p>
-<p>读写锁的概念很平常，当你在读取数据的时候，应该先加读锁，读取完之后的某个时间再解开读锁，那么加了读锁的数据，应该需要有什么特性呢，应该只能读，不能写，因为加了读锁，说明有事务准备读取这个数据，如果被别的事务重写这个数据，那数据就不准确了。所以一个事务给这个数据加了读锁，别的事务也可以对这个数据加读锁，因为大家都是只读不写。</p>
-<p>写锁则具有排他性（exclusive lock），当一个事务准备对一个数据进行写操作的时候，先要对数据加写锁，那么数据就是可变的，这时候，其他事务就无法对这个数据加读锁了，除非这个写锁释放。</p>
-<p><strong>时间戳</strong></p>
-<p>这种是为每一个事务分配一个时间戳，通常当他开始的时候。对于每个数据项，系统维护俩个时间戳。数据项的读时间戳记录读该数据项的事务的最大时间戳。数据项的写时间戳记录写入该数据项的时间戳。时间戳用来确保在访问冲突情况下，事务按照事务的时间戳的顺序来访问数据项。当不能访问时，事务将会终止，并且分配一个新的时间戳重新开始。</p>
-<p><strong>多版本和快照隔离</strong></p>
-<p> 通过维护数据项的多个版本，一个事务允许读取一个旧版本的数据项，而不是被另一个未提交或者在串行化序列中应该排在后面的事务写入的新版本的数据项。有许多的版本控制并发控制技术，其中一种应用比较广泛的就是快照隔离。</p>
-<p>在快照隔离中，我们可以想象每个事务开始时有其自身的数据库版本或者快照。他从这个私有的版本中读取数据，因此和其他事务所做的更新隔离开。如果事务更新数据库，更新只出现在其私有版本中，而不是实际的数据库版本中。当事务提交时，和更新有关的信息将被保存，使得更新被写入真正的数据库。当一个事务进入部分提交状态后，只有在没有其他并发事务修改了该事务想要更新的数据项的情况下，事务进入提交状态。而不能提交的事务则终止。</p>
-<p>快照隔离可以保证读数据的尝试永远无需等待(不向封锁情况)。只读事务不会中止，只有修改数据的事务有微小的中止风险。由于每个事务读取他自己的数据版本或快照，因此读数据不会导致此后其他事务的更新尝试被迫等待(不想封锁情况)。因为大部分事务是只读的(并且大多数其他事务读数据情况多余更新)，所以这是与锁相比往往带来性能改善的主要原因。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本篇文章简单总结了事务不同隔离性级别会带来的问题，以及事务隔离性的实现方式。后面会在写几篇文章来说明事务隔离性实现的具体细节。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li>数据库系统概念</li>
-<li><a target="_blank" rel="noopener" href="https://www.hollischuang.com/archives/900">数据库的读现象浅析</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1828,7 +1733,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">224</span>
+          <span class="site-state-item-count">225</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1841,7 +1746,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">97</span>
+        <span class="site-state-item-count">98</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1884,7 +1789,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:26</span>
+    <span title="站点阅读时长">22:27</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
