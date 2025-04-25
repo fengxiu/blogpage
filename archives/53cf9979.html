@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇文章主要是通过介绍Class.forName和ClassLoader.loadClass这俩个方法，来引入一个重要的概念，系统字典（SystemDictionary），这里会有一些名词，我在前面的一篇文章系统，当前，线程上下文类加载概念介绍？中已经详细介绍过，具体的可以看前面的文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="类加载之SystemDictionary:系统字典">
+<meta property="og:url" content="http://fengxiu.club/archives/53cf9979.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="本篇文章主要是通过介绍Class.forName和ClassLoader.loadClass这俩个方法，来引入一个重要的概念，系统字典（SystemDictionary），这里会有一些名词，我在前面的一篇文章系统，当前，线程上下文类加载概念介绍？中已经详细介绍过，具体的可以看前面的文章。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pandora-system-dictionary.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pandora-class-forname-and-java-code.png">
+<meta property="article:published_time" content="2019-07-07T01:26:00.000Z">
+<meta property="article:modified_time" content="2019-07-07T01:26:00.000Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="类加载">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pandora-system-dictionary.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/53cf9979.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>类加载之SystemDictionary:系统字典 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/53cf9979.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          类加载之SystemDictionary:系统字典
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-07 01:26:00" itemprop="dateCreated datePublished" datetime="2019-07-07T01:26:00+00:00">2019-07-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/53cf9979.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/53cf9979.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/53cf9979.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/53cf9979.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇文章主要是通过介绍<code>Class.forName</code>和<code>ClassLoader.loadClass</code>这俩个方法，来引入一个重要的概念，系统字典（SystemDictionary），这里会有一些名词，我在前面的一篇文章<a href="/archives/338e9034.html">系统，当前，线程上下文类加载概念介绍？</a>中已经详细介绍过，具体的可以看前面的文章。</p>
+<span id="more"></span>
+<h2 id="SystemDictionary-系统字典"><a href="#SystemDictionary-系统字典" class="headerlink" title="SystemDictionary:系统字典"></a>SystemDictionary:系统字典</h2><p>这里主要是先介绍Class.forName的定义，引出系统字典，这样相对来说比较好理解一些。<br>Class.forName是根据给定的类型全名从CCL中加载指定的类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CallerSensitive</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Class&lt;?&gt; forName(String className)  <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">    Class&lt;?&gt; caller = Reflection.getCallerClass();</span><br><span class="line">    <span class="keyword">return</span> forName0(className, <span class="literal">true</span>, ClassLoader.getClassLoader(caller), caller);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Reflection.getCallerClass()</code>，获取到调用Class.forName方法的类，隐含意义就是CCL。类加载的逻辑封装在native方法forName0中，也就是forName进行的类加载行为已经脱离了Java代码的控制范围，进入到了Java运行时环境把控的阶段。<br>下面是JDK实现的部分代码， Class.c中对应的实现逻辑：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT jclass JNICALL</span><br><span class="line"><span class="title function_">Java_java_lang_Class_forName0</span><span class="params">(JNIEnv *env, jclass this, jstring classname,</span></span><br><span class="line"><span class="params">                              jboolean initialize, jobject loader)</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">// 略</span></span><br><span class="line">cls = JVM_FindClassFromClassLoader(env, clname, initialize,</span><br><span class="line">                                    loader, JNI_FALSE);</span><br><span class="line">done:</span><br><span class="line"><span class="keyword">if</span> (clname != buf) &#123;</span><br><span class="line">    <span class="built_in">free</span>(clname);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> cls;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现细节在<code>JVM_FindClassFromClassLoader</code>中定义，可以看到调用Class.forName会使用<code>JVM_FindClassFromClassLoader</code>这个函数来进行类型加载，我们需要注意的时clname和loader这两个变量，一个是类的全限定名，另一个是ClassLoader，而Class.forName所使用的ClassLoader是CCL。</p>
+<p>在jvm.cpp中FindClassFromClassLoader的对应实现是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">jclass <span class="title function_">find_class_from_class_loader</span><span class="params">(JNIEnv* env, Symbol* name, jboolean init, Handle loader, </span></span><br><span class="line"><span class="params">  Handle protection_domain, jboolean throwError, TRAPS)</span> &#123;</span><br><span class="line">  <span class="comment">// Security Note:</span></span><br><span class="line">  <span class="comment">//   The Java level wrapper will perform the necessary security check allowing</span></span><br><span class="line">  <span class="comment">//   us to pass the NULL as the initiating class loader.</span></span><br><span class="line">  klassOop klass = SystemDictionary::resolve_or_fail(name, loader, protection_domain, throwError != <span class="number">0</span>, CHECK_NULL);</span><br><span class="line">  <span class="comment">// 略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> SystemDictionary，系统字典，这个数据结构是保存Java加载类型的数据结构，如图1所示。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pandora-system-dictionary.png" alt="系统字典"></p>
+<p>上图黑色边框中的内容就是SystemDictionary，它是以类的全限定名再加上类加载器作为key，进而确定Class引用。<br>当在代码中调用Class.forName(String name)或者由运行时Java进行类加载，比如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">m</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">B</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">B</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对类型B的加载，就是运行时Java进行的类加载。类型加载时，以ClassLoader和需要加载的类型全限定名作为参数在SystemDictionary中进行查询，如果能够查询到则返回。如果无法找到，则调用loader.loadClass(className)进行加载，这一步将进入到Java代码中。</p>
+<p> 对于loadClass而言，基本等同于loader.defineClass(loader.getResource(file).getBytes())，它做了两件事</p>
+<ol>
+<li>通过资源定位到类文件</li>
+<li>将类文件的字节流数组传递给defineClass进行构造Class实例。而defineClass将再一次派发给运行时Java进行执行。</li>
+</ol>
+<p> 字节流数组经过ClassFileParser进行处理之后，生成了Class实例，在返回Class实例前，Java将name、loader和class的对应关系添加到SystemDictionary中，这样在后续其他类型的加载过程中，就能够快速找到这些类型，避免无谓的defineClass过程。</p>
+<p>一个类加载的过程，在运行时JVM和java代码之间来回切换，有点复杂，我们画一个简单的图来描述主要过程，由于原有的类加载过程中还要处理并发问题，我们将这些内容都去掉，只观察类型加载的主要流程，如图2所示。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pandora-class-forname-and-java-code.png" alt="图2 - Class.forName和Java默认类加载执行顺序"></p>
+<p>上图是一个经过简化后的Class.forName加载过程，这里不再贴代码了，红色的框代表是Java代码，或者说能够在rt.jar中找到的内容，绿色的框代表是JVM的实现代码，是由C和C++实现的，当由Java调用C的代码时，使用绿色的箭头，反之使用红色箭头。以上的方法名和参数都做过简化，并不是真实代码的完全体现，下面说明一下以上需要关注的步骤。<br><strong>步骤说明：</strong></p>
+<ol>
+<li>调用Class.forName(className)方法，该方法会调用native的JVM实现，调用前该方法会确定准备好需要加载的类名以及ClassLoader，将其传递给native方法</li>
+<li>进入到JVM实现后，首先会在SystemDictionary中根据类名和ClassLoader组成hash，进行查询，如果能够命中，则返回</li>
+<li>如果加载到则返回</li>
+<li>如果在SystemDictionary中无法命中，将会调用Java代码：ClassLoader.loadClass(类名)，这一步将委派给Java代码，让传递的ClassLoader进行类型加载</li>
+<li>以URLClassLoader为例，ClassLoader确定了类文件的字节流，但是该字节流如何按照规范生成Class对象，这个过程在Java代码中是没有体现的，其实也就是要求调用ClassLoader.defineClass(byte[])进行解析类型，该方法将会再次调用native方法，因为字节流对应Class对象的规范是定义在JVM实现中的</li>
+<li>进入JVM实现，调用SystemDictionary的resolve_stream方法，接受byte[]，使用ClassFileParser进行解析</li>
+<li>SystemDictionary::define_instance_class</li>
+<li>如果类型被加载了，将类名、ClassLoader和类型的实例引用添加到SystemDictionary中</li>
+<li>返回</li>
+<li>返回</li>
+<li>从Java实现返回到Java代码的defineClass，返回Class对象</li>
+<li>返回给loadClass(Classname)方法</li>
+<li>返回给Java实现的SystemDictionary，因为在resolve_class中调用的ClassLoader.loadClass。ClassLoader并非传递给resolve_class的ClassLoader，那么CassLoader以及类型的实例引用添加到SystemDictionary中</li>
+</ol>
+<p>上述的过程比较复杂，但是简化理解一下它所做的工作，我们将SystemDictionary记作缓存，Class.forName或者说Java默认的类型加载过程是：</p>
+<ol>
+<li>首先根据ClassLoader，我们称之为initialClassLoader和类名查找缓存，如果缓存有，则返回；</li>
+<li>如果缓存没有，则调用ClassLoader.loadClass(类名)，加载到类型后，保存类名，真实加载类的ClassLoader，类型引用到缓存，这里真实加载类的ClassLoader我们可以叫做defineClassLoader；</li>
+<li>返回的类型在交给Java之前，将会判断defineClassLoader是否等于initialClassLoader，如果不等，则新增类名，initialClassLoader，类型引用到缓存。</li>
+</ol>
+<p>这里区分initialClassLoader和defineClassLoader的原因在于，调用initialClassLoader的loadClass，可能最终委派给其他的ClassLoader进行了加载。</p>
+<h3 id="ClassLoader-loadClass-String-className"><a href="#ClassLoader-loadClass-String-className" class="headerlink" title="ClassLoader.loadClass(String className)"></a>ClassLoader.loadClass(String className)</h3><p> 我们在分析了Class.forName之后，再看ClassLoader.loadClass()就会变得简单很多，这个ClassLoader就是一个SCL，而ClassLoader.loadClass()只是相当于一个简单的方法调用。</p>
+<p> 根据图2的所示，该过程开始于第4步，没有前3步，该过程简单说就是：调用ClassLoader.loadClass(类名)，加载到类型后，保存类名，真实加载类的ClassLoader，类型引用到缓存，这里真实加载类的ClassLoader我们可以叫做defineClassLoader。也就是，调用ClassLoader.loadClass(类名)之后，并不一定会在缓存中生成一条类名，ClassLoader，类型引用的记录，但是一定会生成一条类名，真实加载类的ClassLoader，类型引用的记录。</p>
+<h3 id="ClassLoader-findLoadedClass-String-className"><a href="#ClassLoader-findLoadedClass-String-className" class="headerlink" title="ClassLoader.findLoadedClass(String className)"></a>ClassLoader.findLoadedClass(String className)</h3><p>该方法是protected final修饰的方法，也就是ClassLoader的子类可以内部使用，但是无法通过ClassLoader.findLoadedClass直接调用。</p>
+<p> 这个方法一直感觉很奇怪，从名称上看就是查询这个ClassLoader加载过的Class，如果加载过了，那么就返回类型实例。但是只看到获取，没有看到添加，又或者说它到底是从哪里获取的。</p>
+<p> 答案是从SystemDictionary中获取的，当调用ClassLoader.findLoadedClass(className)时，会到SystemDictionary中以className和ClassLoader为key，进行查询，如果命中，则返回类型实例。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以前对类加载过程只是大概知道是怎么回事，但是不清楚内部的流程，通过这篇文章的学习，学习了类加载的整个流程，也明白为什么一直说不同类加载器加载相同的类是不同的类的原因。</p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/a064c1bf.html" rel="bookmark">类加载实战</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/338e9034.html" rel="bookmark">系统、当前、线程上下文类加载概念介绍？</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/2735b28b.html" rel="bookmark">深入理解类加载以及其实现ClassLoader</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/53cf9979.html" title="类加载之SystemDictionary:系统字典">http://fengxiu.club/archives/53cf9979.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/" rel="tag"># 类加载</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/338e9034.html" rel="prev" title="系统、当前、线程上下文类加载概念介绍？">
+      <i class="fa fa-chevron-left"></i> 系统、当前、线程上下文类加载概念介绍？
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/a064c1bf.html" rel="next" title="类加载实战">
+      类加载实战 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SystemDictionary-%E7%B3%BB%E7%BB%9F%E5%AD%97%E5%85%B8"><span class="nav-number">1.</span> <span class="nav-text">SystemDictionary:系统字典</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ClassLoader-loadClass-String-className"><span class="nav-number">1.1.</span> <span class="nav-text">ClassLoader.loadClass(String className)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClassLoader-findLoadedClass-String-className"><span class="nav-number">1.2.</span> <span class="nav-text">ClassLoader.findLoadedClass(String className)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/53cf9979.html";
+    this.page.identifier = "archives/53cf9979.html";
+    this.page.title = "类加载之SystemDictionary:系统字典";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

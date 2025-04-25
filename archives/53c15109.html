@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Java对象引用体系除了强引用之外，出于对性能、可扩展性等方面考虑还特地实现了4种其他引用：SoftReference、WeakReference、PhantomReference、FinalReference，本文主要想讲的是FinalReference，因为当使用内存分析工具，比如zprofiler、mat等，分析一些oom的heap时，经常能看到 java.lang.ref.Finali">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM源码分析之FinalReference 完全解读">
+<meta property="og:url" content="http://fengxiu.club/archives/53c15109.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="概述Java对象引用体系除了强引用之外，出于对性能、可扩展性等方面考虑还特地实现了4种其他引用：SoftReference、WeakReference、PhantomReference、FinalReference，本文主要想讲的是FinalReference，因为当使用内存分析工具，比如zprofiler、mat等，分析一些oom的heap时，经常能看到 java.lang.ref.Finali">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-01-04T10:24:00.000Z">
+<meta property="article:modified_time" content="2019-01-04T10:24:00.000Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="引用">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://fengxiu.club/archives/53c15109.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JVM源码分析之FinalReference 完全解读 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/53c15109.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM源码分析之FinalReference 完全解读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-04 10:24:00" itemprop="dateCreated datePublished" datetime="2019-01-04T10:24:00+00:00">2019-01-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/53c15109.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/53c15109.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/53c15109.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/53c15109.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Java对象引用体系除了强引用之外，出于对性能、可扩展性等方面考虑还特地实现了4种其他引用：<code>SoftReference</code>、<code>WeakReference</code>、<code>PhantomReference</code>、<code>FinalReference</code>，本文主要想讲的是<code>FinalReference</code>，因为当使用内存分析工具，比如zprofiler、mat等，分析一些oom的heap时，经常能看到 <code>java.lang.ref.Finalizer</code>占用的内存大小远远排在前面，而这个类占用的内存大小又和我们这次的主角<code>FinalReference</code>有着密不可分的关系。</p>
+<p><code>FinalReference</code>及关联的内容可能给我们留下如下印象：</p>
+<ul>
+<li>自己代码里从没有使用过；</li>
+<li>线程dump之后，会看到一个叫做<code>Finalizer</code>的Java线程；</li>
+<li>偶尔能注意到<code>java.lang.ref.Finalizer</code>的存在；</li>
+<li>在类里可能会写<code>finalize</code>方法。</li>
+</ul>
+<p>那<code>FinalReference</code>到底存在的意义是什么，以怎样的形式和我们的代码相关联呢？这是本文要理清的问题。</p>
+<span id="more"></span>
+
+<h2 id="JDK中的FinalReference"><a href="#JDK中的FinalReference" class="headerlink" title="JDK中的FinalReference"></a>JDK中的FinalReference</h2><p>首先我们看看<code>FinalReference</code>在JDK里的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">FinalReference</span>&lt;T&gt; <span class="keyword">extends</span> <span class="title class_">Reference</span>&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">FinalReference</span><span class="params">(T referent, ReferenceQueue &lt;? <span class="built_in">super</span> T&gt; q)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(referent, q);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大家应该注意到了类访问权限是package的，这也就意味着我们不能直接去对其进行扩展，但是JDK里对此类进行了扩展实现<code>java.lang.ref.Finalizer</code>，这个类在概述里提到的过，而此类的访问权限也是package的，并且是final的，意味着它不能再被扩展了，接下来的重点我们围绕<code>java.lang.ref.Finalizer</code>展开。(PS：后续讲的<code>Finalizer</code>其实也是在说<code>FinalReference</code>。)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">Finalizer</span> <span class="keyword">extends</span> <span class="title class_">FinalReference</span> &#123; </span><br><span class="line">   <span class="comment">/* Package-private; must be in same package as the </span></span><br><span class="line"><span class="comment">   Referenceclass */</span></span><br><span class="line">   </span><br><span class="line">   <span class="comment">/* A native method that invokes an arbitrary object&#x27;s  </span></span><br><span class="line"><span class="comment">   finalize method is  required since the finalize method is </span></span><br><span class="line"><span class="comment">   protected*/</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">invokeFinalizeMethod</span><span class="params">(Object o)</span> <span class="keyword">throws</span> Throwable;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">ReferenceQueue</span> <span class="variable">queue</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReferenceQueue</span>();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">Finalizer</span> <span class="variable">unfinalized</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Object</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Finalizer</span></span><br><span class="line">        <span class="variable">next</span> <span class="operator">=</span> <span class="literal">null</span>,</span><br><span class="line">        prev = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Finalizer</span><span class="params">(Object finalizee)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(finalizee, queue);</span><br><span class="line">        add();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Invoked by VM */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">register</span><span class="params">(Object finalizee)</span> &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Finalizer</span>(finalizee);</span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (lock) &#123;</span><br><span class="line">            <span class="keyword">if</span> (unfinalized != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="built_in">this</span>.next = unfinalized;</span><br><span class="line">                unfinalized.prev = <span class="built_in">this</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            unfinalized = <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">   &#125;    </span><br></pre></td></tr></table></figure>
+
+<h3 id="Finalizer的构造函数"><a href="#Finalizer的构造函数" class="headerlink" title="Finalizer的构造函数"></a>Finalizer的构造函数</h3><p><code>Finalizer</code>的构造函数提供了以下几个关键信息：</p>
+<ul>
+<li><code>private</code>：意味着我们无法在当前类之外构建这类的对象；</li>
+<li><code>finalizee</code>参数：<code>FinalReference</code>指向的对象引用；</li>
+<li>调用<code>add</code>方法：将当前对象插入到<code>Finalizer</code>对象链里，链里的对象和<code>Finalizer</code>类静态关联。言外之意是在这个链里的对象都无法被GC掉，除非将这种引用关系剥离（因为<code>Finalizer</code>类无法被unload）。</li>
+</ul>
+<p>虽然外面无法创建<code>Finalizer</code>对象，但是它有一个名为<code>register</code>的静态方法，该方法可以创建这种对象，同时将这个对象加入到<code>Finalizer</code>对象链里，这个方法是被vm调用的，那么问题来了，vm在什么情况下会调用这个方法呢？</p>
+<h2 id="Finalizer对象何时被注册到Finalizer对象链里"><a href="#Finalizer对象何时被注册到Finalizer对象链里" class="headerlink" title="Finalizer对象何时被注册到Finalizer对象链里"></a>Finalizer对象何时被注册到Finalizer对象链里</h2><p>类的修饰有很多，比如final，abstract，public等，如果某个类用final修饰，我们就说这个类是final类，上面列的都是语法层面我们可以显式指定的，在JVM里其实还会给类标记一些其他符号，比如<code>finalizer</code>，表示这个类是一个<code>finalizer</code>类（为了和<code>java.lang.ref.Fianlizer</code>类区分，下文在提到的<code>finalizer</code>类时会简称为f类），GC在处理这种类的对象时要做一些特殊的处理，如在这个对象被回收之前会调用它的<code>finalize</code>方法。</p>
+<h4 id="如何判断一个类是不是一个final类"><a href="#如何判断一个类是不是一个final类" class="headerlink" title="如何判断一个类是不是一个final类"></a>如何判断一个类是不是一个final类</h4><p>在讲这个问题之前，我们先来看下<code>java.lang.Object</code>里的一个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">finalize</span><span class="params">()</span> <span class="keyword">throws</span> Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>Object</code>类里定义了一个名为<code>finalize</code>的空方法，这意味着Java里的所有类都会继承这个方法，甚至可以覆写该方法，并且根据方法覆写原则，如果子类覆盖此方法，方法访问权限至少protected级别的，这样其子类就算没有覆写此方法也会继承此方法。</p>
+<p>而判断当前类是否是f类的标准并不仅仅是当前类是否含有一个参数为空，返回值为void的<code>finalize</code>方法，还要求<code>finalize方法必须非空</code>，因此Object类虽然含有一个<code>finalize</code>方法，但它并不是f类，Object的对象在被GC回收时其实并不会调用它的<code>finalize</code>方法。</p>
+<p>需要注意的是，类在加载过程中其实就已经被标记为是否为f类了。（JVM在类加载的时候会遍历当前类的所有方法，包括父类的方法，只要有一个参数为空且返回void的非空<code>finalize</code>方法就认为这个类是f类。）</p>
+<h3 id="f类的对象何时传到Finalizer-register方法"><a href="#f类的对象何时传到Finalizer-register方法" class="headerlink" title="f类的对象何时传到Finalizer.register方法"></a>f类的对象何时传到Finalizer.register方法</h3><p>对象的创建其实是被拆分成多个步骤的，比如<code>A a=new A(2)</code>这样一条语句对应的字节码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: <span class="keyword">new</span>           #<span class="number">1</span>                  <span class="comment">// class A</span></span><br><span class="line"><span class="number">3</span>: dup</span><br><span class="line"><span class="number">4</span>: iconst_2</span><br><span class="line"><span class="number">5</span>: invokespecial #<span class="number">11</span>                 <span class="comment">// Method &quot;&amp;lt;init&amp;gt;&quot;:(I)V</span></span><br></pre></td></tr></table></figure>
+
+<p>先执行new分配好对象空间，然后再执行invokespecial调用构造函数，JVM里其实可以让用户在这两个时机中选择一个，将当前对象传递给<code>Finalizer.register</code>方法来注册到<code>Finalizer</code>对象链里，这个选择取决于是否设置了<code>RegisterFinalizersAtInit</code>这个vm参数，默认值为true，也就是在构造函数返回之前调用<code>Finalizer.register</code>方法，如果通过<code>-XX:-RegisterFinalizersAtInit</code>关闭了该参数，那将在对象空间分配好之后将这个对象注册进去。</p>
+<p>另外需要提醒的是，当我们通过clone的方式复制一个对象时，如果当前类是一个f类，那么在clone完成时将调用<code>Finalizer.register</code>方法进行注册。</p>
+<p><strong>hotspot如何实现f类对象在构造函数执行完毕后调用Finalizer.register</strong></p>
+<p>这个实现比较有意思，在这简单提一下，我们知道执行一个构造函数时，会去调用父类的构造函数，主要是为了初始化继承自父类的属性，那么任何一个对象的初始化最终都会调用到<code>Object</code>的空构造函数里（任何空的构造函数其实并不空，会含有三条字节码指令，如下代码所示），为了不对所有类的构造函数都埋点调用<code>Finalizer.register</code>方法，hotspot的实现是，在初始化<code>Object</code>类时将构造函数里的<code>return</code>指令替换为<code>_return_register_finalizer</code>指令，该指令并不是标准的字节码指令，是hotspot扩展的指令，这样在处理该指令时调用<code>Finalizer.register</code>方法，以很小的侵入性代价完美地解决了这个问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: aload_0</span><br><span class="line"><span class="number">1</span>: invokespecial #<span class="number">21</span>                 <span class="comment">// Method java/lang/Object.&quot;&amp;lt;init&amp;gt;&quot;:()V</span></span><br><span class="line"><span class="number">4</span>: <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="f类对象的GC回收"><a href="#f类对象的GC回收" class="headerlink" title="f类对象的GC回收"></a>f类对象的GC回收</h2><h3 id="FinalizerThread线程"><a href="#FinalizerThread线程" class="headerlink" title="FinalizerThread线程"></a>FinalizerThread线程</h3><p>在<code>Finalizer</code>类的<code>clinit</code>方法（静态块）里，我们看到它会创建一个<code>FinalizerThread</code>守护线程，这个线程的优先级并不是最高的，意味着在CPU很紧张的情况下其被调度的优先级可能会受到影响</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">FinalizerThread</span> <span class="keyword">extends</span> <span class="title class_">Thread</span> &#123;</span><br><span class="line">      <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="type">boolean</span> running;</span><br><span class="line">      FinalizerThread(ThreadGroup g) &#123;</span><br><span class="line">          <span class="built_in">super</span>(g, <span class="string">&quot;Finalizer&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">          <span class="keyword">if</span> (running)</span><br><span class="line">              <span class="keyword">return</span>;</span><br><span class="line">          running = <span class="literal">true</span>;</span><br><span class="line">          <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line">                  <span class="type">Finalizer</span> <span class="variable">f</span> <span class="operator">=</span> (Finalizer)queue.remove();</span><br><span class="line">                  f.runFinalizer();</span><br><span class="line">              &#125; <span class="keyword">catch</span> (InterruptedException x) &#123;</span><br><span class="line">                  <span class="keyword">continue</span>;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> &#123;</span><br><span class="line">      <span class="type">ThreadGroup</span> <span class="variable">tg</span> <span class="operator">=</span> Thread.currentThread().getThreadGroup();</span><br><span class="line">      <span class="keyword">for</span> (<span class="type">ThreadGroup</span> <span class="variable">tgn</span> <span class="operator">=</span> tg;</span><br><span class="line">           tgn != <span class="literal">null</span>;</span><br><span class="line">           tg = tgn, tgn = tg.getParent());</span><br><span class="line">      <span class="type">Thread</span> <span class="variable">finalizer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FinalizerThread</span>(tg);</span><br><span class="line">      finalizer.setPriority(Thread.MAX_PRIORITY - <span class="number">2</span>);</span><br><span class="line">      finalizer.setDaemon(<span class="literal">true</span>);</span><br><span class="line">      finalizer.start();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个线程用来从queue里获取<code>Finalizer</code>对象，然后执行该对象的<code>runFinalizer</code>方法，该方法会将<code>Finalizer</code>对象从<code>Finalizer</code>对象链里剥离出来，这样意味着下次GC发生时就可以将其关联的f对象回收了，最后将这个<code>Finalizer</code>对象关联的f对象传给一个native方法<code>invokeFinalizeMethod</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">runFinalizer</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (hasBeenFinalized()) <span class="keyword">return</span>;</span><br><span class="line">            remove();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Object</span> <span class="variable">finalizee</span> <span class="operator">=</span> <span class="built_in">this</span>.get();</span><br><span class="line">            <span class="keyword">if</span> (finalizee != <span class="literal">null</span> &amp;&amp; !(finalizee <span class="keyword">instanceof</span> java.lang.Enum)) &#123;</span><br><span class="line">                invokeFinalizeMethod(finalizee);</span><br><span class="line">                <span class="comment">/* Clear stack slot containing this variable, to decrease</span></span><br><span class="line"><span class="comment">                   the chances of false retention with a conservative GC */</span></span><br><span class="line">                finalizee = <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable x) &#123; &#125;</span><br><span class="line">        <span class="built_in">super</span>.clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">invokeFinalizeMethod</span><span class="params">(Object o)</span> <span class="keyword">throws</span> Throwable;</span><br></pre></td></tr></table></figure>
+
+<p>其实<code>invokeFinalizeMethod</code>方法就是调了这个f对象的finalize方法，看到这里大家应该恍然大悟了，整个过程都串起来了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL</span><br><span class="line"><span class="title function_">Java_java_lang_ref_Finalizer_invokeFinalizeMethod</span><span class="params">(JNIEnv *env, jclass clazz,</span></span><br><span class="line"><span class="params">                                                  jobject ob)</span></span><br><span class="line">&#123;</span><br><span class="line">    jclass cls;</span><br><span class="line">    jmethodID mid;</span><br><span class="line"></span><br><span class="line">    cls = (*env)-&amp;gt;GetObjectClass(env, ob);</span><br><span class="line">    <span class="keyword">if</span> (cls == NULL) <span class="keyword">return</span>;</span><br><span class="line">    mid = (*env)-&amp;gt;GetMethodID(env, cls, <span class="string">&quot;finalize&quot;</span>, <span class="string">&quot;()V&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (mid == NULL) <span class="keyword">return</span>;</span><br><span class="line">    (*env)-&amp;gt;CallVoidMethod(env, ob, mid);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="f对象的finalize方法抛出异常会导致FinalizeThread退出吗"><a href="#f对象的finalize方法抛出异常会导致FinalizeThread退出吗" class="headerlink" title="f对象的finalize方法抛出异常会导致FinalizeThread退出吗"></a>f对象的finalize方法抛出异常会导致FinalizeThread退出吗</h3><p>不知道大家有没有想过如果f对象的<code>finalize</code>方法抛了一个没捕获的异常，这个<code>FinalizerThread</code>会不会退出呢，细心的读者看上面的代码其实就可以找到答案，<code>runFinalizer</code>方法里对<code>Throwable</code>的异常进行了捕获，因此不可能出现<code>FinalizerThread</code>因异常未捕获而退出的情况。</p>
+<h3 id="f对象的finalize方法会执行多次吗"><a href="#f对象的finalize方法会执行多次吗" class="headerlink" title="f对象的finalize方法会执行多次吗"></a>f对象的finalize方法会执行多次吗</h3><p>如果我们在f对象的<code>finalize</code>方法里重新将当前对象赋值，变成可达对象，当这个f对象再次变成不可达时还会执行<code>finalize</code>方法吗？答案是否定的，因为在执行完第一次<code>finalize</code>方法后，这个f对象已经和之前的<code>Finalizer</code>对象剥离了，也就是下次GC的时候不会再发现<code>Finalizer</code>对象指向该f对象了，自然也就不会调用这个f对象的<code>finalize</code>方法了。</p>
+<h3 id="Finalizer对象何时被放到ReferenceQueue里"><a href="#Finalizer对象何时被放到ReferenceQueue里" class="headerlink" title="Finalizer对象何时被放到ReferenceQueue里"></a>Finalizer对象何时被放到ReferenceQueue里</h3><p>除了这里接下来要介绍的环节之外，整个过程大家应该都比较清楚了。</p>
+<p>当GC发生时，GC算法会判断f类对象是不是只被<code>Finalizer</code>类引用（f类对象被<code>Finalizer</code>对象引用，然后放到<code>Finalizer</code>对象链里），如果这个类仅仅被<code>Finalizer</code>对象引用，说明这个对象在不久的将来会被回收，现在可以执行它的<code>finalize</code>方法了，于是会将这个<code>Finalizer</code>对象放到<code>Finalizer</code>类的<code>ReferenceQueue</code>里，但是这个f类对象其实并没有被回收，因为<code>Finalizer</code>这个类还对它们保持引用，在GC完成之前，JVM会调用<code>ReferenceQueue</code>中lock对象的notify方法（当<code>ReferenceQueue</code>为空时，<code>FinalizerThread</code>线程会调用<code>ReferenceQueue</code>的lock对象的wait方法直到被JVM唤醒），此时就会执行上面FinalizeThread线程里看到的其他逻辑了。</p>
+<h2 id="Finalizer导致的内存泄露"><a href="#Finalizer导致的内存泄露" class="headerlink" title="Finalizer导致的内存泄露"></a>Finalizer导致的内存泄露</h2><p>这里举一个简单的例子，我们使用挺广的Socket通信，<code>SocksSocketImpl</code>的父类其实就实现了<code>finalize</code>方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Cleans up if the user forgets to close it.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">finalize</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其实这么做的主要目的是万一用户忘记关闭Socket，那么在这个对象被回收时能主动关闭Socket来释放一些系统资源，但是如果用户真的忘记关闭，那这些<code>socket</code>对象可能因为<code>FinalizeThread</code>迟迟没有执行这些<code>socket</code>对象的<code>finalize</code>方法，而导致内存泄露，这种问题我们碰到过多次，因此对于这类情况除了大家好好注意貌似没有什么更好的方法了，该做的事真不能省.</p>
+<h2 id="Finalizer的客观评价"><a href="#Finalizer的客观评价" class="headerlink" title="Finalizer的客观评价"></a>Finalizer的客观评价</h2><p>上面的过程基本对<code>Finalizer</code>的实现细节进行了完整剖析，Java里我们看到有构造函数，但是并没有看到析构函数一说，<code>Finalizer</code>其实是实现了析构函数的概念，我们在对象被回收前可以执行一些“收拾性”的逻辑，应该说是一个特殊场景的补充，但是这种概念的实现给f对象生命周期以及GC等带来了一些影响：</p>
+<ul>
+<li>f对象因为<code>Finalizer</code>的引用而变成了一个临时的强引用，即使没有其他的强引用，还是无法立即被回收；</li>
+<li>f对象至少经历两次GC才能被回收，因为只有在<code>FinalizerThread</code>执行完了f对象的<code>finalize</code>方法的情况下才有可能被下次GC回收，而有可能期间已经经历过多次GC了，但是一直还没执行f对象的<code>finalize</code>方法；</li>
+<li>CPU资源比较稀缺的情况下<code>FinalizerThread</code>线程有可能因为优先级比较低而延迟执行f对象的<code>finalize</code>方法；</li>
+<li>因为f对象的<code>finalize</code>方法迟迟没有执行，有可能会导致大部分f对象进入到old分代，此时容易引发old分代的GC，甚至Full GC，GC暂停时间明显变长；</li>
+<li>f对象的<code>finalize</code>方法被调用后，这个对象其实还并没有被回收，虽然可能在不久的将来会被回收。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.infoq.cn/articles/jvm-source-code-analysis-finalreference">JVM源码分析之FinalReference完全解读</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/2e7bd07f.html" rel="bookmark">Java Reference详解</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/53c15109.html" title="JVM源码分析之FinalReference 完全解读">http://fengxiu.club/archives/53c15109.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%BC%95%E7%94%A8/" rel="tag"># 引用</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/190054bc.html" rel="prev" title="String、StringBuffer和StringBuilder对比">
+      <i class="fa fa-chevron-left"></i> String、StringBuffer和StringBuilder对比
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/2e7bd07f.html" rel="next" title="Java Reference详解">
+      Java Reference详解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK%E4%B8%AD%E7%9A%84FinalReference"><span class="nav-number">2.</span> <span class="nav-text">JDK中的FinalReference</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Finalizer%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">Finalizer的构造函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Finalizer%E5%AF%B9%E8%B1%A1%E4%BD%95%E6%97%B6%E8%A2%AB%E6%B3%A8%E5%86%8C%E5%88%B0Finalizer%E5%AF%B9%E8%B1%A1%E9%93%BE%E9%87%8C"><span class="nav-number">3.</span> <span class="nav-text">Finalizer对象何时被注册到Finalizer对象链里</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E7%B1%BB%E6%98%AF%E4%B8%8D%E6%98%AF%E4%B8%80%E4%B8%AAfinal%E7%B1%BB"><span class="nav-number">3.0.1.</span> <span class="nav-text">如何判断一个类是不是一个final类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#f%E7%B1%BB%E7%9A%84%E5%AF%B9%E8%B1%A1%E4%BD%95%E6%97%B6%E4%BC%A0%E5%88%B0Finalizer-register%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">f类的对象何时传到Finalizer.register方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#f%E7%B1%BB%E5%AF%B9%E8%B1%A1%E7%9A%84GC%E5%9B%9E%E6%94%B6"><span class="nav-number">4.</span> <span class="nav-text">f类对象的GC回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FinalizerThread%E7%BA%BF%E7%A8%8B"><span class="nav-number">4.1.</span> <span class="nav-text">FinalizerThread线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#f%E5%AF%B9%E8%B1%A1%E7%9A%84finalize%E6%96%B9%E6%B3%95%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8%E4%BC%9A%E5%AF%BC%E8%87%B4FinalizeThread%E9%80%80%E5%87%BA%E5%90%97"><span class="nav-number">4.2.</span> <span class="nav-text">f对象的finalize方法抛出异常会导致FinalizeThread退出吗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#f%E5%AF%B9%E8%B1%A1%E7%9A%84finalize%E6%96%B9%E6%B3%95%E4%BC%9A%E6%89%A7%E8%A1%8C%E5%A4%9A%E6%AC%A1%E5%90%97"><span class="nav-number">4.3.</span> <span class="nav-text">f对象的finalize方法会执行多次吗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Finalizer%E5%AF%B9%E8%B1%A1%E4%BD%95%E6%97%B6%E8%A2%AB%E6%94%BE%E5%88%B0ReferenceQueue%E9%87%8C"><span class="nav-number">4.4.</span> <span class="nav-text">Finalizer对象何时被放到ReferenceQueue里</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Finalizer%E5%AF%BC%E8%87%B4%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">5.</span> <span class="nav-text">Finalizer导致的内存泄露</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Finalizer%E7%9A%84%E5%AE%A2%E8%A7%82%E8%AF%84%E4%BB%B7"><span class="nav-number">6.</span> <span class="nav-text">Finalizer的客观评价</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/53c15109.html";
+    this.page.identifier = "archives/53c15109.html";
+    this.page.title = "JVM源码分析之FinalReference 完全解读";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

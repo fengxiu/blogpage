@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在看《高性能mysql》这本书的时候，经常看到explain这个命令。所以希望总结一下这个命令的一些知识点。此外，我们为了能够在数据库运行过程中去优化，就会开启慢查询日志，而慢查询日志记录一些执行时间比较久的SQL语句，但是找出这些SQL语句并不意味着完事了。我们需要分析为什么这条sql执行的慢，也就是找出具体的原因。这时我们常常用到explain这个命令来查看一个这些SQL语句的执行计划，查看该">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql explain 详解">
+<meta property="og:url" content="http://fengxiu.club/archives/dd6beb0a.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="在看《高性能mysql》这本书的时候，经常看到explain这个命令。所以希望总结一下这个命令的一些知识点。此外，我们为了能够在数据库运行过程中去优化，就会开启慢查询日志，而慢查询日志记录一些执行时间比较久的SQL语句，但是找出这些SQL语句并不意味着完事了。我们需要分析为什么这条sql执行的慢，也就是找出具体的原因。这时我们常常用到explain这个命令来查看一个这些SQL语句的执行计划，查看该">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220413103943.png">
+<meta property="article:published_time" content="2019-03-26T19:57:28.000Z">
+<meta property="article:modified_time" content="2025-04-25T08:24:51.253Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220413103943.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/dd6beb0a.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>mysql explain 详解 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/dd6beb0a.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          mysql explain 详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-26 19:57:28" itemprop="dateCreated datePublished" datetime="2019-03-26T19:57:28+00:00">2019-03-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-25 08:24:51" itemprop="dateModified" datetime="2025-04-25T08:24:51+00:00">2025-04-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/dd6beb0a.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/dd6beb0a.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/dd6beb0a.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/dd6beb0a.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在看《高性能mysql》这本书的时候，经常看到explain这个命令。所以希望总结一下这个命令的一些知识点。此外，我们为了能够在数据库运行过程中去优化，就会开启慢查询日志，而慢查询日志记录一些执行时间比较久的SQL语句，但是找出这些SQL语句并不意味着完事了。我们需要分析为什么这条sql执行的慢，也就是找出具体的原因。这时我们常常用到explain这个命令来查看一个这些SQL语句的执行计划，查看该SQL语句有没有使用上了索引，有没有做全表扫描，这都可以通过explain命令来查看。所以我们深入了解MySQL的基于开销的优化器，还可以获得很多可能被优化器考虑到的访问策略的细节，以及当运行SQL语句时哪种策略预计会被优化器采用。（QEP：sql生成一个执行计划query Execution plan）</p>
+<p>首先我们看看这个命令输出的具体格式，然后分别的解释其中每列代表的意思,如果执行这条sql语句<code>explain  select * from film</code>,输出的内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>select_type</th>
+<th>table</th>
+<th>type</th>
+<th>possible_keys</th>
+<th>key</th>
+<th>key_len</th>
+<th>ref</th>
+<th>rows</th>
+<th>filtered</th>
+<th>Extras</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>SIMPLE</td>
+<td>film</td>
+<td>ALL</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>1000</td>
+<td>100</td>
+<td>NULL</td>
+</tr>
+</tbody></table>
+<p>以上就是explain命令打印出来的信息，先对这些字段进行一个简介，有个整体的感知，然后在分别详细介绍每一个字段</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>在一个大的查询语句中，每个SELECT关键字都对应一个唯一的id</td>
+</tr>
+<tr>
+<td>select_type</td>
+<td>SELECT关键字对应的查询的类型</td>
+</tr>
+<tr>
+<td>table</td>
+<td>表名</td>
+</tr>
+<tr>
+<td>partitions</td>
+<td>匹配的分区信息</td>
+</tr>
+<tr>
+<td>type</td>
+<td>针对单表的访问方法</td>
+</tr>
+<tr>
+<td>possible_keys</td>
+<td>可能使用到的索引</td>
+</tr>
+<tr>
+<td>key</td>
+<td>实际使用的索引</td>
+</tr>
+<tr>
+<td>key_len</td>
+<td>实时使用的索引长度</td>
+</tr>
+<tr>
+<td>ref</td>
+<td>当使用索引列等值查询时，与索引列进行等值匹配的对象信息</td>
+</tr>
+<tr>
+<td>rows</td>
+<td>预估的需要读取的记录条数</td>
+</tr>
+<tr>
+<td>filtered</td>
+<td>针对预估的需要读取的记录，经过搜索条件过滤后剩余记录条数的百分比</td>
+</tr>
+<tr>
+<td>extra</td>
+<td>一些额外信息</td>
+</tr>
+</tbody></table>
+<span id="more"></span>
+<h2 id="id"><a href="#id" class="headerlink" title="id"></a>id</h2><p>是SQL执行的顺序的标识,SQL从大到小的执行</p>
+<ol>
+<li>id相同时，执行顺序由上至下</li>
+<li>如果是子查询，id的序号会递增，id值越大优先级越高，越先被执行</li>
+<li>id如果相同，可以认为是一组，从上往下顺序执行；在所有组中，id值越大，优先级越高，越先执行</li>
+</ol>
+<p>另外也有可能id值为NULL，这种情况表示的是对多个结果进行UNION并去重产生的结果。</p>
+<h2 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a>select_type</h2><p>表示了查询的类型，具体的值如下表所示</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220413103943.png" alt="select_type"></p>
+<ul>
+<li><strong>SIMPLE</strong>：表示此查询不包含 UNION 查询或子查询,也就是简单的select语句。</li>
+<li><strong>PRIMARY</strong> 对于包含UNION、UNION ALL或者子查询的大查询来说，它是由几个小查询组成，其中最左边那个查询的select_type值及时PRIMARY。</li>
+<li><strong>UNION</strong>：对于包含UNION或者UNION ALL的大查询来说，它是由几个小查询组成的，其中除了最左边的那个小查询以外，其余的小查询都是UNION</li>
+<li><strong>DEPENDENT SUBQUERY</strong> ：如果包含子查询的查询语句不能转为对应的半连接形式，并且该子查询被查询优化器转换为相关子查询的形式。同时这种子查询可能会被执行多次。</li>
+<li><strong>UNION RESULT</strong> Mysql选择使用临时表来完成UNION查询的去重工作，针对该临时表的查询的select_type就是UNION RESULT。</li>
+<li><strong>SUBQUERY</strong> 如果包含子查询的查询语句不能转换为对应的半连接形式，并且改子查询是不相关子查询，而且查询优化器决定采用将改子查询物化的方案来执行改子查询时，该查询对应的类型就是SUBQUERY。这种查询只会被执行一次。</li>
+<li><strong>DEPENDENT UNION</strong>: 在包含UNION或者UNION ALL的大查询中，如果各个小查询都依赖与外层查询，则处理最左边的那个小查询之外，其余小查询都是DEPENDENT UNION。</li>
+<li><strong>DERIVED</strong> ：在包含派生表的查询中，如果以物化派生表的方式执行查询，则派生表对应的子查询的select_type就是DERIVED</li>
+<li><strong>MATERlALIZED</strong>: 当查询优化器在执行包含子查询的语句时，选择将子查询物化之后与外层查询进行连接查询，该子查询对应的select_type属性就是MATERlALIZED。</li>
+<li><strong>UNCACHEABLE SUBQUERY</strong>：一个子查询的结果不能被缓存，必须重新评估外链接的第一行。</li>
+<li><strong>UNCACHEABLE SUBQUERY</strong>: 不常用</li>
+</ul>
+<h2 id="table"><a href="#table" class="headerlink" title="table"></a>table</h2><p>显示当前查询的是哪张表，有时不是真实的表名字，会出现以下格式的值</p>
+<ul>
+<li><code>&lt;unionM,N&gt;</code>:数据的来源是id为M和N的并集</li>
+<li><code>&lt;derivedN&gt;</code>: 该行指的是id值为N的行的派生表结果。派生表可能来自例如 FROM 子句中的子查询</li>
+<li><code>&lt;subqueryN&gt;</code>: 表示id为N的子查询物化后的结果表。</li>
+</ul>
+<h2 id="partitions"><a href="#partitions" class="headerlink" title="partitions"></a>partitions</h2><p>表示当前查询使用到的分区是哪一个，如果是null则表示当前表不是分区表。</p>
+<h2 id="type"><a href="#type" class="headerlink" title="type"></a>type</h2><p>表示Mysql执行这条语句是使用的访问方法，这边<a target="_blank" rel="noopener" href="https://fengxiu.tech/archives/63372.html">Mysql是如何执行查询</a>文章介绍mysql当前执行查询的类型，但是在这篇文章中，只介绍了单表的访问方法，还有一些其它的访问方法。下面对常使用的访问方法进行介绍。</p>
+<ul>
+<li><strong>system</strong>: 当表中只有一条记录并且该表使用的存储引擎的统计数据是精确的，比如MyISAM，MEMORY，name对该表的访问方法就是system。</li>
+<li><strong>const</strong>：表示根据主键或者唯一二级索引列与常数进行等值匹配</li>
+</ul>
+<p>–<strong>eq_ref</strong>：执行链接查询时，如果被驱动表是通过主键或者不允许存储NULL值的唯一二级索引列等值匹配的方式进行访问，则对该被驱动表的访问方法就是eq_ref。<br>–<strong>ref</strong> 通过普通的二级索引列与常量进行等值匹配的方式来查询某个表时，对该表的访问方法就可能是ref<br>– <strong>fulltext</strong> : 使用全文索引<br>– <strong>ref_or_null</strong>：表示对普通索引进行等值匹配且该索引列的值也可以是NULL值，就是在ref的等值匹配基础上加上列是否为NULL的判断。<br>– <strong>index_merge</strong>：索引合并，可以参考前面说的文章。<br>– <strong>unique_subquery</strong>：类似于俩表连接中的被驱动表的eq_ref访问方法，只不过它针对的是一些包含IN子查询的查询语句，如果改查询优化器决定将IN子查询转换为EXISTS子查询，而且改子查询在转换之后可以使用主键或者不允许存储NULL值的唯一二级索引进行等值匹配，那么就成改子查询使用的方法是unique_subquery。<br>– <strong>index_subquery</strong>：与上面类似，区别是在访问子查询中的表时使用的是普通索引。<br>– <strong>range</strong> 使用索引获取某些单点扫描区间的记录<br>– <strong>index</strong> 可以使用索引覆盖，但需要扫描全部的索引记录</p>
+<ul>
+<li><strong>ALL</strong>：全表扫描，MySQL将遍历全表以找到匹配的行</li>
+</ul>
+<h2 id="possible-keys和key"><a href="#possible-keys和key" class="headerlink" title="possible_keys和key"></a>possible_keys和key</h2><p>possible_keys表示mysql在查询时，能够使用到的索引。 即使有些索引在 <code>possible_keys</code> 中出现, 但是并不表示此索引会真正地被MySQL使用到. MySQL 在查询时具体使用了哪些索引, 由 <code>key</code> 字段决定。</p>
+<p>如果该列是NULL，则没有相关的索引。在这种情况下，可以通过检查WHERE子句看是否它引用某些列或适合索引的列来提高你的查询性能。如果是这样，创造一个适当的索引并且再次用EXPLAIN检查查询</p>
+<p>key表示实际使用的索引。</p>
+<h2 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a>key_len</h2><p>表示实际使用索引的长度，计算逻辑如下：</p>
+<ol>
+<li>该字段的最大长度，如果是某些变长字符串，则计算改列最大使用的长度。</li>
+<li>如果可以存储NULL值，长度加1</li>
+<li>如果该列是变长类型的列，长度加2</li>
+</ol>
+<h2 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h2><p>当访问方法是 const、er_ref、ref、 ref_or_null、 unique_subquery、index_subquery中的一个时， ref列展示的就是与索引列进行等值匹配的东西是啥。</p>
+<h2 id="rows"><a href="#rows" class="headerlink" title="rows"></a>rows</h2><p>在查询优化器决定使用全表扫描的方式对某个表执行查询时，执行计划的rows列就代表该表的估计行数。</p>
+<h2 id="filtered"><a href="#filtered" class="headerlink" title="filtered"></a>filtered</h2><p>这个值表示预估最终获取符合条件行数的比例。比如rows是1000，这个值是10，则表示大概查询到符合条件的行数有1000*10% &#x3D; 100。</p>
+<h2 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h2><p>这个字段是用来说明一些额外信息，可以通过这个额外信息来更准确地理解Mysql到底如何执行给定的查询语句。这里介绍比较常用的，如果要知道其它的，可以参考mysql官方文档。</p>
+<p><strong>No table used</strong>：当查询语句中没有FROM子句时将会提示该额外信息。<br><strong>Impossible where</strong>：当查询语句的where子句永远为FLASE时会提示该额外信息。<br><strong>No matching min&#x2F;max row</strong>：当查询列表处有MIN或者MAX聚集函数，但是并没有记录符合WHERE子句中的搜索条件时提示的信息</p>
+<p><strong>Using index</strong>：覆盖索引查询，表示查询在索引树中就可以查找所需数据，不用执行回表操作。</p>
+<p><strong>Using index condition</strong>：有些搜搜条件中虽然出现了索引列，但却不能充当边界条件来形成扫描区间，也就不能用力啊减少需要扫描的记录数量的提示信息。</p>
+<p><strong>Using where</strong>:列数据是从仅仅使用了索引中的信息而没有读取实际的行动的表返回的，这发生在对表的全部的请求列都是同一个索引的部分的时候，表示mysql服务器将在存储引擎检索行后再进行过滤。表示存储引擎返回的记录并不是所有的都满足查询条件，需要在server层进行过滤。查询条件中分为限制条件和检查条件，5.6之前，存储引擎只能根据限制条件扫描数据并返回，然后server层根据检查条件进行过滤再返回真正符合查询的数据。5.6.x之后支持ICP特性，可以把检查条件也下推到存储引擎层，不符合检查条件和限制条件的数据，直接不读取，这样就大大减少了存储引擎扫描的记录数量。extra列显示using index condition。</p>
+<p> <strong>Using join buffer</strong>：改值强调了在获取连接条件时没有使用索引，并且需要连接缓冲区来存储中间结果。如果出现了这个值，那应该注意，根据查询的具体情况可能需要添加索引来改进能。</p>
+<p><strong>Select tables optimized away</strong>：这个值意味着仅通过使用索引，优化器可能仅从聚合函数结果中返回一行</p>
+<p>下面中using filesort和using temporary，这两项非常消耗性能，需要尽量优化掉。</p>
+<p> <strong>Using temporary</strong>：表示MySQL需要使用临时表来存储结果集，常见于排序和分组查询</p>
+<p><strong>Using filesort</strong>：MySQL中无法利用索引完成的排序操作称为“文件排序”,也就是mysql需要通过额外的排序操作，最好优化掉，因为这个操作一方面会使CPU资源消耗过大，另一方面可以内存不足，会使得排序的操作存储到磁盘文件上，增加了磁盘IO次数。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/xuanzhi201111/p/4175635.html">MySQL Explain详解</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000008131735">MySQL 性能优化神器 Explain 使用分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/73f2c8448722">Mysql优化之explain详解，基于5.7来解释</a></li>
+<li>mysql是怎样运行的</li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/explain-output.html#explain_table">EXPLAIN Output Format</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/dd6beb0a.html" title="mysql explain 详解">http://fengxiu.club/archives/dd6beb0a.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/d42e6e40.html" rel="prev" title="Servlet简介以及简单使用">
+      <i class="fa fa-chevron-left"></i> Servlet简介以及简单使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/527f2873.html" rel="next" title="sql的几种连接">
+      sql的几种连接 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#id"><span class="nav-number">1.</span> <span class="nav-text">id</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#select-type"><span class="nav-number">2.</span> <span class="nav-text">select_type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table"><span class="nav-number">3.</span> <span class="nav-text">table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#partitions"><span class="nav-number">4.</span> <span class="nav-text">partitions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type"><span class="nav-number">5.</span> <span class="nav-text">type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#possible-keys%E5%92%8Ckey"><span class="nav-number">6.</span> <span class="nav-text">possible_keys和key</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-len"><span class="nav-number">7.</span> <span class="nav-text">key_len</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ref"><span class="nav-number">8.</span> <span class="nav-text">ref</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rows"><span class="nav-number">9.</span> <span class="nav-text">rows</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#filtered"><span class="nav-number">10.</span> <span class="nav-text">filtered</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extra"><span class="nav-number">11.</span> <span class="nav-text">Extra</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">12.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/dd6beb0a.html";
+    this.page.identifier = "archives/dd6beb0a.html";
+    this.page.title = "mysql explain 详解";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

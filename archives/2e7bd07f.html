@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Java引用体系中我们最熟悉的就是强引用类型，如 A a&#x3D; new A();这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。 除了强引用外，Java还引入了SoftReference（软引用），WeakReference（弱引用），PhantomR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java Reference详解">
+<meta property="og:url" content="http://fengxiu.club/archives/2e7bd07f.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="Java引用体系中我们最熟悉的就是强引用类型，如 A a&#x3D; new A();这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。 除了强引用外，Java还引入了SoftReference（软引用），WeakReference（弱引用），PhantomR">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/21153037_ubGO.png">
+<meta property="og:image" content="https://static.oschina.net/uploads/img/201701/21165610_kkb9.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205039.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205054.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205346.png">
+<meta property="article:published_time" content="2019-01-04T10:25:00.000Z">
+<meta property="article:modified_time" content="2019-01-04T10:25:00.000Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="引用">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/21153037_ubGO.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/2e7bd07f.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java Reference详解 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/2e7bd07f.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java Reference详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-04 10:25:00" itemprop="dateCreated datePublished" datetime="2019-01-04T10:25:00+00:00">2019-01-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/2e7bd07f.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/2e7bd07f.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/2e7bd07f.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/2e7bd07f.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>20k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>18 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Java引用体系中我们最熟悉的就是强引用类型，如 <code>A a= new A()</code>;这是我们经常说的强引用StrongReference，jvm gc时会检测对象是否存在强引用，如果存在由根对象对其有传递的强引用，则不会对其进行回收，即使内存不足抛出OutOfMemoryError。</p>
+<p>除了强引用外，Java还引入了SoftReference（软引用），WeakReference（弱引用），PhantomReference（虚引用），FinalReference ，这些类放在java.lang.ref包下，类的继承体系如下图。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/21153037_ubGO.png" alt="类图"></p>
+<p>Java额外引入这个四种类型引用主要目的是在jvm在gc时，按照引用类型的不同，在回收时采用不同的逻辑。可以把这些引用看作是对对象的一层包裹，jvm根据外层不同的包裹，对其包裹的对象采用不同的回收策略，或特殊逻辑处理。 这几种类型的引用主要在jvm内存缓存、资源释放、对象可达性事件处理等场景会用到。</p>
+<span id="more"></span>
+
+<p>本文会首先讲解SoftReference，WeakReference和PhantomReference的使用，然后在对Reference和ReferenceQueue的源码进行分析。至于FinalRefeence会在另一篇文章中讲解。</p>
+<p>主要内容如下</p>
+<ol>
+<li>对象可达性判断</li>
+<li>ReferenceQueue 简介</li>
+<li>SoftReference简介及使用</li>
+<li>WeakReference简介及使用</li>
+<li>PhantomReference简介及使用</li>
+<li>总结</li>
+<li><!-- more --></li>
+</ol>
+<p><strong>本文名称使用说明</strong>：Reference指代引用对象本身，Referent指代被引用对象，下文介绍会以Reference，Referent形式出现。</p>
+<h2 id="对象可达性判断"><a href="#对象可达性判断" class="headerlink" title="对象可达性判断"></a>对象可达性判断</h2><p>jvm gc时，判断一个对象是否存在引用时，都是从根结合引用(Root Set of References)开始去标识,往往到达一个对象的引用路径会存在多条，如下图。</p>
+<p><img src="https://static.oschina.net/uploads/img/201701/21165610_kkb9.png" alt="可达性图"></p>
+<p>那么 垃圾回收时会依据两个原则来判断对象的可达性：</p>
+<ul>
+<li>单一路径中，以最弱的引用为准</li>
+<li>多路径中，以最强的引用为准</li>
+</ul>
+<p>例如Obj4的引用，存在3个路径:1-&gt;6、2-&gt;5、3-&gt;4, 那么从根对象到Obj4最强的引用是2-&gt;5，因为它们都是强引用。如果仅仅存在一个路径对Obj4有引用时，比如现在只剩1-&gt;6,那么根对象到Obj4的引用就是以最弱的为准，就是SoftReference引用,Obj4就是softly-reachable对象。如果是WeakReference引用，就称作weakly-reachable对象。只要一个对象是强引用可达，那么这个对象就不会被gc，即使发生OOM也不会回收这个对象。</p>
+<h2 id="ReferenceQueue-简介"><a href="#ReferenceQueue-简介" class="headerlink" title="ReferenceQueue 简介"></a>ReferenceQueue 简介</h2><p>引用队列，在检测到适当的可到达性更改后，即Referent对象的可达性发生适当的改变时，垃圾回收器将已注册的引用对象reference添加到该队列中。</p>
+<p>简单用下面代码来说明</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">object</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br><span class="line"><span class="type">ReferenceQueue</span>  <span class="variable">queue</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReferenceQueue</span>();</span><br><span class="line">SoftReference&lt;Objecct&gt; soft = <span class="keyword">new</span> <span class="title class_">SoftReference</span>&lt;&gt;(object,queue);</span><br><span class="line">object = <span class="literal">null</span>;</span><br><span class="line">Systen.gc();</span><br><span class="line"><span class="comment">//休眠一会，等待gc完成</span></span><br><span class="line">Thread.sleep(<span class="number">100</span>);</span><br><span class="line">System.out.println(queue.poll() == soft);</span><br><span class="line">System.out.println(soft.get() == <span class="literal">null</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">true</span></span><br><span class="line"><span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>结果分析：</p>
+<p>对应上面第一句话，就是说当soft引用对象包含的object对象被gc之后，其可达性就会发生改变，同时会将soft对象注册到queue这个引用队列中。可以使用poll()这个方法取出被所有可达性改变的引用对象。</p>
+<p>ReferenceQueue实现了一个队列的入队(enqueue)和出队(poll,remove)操作，内部元素就是泛型的Reference，并且Queue的实现，是由Reference自身的链表结构( 单向循环链表 )所实现的。</p>
+<p>ReferenceQueue名义上是一个队列，但实际内部并非有实际的存储结构，它的存储是依赖于内部节点之间的关系来表达。可以理解为queue是一个类似于链表的结构，这里的节点其实就是reference本身。可以理解为queue为一个链表的容器，其自己仅存储当前的head节点，而后面的节点由每个reference节点自己通过next来保持即可。</p>
+<p>因此可以看出，当reference与referenQueue联合使用的主要作用就是当reference指向的referent回收时，提供一种通知机制，通过queue取到这些reference，来做额外的处理工作。当然，如果我们不需要这种通知机制，在创建Reference对象时不传入queue对象即可。</p>
+<h2 id="java引用种类简介"><a href="#java引用种类简介" class="headerlink" title="java引用种类简介"></a>java引用种类简介</h2><ul>
+<li>强引用是最传统的“引用”的定义，是指在程序代码之中普遍存在的引用赋值，即类似“Object obj&#x3D;new Object()”这种引用关系。无论任何情况下，只要强引用关系还存在，垃圾收集器就永远不会回 收掉被引用的对象。</li>
+<li>软引用是用来描述一些还有用，但非必须的对象。只被软引用关联着的对象，在系统将要发生内 存溢出异常前，会把这些对象列进回收范围之中进行第二次回收，如果这次回收还没有足够的内存， 才会抛出内存溢出异常。在JDK 1.2版之后提供了SoftReference类来实现软引用。</li>
+<li>弱引用也是用来描述那些非必须对象，但是它的强度比软引用更弱一些，被弱引用关联的对象只 能生存到下一次垃圾收集发生为止。当垃圾收集器开始工作，无论当前内存是否足够，都会回收掉只 被弱引用关联的对象。在JDK 1.2版之后提供了WeakReference类来实现弱引用。</li>
+<li>虚引用也称为“幽灵引用”或者“幻影引用”，它是最弱的一种引用关系。一个对象是否有虚引用的 存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚 引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</li>
+</ul>
+<h2 id="SoftReference简介及使用"><a href="#SoftReference简介及使用" class="headerlink" title="SoftReference简介及使用"></a>SoftReference简介及使用</h2><p>根据上面我们讲的对象可达性原理，我们把一个对象存在根对象对其有直接或间接的SoftReference，并没有其他强引用路径，我们把该对象成为softly-reachable对象。JVM保证在抛出OutOfMemoryError前会回收这些softly-reachable对象。JVM会根据当前内存的情况来决定是否回收softly-reachable对象，但只要referent有强引用存在，该referent就一定不会被清理，因此SoftReference适合用来实现memory-sensitive caches。</p>
+<p>可见，SoftReference在一定程度上会影响JVM GC的，例如softly-reachable对应的referent多次垃圾回收仍然不满足释放条件，那么它会停留在heap old区，占据很大部分空间，在JVM没有抛出OutOfMemoryError前，它有可能会导致频繁的Full GC。</p>
+<p>下面是我使用SoftReference做的一个简单的缓存图片的测试</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SoftReferenceImageTest</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        testImageLoad();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">testImageLoad</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;xmind.png&quot;</span>;</span><br><span class="line">        HashMap&lt;String, SoftReference&lt;<span class="type">byte</span>[]&gt;&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(<span class="number">100</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            <span class="type">FileInputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(s);</span><br><span class="line">            <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[(<span class="type">int</span>) inputStream.getChannel().size()];</span><br><span class="line">            <span class="keyword">while</span> (inputStream.read(bytes) &gt; <span class="number">0</span>) ;</span><br><span class="line">            inputStream.close();</span><br><span class="line">            map.put(s + i, <span class="keyword">new</span> <span class="title class_">SoftReference</span>&lt;<span class="type">byte</span>[]&gt;(bytes));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; map.size(); i++) &#123;</span><br><span class="line"></span><br><span class="line">            Optional.ofNullable(map.get(s + i))</span><br><span class="line">                    .filter(softReference -&gt; softReference.get() != <span class="literal">null</span>)</span><br><span class="line">                    .ifPresent(softReference -&gt; &#123;</span><br><span class="line">                        System.out.println(<span class="string">&quot;ok&quot;</span>);</span><br><span class="line">                    &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行这段代码时，加上jvm参数(<strong>-Xms10M -Xmx10M -Xmn5M -XX:+PrintGCDetails</strong>)</p>
+<p>运行结果为空，因为我加载的图片是5M，而分配给运行时的jvm是10M,所以每次加载完一张图片之后，在下一次加载就会清理这个SoftReference对象，因此最后得到的结果为空。</p>
+<h2 id="WeakReference简介及使用"><a href="#WeakReference简介及使用" class="headerlink" title="WeakReference简介及使用"></a>WeakReference简介及使用</h2><p>当一个对象被WeakReference引用时，处于weakly-reachable状态时，只要发生GC时，就会被清除，同时会把WeakReference注册到引用队列中(如果存在的话)。 WeakReference不阻碍或影响它们对应的referent被终结(finalized)和回收(reclaimed)，因此，WeakReference经常被用作实现规范映射(canonicalizing mappings)。相比SoftReference来说，WeakReference对JVM GC几乎是没有影响的。</p>
+<p>下面是一个简单的demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WeakReferenceTest</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        weak();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">weak</span><span class="params">()</span> &#123;</span><br><span class="line">        ReferenceQueue&lt;Integer&gt; referenceQueue = <span class="keyword">new</span> <span class="title class_">ReferenceQueue</span>&lt;&gt;();</span><br><span class="line">        WeakReference&lt;Integer&gt; weak = <span class="keyword">new</span> <span class="title class_">WeakReference</span>&lt;Integer&gt;(<span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">100</span>), </span><br><span class="line">                                                                 referenceQueue);</span><br><span class="line">        System.out.println(<span class="string">&quot;GC 前===&gt;&quot;</span> + weak.get());</span><br><span class="line">        System.gc();</span><br><span class="line">        System.out.println(<span class="string">&quot;GC 后===&gt;&quot;</span> + weak.get());</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">100</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(referenceQueue.poll() == weak);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GC 前===&gt;<span class="number">100</span></span><br><span class="line">GC 后===&gt;<span class="literal">null</span></span><br><span class="line"><span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>结果分析：</p>
+<p>从上面我么可以看到，WeakReference所对应的Referent对象被回收了，因此验证了只要发生gc，weakly-reachable对象就会被gc回收。</p>
+<p>另外可以查看这篇文章，仔细说明jdk中WeakHashMap在Tomact中使用的场景<a target="_blank" rel="noopener" href="https://blog.csdn.net/kaka0509/article/details/73459419">WeakHashMap使用场景</a></p>
+<h2 id="PhantomReference简介及使用"><a href="#PhantomReference简介及使用" class="headerlink" title="PhantomReference简介及使用"></a>PhantomReference简介及使用</h2><p>PhantomReference 不同于WeakReference、SoftReference，它存在的意义不是为了获取referent,因为你也永远获取不到，因为它的get如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> T <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PhantomReference主要作为其指向的referent被回收时的一种通知机制,它就是利用上文讲到的ReferenceQueue实现的。当referent被gc回收时，JVM自动把PhantomReference对象(reference)本身加入到ReferenceQueue中，像发出信号通知一样，表明该reference指向的referent被回收。然后可以通过去queue中取到reference，此时说明其指向的referent已经被回收，可以通过这个通知机制来做额外的清场工作。 因此有些情况可以用PhantomReference 代替finalize()，做资源释放更明智。</p>
+<p>下面举个例子，用PhantomReference来自动关闭文件流。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ResourcePhantomReference</span>&lt;T&gt; <span class="keyword">extends</span> <span class="title class_">PhantomReference</span>&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> List&lt;Closeable&gt; closeables;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ResourcePhantomReference</span><span class="params">(T referent, ReferenceQueue&lt;? <span class="built_in">super</span> T&gt; q, List&lt;Closeable&gt; resource)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(referent, q);</span><br><span class="line">        closeables = resource;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">cleanUp</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (closeables == <span class="literal">null</span> || closeables.size() == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">for</span> (Closeable closeable : closeables) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                closeable.close();</span><br><span class="line">                System.out.println(<span class="string">&quot;clean up:&quot;</span>+closeable);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ResourceCloseDeamon</span> <span class="keyword">extends</span> <span class="title class_">Thread</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">ReferenceQueue</span> <span class="variable">QUEUE</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReferenceQueue</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//保持对reference的引用,防止reference本身被回收</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;Reference&gt; references=<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.setName(<span class="string">&quot;ResourceCloseDeamon&quot;</span>);</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="type">ResourcePhantomReference</span> <span class="variable">reference</span> <span class="operator">=</span> (ResourcePhantomReference) QUEUE.remove();</span><br><span class="line">                reference.cleanUp();</span><br><span class="line">                references.remove(reference);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">register</span><span class="params">(Object referent, List&lt;Closeable&gt; closeables)</span> &#123;</span><br><span class="line">        references.add(<span class="keyword">new</span> <span class="title class_">ResourcePhantomReference</span>(referent,QUEUE,closeables));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FileOperation</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> FileOutputStream outputStream;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> FileInputStream inputStream;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">FileOperation</span><span class="params">(FileInputStream inputStream, FileOutputStream outputStream)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.outputStream = outputStream;</span><br><span class="line">        <span class="built_in">this</span>.inputStream = inputStream;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">operate</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            inputStream.getChannel().transferTo(<span class="number">0</span>, inputStream.getChannel().size(), outputStream.getChannel());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PhantomTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">//打开回收</span></span><br><span class="line">        <span class="type">ResourceCloseDeamon</span> <span class="variable">deamon</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ResourceCloseDeamon</span>();</span><br><span class="line">        deamon.setDaemon(<span class="literal">true</span>);</span><br><span class="line">        deamon.start();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// touch a.txt b.txt</span></span><br><span class="line">        <span class="comment">// echo &quot;hello&quot; &gt; a.txt</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//保留对象,防止gc把stream回收掉,其不到演示效果</span></span><br><span class="line">        List&lt;Closeable&gt; all=<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        FileInputStream inputStream;</span><br><span class="line">        FileOutputStream outputStream;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">100000</span>; i++) &#123;</span><br><span class="line">            inputStream = <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;/Users/robin/a.txt&quot;</span>);</span><br><span class="line">            outputStream = <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;/Users/robin/b.txt&quot;</span>);</span><br><span class="line">            <span class="type">FileOperation</span> <span class="variable">operation</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOperation</span>(inputStream, outputStream);</span><br><span class="line">            operation.operate();</span><br><span class="line">            TimeUnit.MILLISECONDS.sleep(<span class="number">100</span>);</span><br><span class="line"></span><br><span class="line">            List&lt;Closeable&gt;closeables=<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            closeables.add(inputStream);</span><br><span class="line">            closeables.add(outputStream);</span><br><span class="line">            all.addAll(closeables);</span><br><span class="line">            ResourceCloseDeamon.register(operation,closeables);</span><br><span class="line">            <span class="comment">//用下面命令查看文件句柄,如果把上面register注释掉,就会发现句柄数量不断上升</span></span><br><span class="line">            <span class="comment">//jps | grep PhantomTest | awk &#x27;&#123;print $1&#125;&#x27; |head -1 | xargs  lsof -p  | grep /User/robin</span></span><br><span class="line">            System.gc();</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行上面的代码，通过jps | grep PhantomTest | awk ‘{print $1}’ |head -1 | xargs lsof -p | grep &#x2F;User&#x2F;robin ｜ wc -l 可以看到句柄没有上升，而去掉ResourceCloseDeamon.register(operation,closeables);时，句柄就不会被释放。</p>
+<p>PhantomReference使用时一定要传一个referenceQueue,当然也可以传null,但是这样就毫无意义了。因为PhantomReference的get结果为null,如果在把queue设为null,那么在其指向的referent被回收时，reference本身将永远不会可能被加入队列中，这里我们可以看ReferenceQueue的源码。</p>
+<h2 id="Reference和ReferenceQueue源码分析"><a href="#Reference和ReferenceQueue源码分析" class="headerlink" title="Reference和ReferenceQueue源码分析"></a>Reference和ReferenceQueue源码分析</h2><h3 id="Reference源码分析"><a href="#Reference源码分析" class="headerlink" title="Reference源码分析"></a>Reference源码分析</h3><p>java.lang.ref.Reference 为 软（soft）引用、弱（weak）引用、虚（phantom）引用的父类。</p>
+<p>因为Reference对象和垃圾回收密切配合实现，该类可能不能被直接子类化。<br>可以理解为Reference的直接子类都是由jvm定制化处理的,因此在代码中直接继承于Reference类型没有任何作用。但可以继承jvm定制的Reference的子类。<br>例如：Cleaner 继承了 PhantomReference</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Cleaner</span> <span class="keyword">extends</span> <span class="title class_">PhantomReference</span>&lt;Object&gt;</span><br></pre></td></tr></table></figure>
+
+<p>老规矩，先看下Reference的重要属性，方便后面讲解函数的时候使用</p>
+<p>Reference链表结构内部主要的成员有</p>
+<p><strong>pending 和 discovered</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* List of References waiting to be enqueued.  The collector adds</span></span><br><span class="line"><span class="comment"> * References to this list, while the Reference-handler thread removes</span></span><br><span class="line"><span class="comment"> * them.  This list is protected by the above lock object. The</span></span><br><span class="line"><span class="comment"> * list uses the discovered field to link its elements.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Reference&lt;Object&gt; pending = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* When active:   next element in a discovered reference list maintained by GC (or this if last)</span></span><br><span class="line"><span class="comment"> *     pending:   next element in the pending list (or null if last)</span></span><br><span class="line"><span class="comment"> *   otherwise:   NULL</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">private</span> Reference&lt;T&gt; discovered;  <span class="comment">/* used by VM */</span></span><br></pre></td></tr></table></figure>
+
+<p>上面俩个字段都是jvm来赋值。</p>
+<p>pending: 可以理解为jvm在gc时会将要处理的对象放到这个静态字段上面。同时，另一个字段discovered：。</p>
+<p>discovered：表示要处理下一个对象，当是最后一个元素时discovered&#x3D;this</p>
+<p>通过这俩个字段，可以将jvm在gc时处理的引用对象集合变成一个链表，通过discovered插入下一个待处理的对象。</p>
+<p>在处理这些已经被GC处理过的对象时，通过discovered不断地拿到下一个对象，然后处理对象的pending，直到最后没有可处理的对象。</p>
+<p><strong>referent</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> T referent; <span class="comment">/* Treated specially by GC */</span></span><br></pre></td></tr></table></figure>
+
+<p>referent字段由GC特别处理,表示其引用的对象，即我们在构造的时候需要被包装在其中的对象。对象即将被回收的定义：此对象除了被reference引用之外没有其它引用了( 并非确实没有被引用，而是gcRoot可达性不可达,以避免循环引用的问题 )。如果一旦被回收，则会直接置为null，而外部程序可通过引用对象本身( 而不是referent，这里是reference#get() )了解到回收行为的产生( PhntomReference除外 )。</p>
+<p><strong>next</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* When active:   NULL</span></span><br><span class="line"><span class="comment">    *     pending:   this</span></span><br><span class="line"><span class="comment">    *    Enqueued:   next reference in queue (or this if last)</span></span><br><span class="line"><span class="comment">    *    Inactive:   this</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"><span class="meta">@SuppressWarnings(&quot;rawtypes&quot;)</span></span><br><span class="line"><span class="keyword">volatile</span> Reference next;</span><br></pre></td></tr></table></figure>
+
+<p>next：即描述当前引用节点所存储的下一个即将被处理的节点。但next仅在放到queue中才会有意义( 因为，只有在enqueue的时候，会将next设置为下一个要处理的Reference对象 )。为了描述相应的状态值，在放到队列当中后，其queue就不会再引用这个队列了。而是引用一个特殊的ENQUEUED。因为已经放到队列当中，并且不会再次放到队列当中。</p>
+<p><strong>lock</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">private</span> <span class="keyword">class</span> <span class="title class_">Lock</span> &#123; &#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Lock</span>();</span><br></pre></td></tr></table></figure>
+
+<p>lock：在垃圾收集中用于同步的对象。收集器必须获取该锁在每次收集周期开始时。因此这是至关重要的：任何持有该锁的代码应该尽快完成，不分配新对象，并且避免调用用户代码。</p>
+<p><strong>pending</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* List of References waiting to be enqueued.  The collector adds</span></span><br><span class="line"><span class="comment">    * References to this list, while the Reference-handler thread removes</span></span><br><span class="line"><span class="comment">    * them.  This list is protected by the above lock object. The</span></span><br><span class="line"><span class="comment">    * list uses the discovered field to link its elements.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Reference&lt;Object&gt; pending = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>pending：等待被入队的引用列表。收集器会添加引用到这个列表，直到Reference-handler线程移除了它们。这个列表被上面的lock对象保护。这个列表使用discovered字段来连接它自己的元素( 即pending的下一个元素就是discovered对象 )。</p>
+<p><strong>queue</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">volatile</span> ReferenceQueue&lt;? <span class="built_in">super</span> T&gt; queue;</span><br></pre></td></tr></table></figure>
+
+<p>queue：是对象即将被回收时所要通知的队列。当对象即被回收时，整个reference对象( 而不是被回收的对象 )会被放到queue里面，然后外部程序即可通过监控这个queue拿到相应的数据了。</p>
+<p>这里的queue( 即，ReferenceQueue对象 )名义上是一个队列，但实际内部并非有实际的存储结构，它的存储是依赖于内部节点之间的关系来表达。可以理解为queue是一个类似于链表的结构，这里的节点其实就是reference本身。可以理解为queue为一个链表的容器，其自己仅存储当前的head节点，而后面的节点由每个reference节点自己通过next来保持即可。</p>
+<p>Reference实例( 即Reference中的真是引用对象referent )的4中可能的内部状态值<br>Queue的另一个作用是可以区分不同状态的Reference。</p>
+<p>Reference有4种状态，不同状态的reference其queue也不同：</p>
+<ul>
+<li>Active：新创建的引用对象都是这个状态，在 GC 检测到引用对象已经到达合适的reachability时，GC 会根据引用对象是否在创建时制定ReferenceQueue参数进行状态转移，如果指定了，那么转移到Pending，如果没指定，转移到Inactive。</li>
+<li>Pending：pending-Reference列表中的引用都是这个状态，它们等着被内部线程ReferenceHandler处理入队（会调用ReferenceQueue.enqueue方法）。没有注册的实例不会进入这个状态。</li>
+<li>Enqueued：相应的对象已经为待回收，并且相应的引用对象已经放到queue当中了。准备由外部线程来询问queue获取相应的数据。调用ReferenceQueue.enqueued方法后的Reference处于这个状态中。当Reference实例从它的ReferenceQueue移除后，它将成为Inactive。没有注册的实例不会进入这个状态。</li>
+<li>Inactive：即此对象已经由外部从queue中获取到，并且已经处理掉了。即意味着此引用对象可以被回收，并且对内部封装的对象也可以被回收掉了( 实际的回收运行取决于clear动作是否被调用 )。可以理解为进入到此状态的肯定是应该被回收掉的。一旦一个Reference实例变为了Inactive，它的状态将不会再改变。</li>
+</ul>
+<p>jvm并不需要定义状态值来判断相应引用的状态处于哪个状态，只需要通过计算next和queue即可进行判断。</p>
+<ul>
+<li>Active：queue为创建一个Reference对象时传入的ReferenceQueue对象；如果ReferenceQueue对象为空或者没有传入ReferenceQueue对象，则为ReferenceQueue.NULL；next&#x3D;&#x3D;null；</li>
+<li>Pending：queue为初始化时传入ReferenceQueue对象；next&#x3D;&#x3D;this(由jvm设置)；</li>
+<li>Enqueue：当queue!&#x3D;null &amp;&amp; queue !&#x3D; ENQUEUED 时；设置queue为ENQUEUED；next为下一个要处理的reference对象，或者若为最后一个了next&#x3D;&#x3D;this；</li>
+<li>Inactive：queue &#x3D; ReferenceQueue.NULL; next &#x3D; this.</li>
+</ul>
+<p>通过这个组合，收集器只需要检测next属性为了决定是否一个Reference实例需要特殊的处理：如果next&#x3D;&#x3D;null，则实例是active；如果next!&#x3D;null，为了确保并发收集器能够发现active的Reference对象，而不会影响可能将enqueue()方法应用于这些对象的应用程序线程，收集器应通过discovered字段链接发现的对象。discovered字段也用于链接pending列表中的引用对象。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205039.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205054.png"></p>
+<p>外部从queue中获取Reference</p>
+<ul>
+<li>WeakReference对象进入到queue之后,相应的referent为null。</li>
+<li>SoftReference对象，如果对象在内存足够时，不会进入到queue，自然相应的referent不会为null。如果需要被处理( 内存不够或其它策略 )，则置相应的referent为null，然后进入到queue。通过debug发现，SoftReference是pending状态时，referent就已经是null了，说明此事referent已经被GC回收了。</li>
+<li>FinalReference对象，因为需要调用其finalize对象，因此其reference即使入queue，其referent也不会为null，即不会clear掉。</li>
+<li>PhantomReference对象，因为本身get实现为返回null。因此clear的作用不是很大。因为不管enqueue还是没有，都不会清除掉。</li>
+</ul>
+<p>如果PhantomReference对象不管enqueue还是没有，都不会清除掉reference对象，那么怎么办？这个reference对象不就一直存在这了？而且JVM是会直接通过字段操作清除相应引用的，那么是不是JVM已经释放了系统底层资源，但java代码中该引用还未置null？</p>
+<p>不会的，虽然PhantomReference有时候不会调用clear，如Cleaner对象 。但Cleaner的clean()方法只调用了remove(this)，这样当clean()执行完后，Cleaner就是一个无引用指向的对象了，也就是可被GC回收的对象。</p>
+<ul>
+<li>active ——&gt; pending ：Reference#tryHandlePending</li>
+<li>pending ——&gt; enqueue ：ReferenceQueue#enqueue</li>
+<li>enqueue ——&gt; inactive ：Reference#clear</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220421205346.png"></p>
+<p><strong>构造函数</strong><br>其内部提供2个构造函数，一个带queue，一个不带queue。其中queue的意义在于，我们可以在外部对这个queue进行监控。即如果有对象即将被回收，那么相应的reference对象就会被放到这个queue里。我们拿到reference，就可以再作一些事务。</p>
+<p>而如果不带的话，就只有不断地轮询reference对象，通过判断里面的get是否返回null( phantomReference对象不能这样作，其get始终返回null，因此它只有带queue的构造函数 )。这两种方法均有相应的使用场景，取决于实际的应用。如weakHashMap中就选择去查询queue的数据，来判定是否有对象将被回收。而ThreadLocalMap，则采用判断get()是否为null来作处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Reference(T referent) &#123;</span><br><span class="line">    <span class="built_in">this</span>(referent, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Reference(T referent, ReferenceQueue&lt;? <span class="built_in">super</span> T&gt; queue) &#123;</span><br><span class="line">    <span class="built_in">this</span>.referent = referent;</span><br><span class="line">    <span class="built_in">this</span>.queue = (queue == <span class="literal">null</span>) ? ReferenceQueue.NULL : queue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们在创建一个引用对象时，指定了ReferenceQueue，那么当引用对象指向的对象达到合适的状态（根据引用类型不同而不同）时，GC会把引用对象本身添加到这个队列中，方便我们处理它，因为引用对象指向的对象GC会自动清理，但是引用对象本身也是对象（是对象就占用一定资源），所以需要我们自己清理。</p>
+<p><strong>重要方法</strong><br>clear()</p>
+<pre><code>/**
+ * Clears this reference object.  Invoking this method will not cause this
+ * object to be enqueued.
+ *
+ * &lt;p&gt; This method is invoked only by Java code; when the garbage collector
+ * clears references it does so directly, without invoking this method.
+ */
+public void clear() &#123;
+    this.referent = null;
+&#125;
+</code></pre>
+<p>调用此方法不会导致此对象入队。此方法仅由Java代码调用；当垃圾收集器清除引用时，它直接执行，而不调用此方法。<br> clear的语义就是将referent置null。<br> 清除引用对象所引用的原对象，这样通过get()方法就不能再访问到原对象了( PhantomReference除外 )。从相应的设计思路来说，既然都进入到queue对象里面，就表示相应的对象需要被回收了，因为没有再访问原对象的必要。此方法不会由JVM调用，而JVM是直接通过字段操作清除相应的引用，其具体实现与当前方法相一致。</p>
+<p>ReferenceHandler线程，其优先级最高，可以理解为需要不断地处理引用对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    <span class="type">ThreadGroup</span> <span class="variable">tg</span> <span class="operator">=</span> Thread.currentThread().getThreadGroup();</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">ThreadGroup</span> <span class="variable">tgn</span> <span class="operator">=</span> tg;</span><br><span class="line">         tgn != <span class="literal">null</span>;</span><br><span class="line">         tg = tgn, tgn = tg.getParent());</span><br><span class="line">    <span class="type">Thread</span> <span class="variable">handler</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReferenceHandler</span>(tg, <span class="string">&quot;Reference Handler&quot;</span>);</span><br><span class="line">    <span class="comment">/* If there were a special system-only priority greater than</span></span><br><span class="line"><span class="comment">     * MAX_PRIORITY, it would be used here</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    handler.setPriority(Thread.MAX_PRIORITY);</span><br><span class="line">    handler.setDaemon(<span class="literal">true</span>);</span><br><span class="line">    handler.start();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// provide access in SharedSecrets</span></span><br><span class="line">    SharedSecrets.setJavaLangRefAccess(<span class="keyword">new</span> <span class="title class_">JavaLangRefAccess</span>() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">tryHandlePendingReference</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> tryHandlePending(<span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">ReferenceHandler</span> <span class="keyword">extends</span> <span class="title class_">Thread</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">ensureClassInitialized</span><span class="params">(Class&lt;?&gt; clazz)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Class.forName(clazz.getName(), <span class="literal">true</span>, clazz.getClassLoader());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> (Error) <span class="keyword">new</span> <span class="title class_">NoClassDefFoundError</span>(e.getMessage()).initCause(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="comment">// pre-load and initialize InterruptedException and Cleaner classes</span></span><br><span class="line">        <span class="comment">// so that we don&#x27;t get into trouble later in the run loop if there&#x27;s</span></span><br><span class="line">        <span class="comment">// memory shortage while loading/initializing them lazily.</span></span><br><span class="line">        ensureClassInitialized(InterruptedException.class);</span><br><span class="line">        ensureClassInitialized(Cleaner.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ReferenceHandler(ThreadGroup g, String name) &#123;</span><br><span class="line">        <span class="built_in">super</span>(g, name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            tryHandlePending(<span class="literal">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>tryHandlePending()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Try handle pending &#123;<span class="doctag">@link</span> Reference&#125; if there is one.&lt;p&gt;</span></span><br><span class="line"><span class="comment"> * Return &#123;<span class="doctag">@code</span> true&#125; as a hint that there might be another</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> Reference&#125; pending or &#123;<span class="doctag">@code</span> false&#125; when there are no more pending</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> Reference&#125;s at the moment and the program can do some other</span></span><br><span class="line"><span class="comment"> * useful work instead of looping.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> waitForNotify if &#123;<span class="doctag">@code</span> true&#125; and there was no pending</span></span><br><span class="line"><span class="comment"> *                      &#123;<span class="doctag">@link</span> Reference&#125;, wait until notified from VM</span></span><br><span class="line"><span class="comment"> *                      or interrupted; if &#123;<span class="doctag">@code</span> false&#125;, return immediately</span></span><br><span class="line"><span class="comment"> *                      when there is no pending &#123;<span class="doctag">@link</span> Reference&#125;.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if there was a &#123;<span class="doctag">@link</span> Reference&#125; pending and it</span></span><br><span class="line"><span class="comment"> *         was processed, or we waited for notification and either got it</span></span><br><span class="line"><span class="comment"> *         or thread was interrupted before being notified;</span></span><br><span class="line"><span class="comment"> *         &#123;<span class="doctag">@code</span> false&#125; otherwise.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">tryHandlePending</span><span class="params">(<span class="type">boolean</span> waitForNotify)</span> &#123;</span><br><span class="line">    Reference&lt;Object&gt; r;</span><br><span class="line">    Cleaner c;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 加锁是为了防止竞争产生同步问题</span></span><br><span class="line">        <span class="keyword">synchronized</span> (lock) &#123;</span><br><span class="line">            <span class="keyword">if</span> (pending != <span class="literal">null</span>) &#123;</span><br><span class="line">                r = pending;</span><br><span class="line">                <span class="comment">// &#x27;instanceof&#x27; might throw OutOfMemoryError sometimes</span></span><br><span class="line">                <span class="comment">// so do this before un-linking &#x27;r&#x27; from the &#x27;pending&#x27; chain...</span></span><br><span class="line">                c = r <span class="keyword">instanceof</span> Cleaner ? (Cleaner) r : <span class="literal">null</span>;</span><br><span class="line">                <span class="comment">// unlink &#x27;r&#x27; from &#x27;pending&#x27; chain</span></span><br><span class="line">                pending = r.discovered;</span><br><span class="line">                r.discovered = <span class="literal">null</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// The waiting on the lock may cause an OutOfMemoryError</span></span><br><span class="line">                <span class="comment">// because it may try to allocate exception objects.</span></span><br><span class="line">                <span class="keyword">if</span> (waitForNotify) &#123;</span><br><span class="line">                    lock.wait();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// retry if waited</span></span><br><span class="line">                <span class="keyword">return</span> waitForNotify;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</span><br><span class="line">        <span class="comment">// Give other threads CPU time so they hopefully drop some live references</span></span><br><span class="line">        <span class="comment">// and GC reclaims some space.</span></span><br><span class="line">        <span class="comment">// Also prevent CPU intensive spinning in case &#x27;r instanceof Cleaner&#x27; above</span></span><br><span class="line">        <span class="comment">// persistently throws OOME for some time...</span></span><br><span class="line">        Thread.yield();</span><br><span class="line">        <span class="comment">// retry</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException x) &#123;</span><br><span class="line">        <span class="comment">// retry</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Fast path for cleaners</span></span><br><span class="line">    <span class="keyword">if</span> (c != <span class="literal">null</span>) &#123;</span><br><span class="line">        c.clean();</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ReferenceQueue&lt;? <span class="built_in">super</span> Object&gt; q = r.queue;</span><br><span class="line">    <span class="keyword">if</span> (q != ReferenceQueue.NULL) q.enqueue(r);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个线程在Reference类的static构造块中启动，并且被设置为高优先级和daemon状态。此线程要做的事情，是不断的检查pending是否为null，如果pending不为null，则将pending进行enqueue，否则线程进入wait状态。</p>
+<p>由此可见，pending是由jvm来赋值的，当Reference内部的referent对象的可达状态改变时，jvm会将Reference对象放入pending链表。并且这里enqueue的队列是我们在初始化( 构造函数 )Reference对象时传进来的queue，如果传入了null( 实际使用的是ReferenceQueue.NULL )，则ReferenceHandler则不进行enqueue操作，所以只有非RefernceQueue.NULL的queue才会将Reference进行enqueue。</p>
+<h3 id="ReferenceQueue源码"><a href="#ReferenceQueue源码" class="headerlink" title="ReferenceQueue源码"></a>ReferenceQueue源码</h3><p>引用队列，在检测到适当的可到达性更改后，垃圾回收器将已注册的引用对象添加到该队列中</p>
+<p>实现了一个队列的入队(enqueue)和出队(poll还有remove)操作，内部元素就是泛型的Reference，并且Queue的实现，是由Reference自身的链表结构( 单向循环链表 )所实现的。</p>
+<p>ReferenceQueue名义上是一个队列，但实际内部并非有实际的存储结构，它的存储是依赖于内部节点之间的关系来表达。可以理解为queue是一个类似于链表的结构，这里的节点其实就是reference本身。可以理解为queue为一个链表的容器，其自己仅存储当前的head节点，而后面的节点由每个reference节点自己通过next来保持即可。</p>
+<p><strong>属性</strong><br><strong>head</strong>：始终保存当前队列中最新要被处理的节点，可以认为queue为一个后进先出的队列。当新的节点进入时，采取以下的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">r.next = (head == <span class="literal">null</span>) ? r : head;</span><br><span class="line">head = r;</span><br></pre></td></tr></table></figure>
+
+<p>然后，在获取的时候，采取相应的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Reference&lt;? <span class="keyword">extends</span> <span class="title class_">T</span>&gt; r = head;</span><br><span class="line">        <span class="keyword">if</span> (r != <span class="literal">null</span>) &#123;</span><br><span class="line">            head = (r.next == r) ?</span><br><span class="line">                <span class="literal">null</span> :</span><br><span class="line">                r.next; <span class="comment">// Unchecked due to the next field having a raw type in Reference</span></span><br><span class="line">            r.queue = NULL;</span><br><span class="line">            r.next = r;</span><br></pre></td></tr></table></figure>
+
+<p>方法<br>**enqueue()**：待处理引用入队</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">boolean</span> <span class="title function_">enqueue</span><span class="params">(Reference&lt;? extends T&gt; r)</span> &#123; <span class="comment">/* Called only by Reference class */</span></span><br><span class="line">    <span class="keyword">synchronized</span> (lock) &#123;</span><br><span class="line">        <span class="comment">// Check that since getting the lock this reference hasn&#x27;t already been</span></span><br><span class="line">        <span class="comment">// enqueued (and even then removed)</span></span><br><span class="line">        ReferenceQueue&lt;?&gt; queue = r.queue;</span><br><span class="line">        <span class="keyword">if</span> ((queue == NULL) || (queue == ENQUEUED)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">assert</span> <span class="variable">queue</span> <span class="operator">=</span>= <span class="built_in">this</span>;</span><br><span class="line">        r.queue = ENQUEUED;</span><br><span class="line">        r.next = (head == <span class="literal">null</span>) ? r : head;</span><br><span class="line">        head = r;</span><br><span class="line">        queueLength++;</span><br><span class="line">        <span class="keyword">if</span> (r <span class="keyword">instanceof</span> FinalReference) &#123;</span><br><span class="line">            sun.misc.VM.addFinalRefCount(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        lock.notifyAll(); <span class="comment">// ①</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>lock.notifyAll(); 通知外部程序之前阻塞在当前队列之上的情况。( 即之前一直没有拿到待处理的对象，如ReferenceQueue的remove()方法 )</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>引用类型对比</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>引用类型</th>
+<th>取得目标对象方式</th>
+<th>垃圾回收条件</th>
+<th>是否可能内存泄漏</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>强引用</td>
+<td>直接调用</td>
+<td>不回收</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>2</td>
+<td>软引用</td>
+<td>通过 get()方法</td>
+<td>视内存情况回收</td>
+<td>不可能</td>
+</tr>
+<tr>
+<td>3</td>
+<td>弱引用</td>
+<td>通过 get()方法</td>
+<td>永远回收</td>
+<td>不可能</td>
+</tr>
+<tr>
+<td>4</td>
+<td>虚引用</td>
+<td>无法取得</td>
+<td>不回收</td>
+<td>可能</td>
+</tr>
+</tbody></table>
+<p>通过对SoftReference，WeakReference，PhantomReference 的介绍，可以看出JDK提供这些类型的reference 主要是用来和GC交互的，根据reference的不同，让JVM采用不同策略来进行对对象的回收(reclaim)。softly-reachable的referent在保证在OutOfMemoryError之前回收对象，weakly-reachable的referent在发生GC时就会被回收,同时这些reference和referenceQueue在一起提供通知机制，PhantomReference的作用就是仅仅就是提供对象回收通知机制，Finalizer借助这种机制实现referent的finalize执行，SoftReference、WeakReference也可以配合referenceQueue使用，实现对象回收通知机制。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/147793693edc">Java中的四种引用类型</a></li>
+<li><a target="_blank" rel="noopener" href="https://my.oschina.net/robinyao/blog/829983">Java Reference详解</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/java/j-jtp11225/">用弱引用堵住内存泄漏</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1152608">Reference及ReferenceQueue 详解</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/53c15109.html" rel="bookmark">JVM源码分析之FinalReference 完全解读</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀天涯
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/2e7bd07f.html" title="Java Reference详解">http://fengxiu.club/archives/2e7bd07f.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%BC%95%E7%94%A8/" rel="tag"># 引用</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/53c15109.html" rel="prev" title="JVM源码分析之FinalReference 完全解读">
+      <i class="fa fa-chevron-left"></i> JVM源码分析之FinalReference 完全解读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/931a340.html" rel="next" title="Java多线程系列-JUC线程池之07 CompletionFuture">
+      Java多线程系列-JUC线程池之07 CompletionFuture <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%8F%AF%E8%BE%BE%E6%80%A7%E5%88%A4%E6%96%AD"><span class="nav-number">1.</span> <span class="nav-text">对象可达性判断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ReferenceQueue-%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">ReferenceQueue 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java%E5%BC%95%E7%94%A8%E7%A7%8D%E7%B1%BB%E7%AE%80%E4%BB%8B"><span class="nav-number">3.</span> <span class="nav-text">java引用种类简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SoftReference%E7%AE%80%E4%BB%8B%E5%8F%8A%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">SoftReference简介及使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WeakReference%E7%AE%80%E4%BB%8B%E5%8F%8A%E4%BD%BF%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">WeakReference简介及使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PhantomReference%E7%AE%80%E4%BB%8B%E5%8F%8A%E4%BD%BF%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">PhantomReference简介及使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference%E5%92%8CReferenceQueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">7.</span> <span class="nav-text">Reference和ReferenceQueue源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">7.1.</span> <span class="nav-text">Reference源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReferenceQueue%E6%BA%90%E7%A0%81"><span class="nav-number">7.2.</span> <span class="nav-text">ReferenceQueue源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/2e7bd07f.html";
+    this.page.identifier = "archives/2e7bd07f.html";
+    this.page.title = "Java Reference详解";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

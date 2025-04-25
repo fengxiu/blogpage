@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前文介绍过TCP是一种可靠的协议，主要通过超时重传管理、窗口管理、流量控制、拥塞控制来保证其可靠性。本文将对这些概念进行详细介绍，主要分文三大部分，重传，流量控制，拥塞控制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP可靠性保障之重传、流量控制和拥塞控制">
+<meta property="og:url" content="http://fengxiu.club/archives/20ef80bb.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="前文介绍过TCP是一种可靠的协议，主要通过超时重传管理、窗口管理、流量控制、拥塞控制来保证其可靠性。本文将对这些概念进行详细介绍，主要分文三大部分，重传，流量控制，拥塞控制。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-200.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-192.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-193.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-194.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-195.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-196.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-199.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-201.png">
+<meta property="article:published_time" content="2019-03-10T02:09:00.000Z">
+<meta property="article:modified_time" content="2019-03-10T02:09:00.000Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="tcp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-200.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/20ef80bb.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>TCP可靠性保障之重传、流量控制和拥塞控制 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/20ef80bb.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TCP可靠性保障之重传、流量控制和拥塞控制
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-10 02:09:00" itemprop="dateCreated datePublished" datetime="2019-03-10T02:09:00+00:00">2019-03-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/tcp/" itemprop="url" rel="index"><span itemprop="name">tcp</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/20ef80bb.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/20ef80bb.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/20ef80bb.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/20ef80bb.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前文介绍过TCP是一种可靠的协议，主要通过超时重传管理、窗口管理、流量控制、拥塞控制来保证其可靠性。本文将对这些概念进行详细介绍，主要分文三大部分，重传，流量控制，拥塞控制。</p>
+<span id="more"></span>
+
+<h2 id="重传"><a href="#重传" class="headerlink" title="重传"></a>重传</h2><p>经过N多专家前扑后继的研究，在目前的信息论(information theory)和编码理论(coding theory)中，主要有两种方式用来保证可靠的传输</p>
+<ol>
+<li><p>通过传输的数据包中增加冗余的error-correcting codes来修复传出错误的报文，这种方式中接受端在接收到报文的时候，如果报文中有少量的bit传输错误，接收端可以通过冗余数据恢复出正确的数据包。</p>
+</li>
+<li><p>使用ARQ(Automatic Repeat Request)机制来提高数据传输的可靠性，ARQ机制需要发送端重复发送传输错误的数据包直到接收端接收到正确的数据包为止</p>
+</li>
+</ol>
+<p>解决丢包和比特错误两类问题最简单的方式就是重新发送出错的数据包，TCP协议使用的是这种方式，但是这也带来俩个问题：</p>
+<ol>
+<li>接收端是否已经接收到对应的数据包：这个可以通过ACK(acknowledgment)机制来确认接收端接收到数据包的情况。但是这个又带来其他小问题比如发送端应该等待ACK确认包多长时间？如果超过这个时间发送端就认为数据包丢失而重新发送这个数据包，这个时间在TCP协议中叫做RTO(Retransmission Timeout)，后面会详细介绍。</li>
+<li>接收端接收到的数据包和发送端发送的数据包是否一致：一般来说有两种方式，一种是CRC，另外一种是checksum，在TCP协议中通过checksum机制检查比特错误。当TCP的checksum校验失败的时候，接收端并不会发送ACK给发送端。对于数据完整性要求较高的应用，应该在应用层添加更可靠的校验方式。</li>
+</ol>
+<p>在TCP协议中有俩种形式的重传，一种是基于定时机制的重传，一种是快重传，下面将对这俩种重传机制进行详细介绍，这里补充一点在这重传内容中我们重点关注TCP如果判断丢包以及重传对应的数据包。至于发送多少数据包则等到我们后面的拥塞控制时候在来讲解。</p>
+<h3 id="基于定时机制重传"><a href="#基于定时机制重传" class="headerlink" title="基于定时机制重传"></a>基于定时机制重传</h3><p>这种机制是指对于发送出去的报文，如果没有在指定时间内进行确认，就重传报文。这个指定的时间在前面也介绍了，叫做RTO，RTO是根据环回时间RTT(round-trip-time)来估计。环回时间应该包括三部分：数据包传送到接收端的时间，接收端处理这个数据包并产生ACK的时间，ACK确认包返回到发送端的时间。但是RTT这个时间是随着网络状况动态变化的，网络负载较重产生拥塞的时候，RTT就会变大，因此发送端就需要一种方式来动态估计这个RTT时间，这个过程就叫做round-trip-time estimation。这个估计过程是一个统计过程，真实的RTT应该比较接近这个统计平均值。所以基于定时机制重传的重要地点就是计算RTO。</p>
+<p><strong>这里有一点需要注意是对每个连接维护一个超时定时器，而不是对每个发出去的TCP报文</strong>。</p>
+<p>RTO的计算主要分为俩部分，一部分是测量RTT，在TCP中叫做RTT采样(RTT sample) ，主要原理是TCP在接收到数据后会发送累计的ACK number，因此TCP发送某个系列号的报文后，在接收到覆盖此系列号的ACK报文的时候，测量发送和接收之间的时间。第二部分根据RTT采样得到的数据，采用算法计算RTO，协议中主要有两种方法来计算RTO一种是RFC793的经典方法(classic method)，另一种是RFC6298的标准方法(standard method)。具体的计算过程这里就不介绍，有兴趣可以去协议官网查看。</p>
+<p>RTO默认值是1S，得到了具体的RTO，下面来看下重传的具体步骤，也就是RTO定时器的管理，协议对于RTO定时器的建议管理方法如下：</p>
+<ol>
+<li>每次一个包含数据的TCP报文发送出去的时候(包括重传)，如果RTO定时器没有运行，则重启RTO定时器，并设置定时时间为RTO。</li>
+<li>当所有发出的数据报文都被ACK后，关闭这个RTO定时器。</li>
+<li>当一个新的ack number到达的时候(新的ack number是指ack了新数据)，如果还有未被ACK的数据，则重启RTO定时器，并设置定时时间为当前RTO。</li>
+</ol>
+<p>当RTO定时器触发的时候(即所设置的定时时间到达的时候)</p>
+<ol start="4">
+<li>在没有任何ACK的报文到达的情况下，重传最早发出去的报文。</li>
+<li>设置RTO &#x3D; RTO * 2，这也就是我们经常说的指数回退。这里可以设置一个上限来限制RTO大小。</li>
+<li>重启RTO定时器，设置定时时间为RTO(这里的RTO是已经回退过的RTO)。</li>
+<li>如果RTO定时器是因为等待SYN报文的ACK而超时，同时实现上使用的RTO值小于3s，这个RTO定时器必须被重新初始化为3s。</li>
+</ol>
+<p>在重传完成后，新的RTT采样可能会将RTO设置为与原来比较接近的值，从而消除指数回退对于RTO的影响。另外在多次指数回退过程中，TCP实现可能会清空之前的一些记录值，会导致RTO需要一段时间才能恢复到一个合理的值，增加通信的时间。</p>
+<h3 id="快重传"><a href="#快重传" class="headerlink" title="快重传"></a>快重传</h3><p>基于ACK报文结构顺序的重传，这种重传叫做快速重传(fast retransmission或者fast retransmit)，当TCP注意到累计ack(即TCP头中的ack number)不再推进或者接收端通过SACK信息指示发送端接收端存在洞(hole)时候就会触发发送端的重传。</p>
+<p><strong>通常来说快速重传比超时重传更高效。</strong></p>
+<p>按照TCP协议，RTO超时重传是一个非常重要的事件，当RTO超时的时候，TCP会同时通过两种方式非常谨慎的降低发送数据包的速率，一种是基于拥塞控制削减发送窗口的大<br>小，另外一个是通过指数回退增加每次RTO超时的时间(即karn算法的第二部分)。所以RTO超时后有可能会导致网络容量的利用不足。</p>
+<p>快速重传是RFC5681定义一个的一个过程。快速重传不依赖定时器的超时，而是依靠ACK确认包来进行重传。使用快速重传相比RTO超时重传通常可以更高效的修复TCP丢包问题。快速重传是基于一个前提：即按照RFC5681，当TCP收到一个乱序报文的时候应该立即回复ACK确认包，而不会延迟ACK(延迟ACK：等待服务端有数据发送，将ACK和发送的数据结合在一起发送给客户端，从而介绍发送的次数)确认。另外RFC5681还指出如果接收序列号空间存在洞，新接收的报文完全填充了这个洞或者部分填充了这个洞，TCP也应该立即回复一个ACK确认包以便发送端及时获取接收端相关的信息。</p>
+<p>我们举个例子来详细介绍基本的快速重传，假设有5个TCP报文，P1(1-10)、P2(11-20)、P3(21-30)、P4(31-40)、P5(41-50)，其中括号中标注的是报文的比特系列号，每个报文的长度都为10bytes。假设发送端依次发送这5个报文，其中P2报文在网络传输过程中丢失，P1、P3、P4、P5报文依次按序到达，接收端收到这P1的时候发送ack&#x3D;11的确认包(实际上这里可能会延迟发送ACK报文，为了描述简单我们假设立即发送ACK报文)，接收端收到P3的时候发现是乱序的报文则会立即回复ack&#x3D;11确认包(还记得ACK是累计确认的吧，因为P2丢失了ACK只能累计到11)，同样后面收到P4和P5的时候还是会回复ack&#x3D;11的确认包。这样发送端就会连续接收到4个ack&#x3D;11的确认包，后面三个确认包因为和第一个ack number重复，称呼为duplicate ACK。发送端就可以依据dup ACK来推测接收端的接收情况。但是我们之前说过IP层不会向TCP提供有序的数据报文，如果网络传输过程中发生乱序导致接收端接收顺序变为P1、P3、P2、P4、P5，这样的情况下也会产生一个dup ACK。另外还有一种情况是IP层导致了dup ACK报文。我们通过一个dup ACK并不能可靠的确认是发生了丢包还是发生了乱序传输，因此会存在一个门限(duplicate ACK threshold或者叫做dupthresh)，当TCP收到的dup ACK数超过这个门限的时候，就会认为发生了丢包，进而初始化一个快速重传。最初协议中给出的dupthresh这个上限是3，不同的操作系统可以调整这个值。在没有使能SACK的时候，快速重传只会重传一个数据包，在使能SACK时候，SACK可以反映接收端是否存在系列号洞，进而允许发送端根据SACK的情况同时传输多个数据包。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-200.png"></p>
+<p><strong>下面来详细说明下什么是SACK</strong>。SACK的全称是selective acknowledgment，也就是选择性确认，添加sack功能需要在TCP包头加两个选项，一个是开启选项（enabling option），另一个是sack选项（sack option）本身。开启sack选项后，接收者会将自己收到了哪些包，没收到哪些包的信息记录在sack段中告诉给发送方，这样发送方便可以一次性重传所有的丢包。</p>
+<p>在早期的TCP拥塞控制中，通过收到duplicate ack（默认为3个），连续三次ack某一个包来告诉sender某个丢包了，然后进入fast retransmition state，发送方重传这个包，当接收方收到这个重传包后，便会发一个ack（ack新的包）给发送方，告诉发送方下一个要发送的包是哪一个。可以看到，通过duplicate ack每次只能重传一个包，如果有多个丢包，在等待重传过程中，很容易timeout，造成带宽利用率下降（underutilized）。</p>
+<p>而如果开启sack，每一个sack段记录的是已经收到的连续的包，sack段与sack段之间断片的，也就是还没收到的（可能已经丢失，也可能是reorder）。通过sack段便可以知道多个可能已经丢失的包，这样便可以一次性的重传，而不是一个一个重传，避免因等待时间长造成的timeout问题。</p>
+<p>另外注意就是SACK块是按照最新形成的洞信息倒序排列的。每个ACK报文中可以携带多个SACK块的原因是因为ACK确认包有可能会丢包，但是ACK报文不消耗系列号因此不会进行重传，因此接收端通过多个ACK报文中冗余的SACK块信息来提高SACK信息传输的可靠性。</p>
+<p>开启sack选项，也是有弊端的，因为丢包意味着网络很可能已经拥塞，这时如果一次重传多个包，很可能会造成网络更加拥塞。</p>
+<h2 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h2><p><strong>什么是流量控制？流量控制的目的？</strong></p>
+<p>如果发送者发送数据过快，接收者来不及接收，那么就会有分组丢失。为了避免分组丢失，控制发送者的发送速度，使得接收者来得及接收，这就是流量控制。流量控制根本目的是防止分组丢失，它是构成TCP可靠性的一方面。</p>
+<p><strong>如何实现流量控制？</strong></p>
+<p>由滑动窗口协议（连续ARQ协议）实现。滑动窗口协议既保证了分组无差错、有序接收，也实现了流量控制。主要的方式就是接收方返回的 ACK 中会包含自己的接收窗口的大小，并且利用大小来控制发送方的数据发送。</p>
+<p><strong>滑动窗口</strong></p>
+<p>滑动窗口协议的基本原理就是在任意时刻，发送方都维持了一个连续的允许发送的帧的序号，称为发送窗口；同时，接收方也维持了一个连续的允许接收的帧的序号，称为接收窗口。发送窗口和接收窗口的序号的上下界不一定要一样，甚至大小也可以不同。不同的滑动窗口协议窗口大小一般不同。发送方窗口内的序列号代表了那些已经被发送，但是还没有被确认的帧，或者是那些可以被发送的帧。</p>
+<p><strong>举例解释：</strong></p>
+<p>发送和接受方都会维护一个数据帧的序列，这个序列被称作窗口。发送方的窗口大小由接受方确定，目的在于控制发送速度，以免接受方的缓存不够大，而导致溢出，同时控制流量也可以避免网络拥塞。下面图中的4,5,6号数据帧已经被发送出去，但是未收到关联的ACK，7,8,9帧则是等待发送。可以看出发送端的窗口大小为6，这是由接受端告知的（事实上必须考虑拥塞窗口cwnd，这里暂且考虑cwnd&gt;rwnd）。此时如果发送端收到4号ACK，则窗口的左边缘向右收缩，窗口的右边缘则向右扩展，此时窗口就向前滑动了，即数据帧10也可以被发送。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-192.png" alt="滑动窗口"></p>
+<p>称窗口左边沿向右边沿靠近为窗口合拢。这种现象发生在数据被发送和确认时。<br>当窗口右边沿向右移动时将允许发送更多的数据，我们称之为窗口张开。这种现象发生在另一端的接收进程读取已经确认的数据并释放了T C P的接收缓存时。<br>当右边缘向左移动时，称之为窗口收缩。</p>
+<p><strong>注：cwnd（congestion window） 拥塞窗口的简写，rwnd（Receive Window）接收窗口</strong></p>
+<p> <strong>举例2：</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-193.png" alt="upload successful"></p>
+<p>一：初始态，发送方没有帧发出，发送窗口前后沿相重合。接收方0号窗口打开，等待接收0号帧；<br>二：发送方打开0号窗口，表示已发出0帧但尚确认返回信息。 此时接收窗口状态不变；<br>三：发送方打开0、1号窗口，表示0、1号帧均在等待确认之列。至此，发送方打开的窗口数已达规定限度，在未收到新的确认返回帧之 前，发送方将暂停发送新的数据帧。接收窗口此时状态仍未变；<br>四：接收方已收到0号帧，0号窗口关闭，1号窗口打开，表示准备接收1号帧。此时发送窗口状态不 变；<br>五：发送方收到接收方发来的0号帧确认返回信息，关闭0号窗口，表示从重发表中删除0号帧。此时接收窗口状态仍不变<br>六：发送方继续发送2号帧，2号窗口 打开，表示2号帧也纳入待确认之列。至此，发送方打开的窗口又已达规定限度，在未收到新的确认返回帧之前，发送方将暂停发送新的数据帧，此时接收窗口状态 仍不变；<br>七：接收方已收到1号帧，1号窗口关闭，2号窗口打开，表示准备接收2号帧。此时发送窗口状态不变； </p>
+<p>八：发送方收到接收方发来的1号帧收毕的确认信 息，关闭1号窗口，表示从重发表中删除1号帧。此时接收窗口状态仍不变。</p>
+<p><strong>1比特滑动窗口协议</strong></p>
+<p>上面说的只是滑动窗口协议的理论，实际应用中又有不同。首先就是停等协议(stop－and－wait)，这时接受方的窗口和发送方的窗口大小都是1，1个比特就够表示了，所以也叫1比特滑动窗口协议。发送方这时自然发送每次只能发送一个，并且必须等待这个数据包的ACK，才能发送下一个。虽然在效率上比较低，带宽利用率明显较低，不过在网络环境较差，或是带宽本身很低的情况下，还是适用的。看下面的流程图： </p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-194.png" alt="upload successful"></p>
+<p><strong>后退n协议</strong><br>停等协议虽然实现简单，也能较好的适用恶劣的网络环境，但是显然效率太低。所以有了后退n协议，这也是滑动窗口协议真正的用处，这里发送的窗口大小为n，接受方的窗口仍然为1。具体看下面的图，这里假设n&#x3D;9：<br>首先发送方一口气发送10个数据帧，前面两个帧正确返回了，数据帧2出现了错误，这时发送方被迫重新发送2-8这7个帧，接受方也必须丢弃之前接受的3-8这几个帧。 </p>
+<p>后退n协议的好处无疑是提高了效率，但是一旦网络情况糟糕，则会导致大量数据重发，反而不如上面的停等协议，实际上这是很常见的，具体可以参考TCP拥塞控制。 </p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-195.png" alt="upload successful"></p>
+<p><strong>选择重传协议</strong></p>
+<p>后退n协议的另外一个问题是，当有错误帧出现后，总是要重发该帧之后的所有帧，毫无疑问在网络不是很好的情况下会进一步恶化网络状况，重传协议便是用来解决这个问题。原理也很简单，接收端总会缓存所有收到的帧，当某个帧出现错误时，只会要求重传这一个帧，只有当某个序号后的所有帧都正确收到后，才会一起提交给高层应用。重传协议的缺点在于接受端需要更多的缓存。</p>
+<p><strong>流量控制引发的死锁？怎么避免死锁的发生？</strong></p>
+<p>当发送者收到了一个窗口为0的应答，发送者便停止发送，等待接收者的下一个应答。但是如果这个窗口不为0的应答在传输过程丢失，发送者一直等待下去，而接收者以为发送者已经收到该应答，等待接收新数据，这样双方就相互等待，从而产生死锁。<br>为了避免流量控制引发的死锁，TCP使用了持续计时器。每当发送者收到一个零窗口的应答后就启动该计时器。时间一到便主动发送报文询问接收者的窗口大小。若接收者仍然返回零窗口，则重置该计时器继续等待；若窗口不为0，则表示应答报文丢失了，此时重置发送窗口后开始发送，这样就避免了死锁的产生。</p>
+<h2 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><p>拥塞发生的主要原因在于网络能够提供的资源不足以满足用户的需求，这些资源包括缓存空间、链路带宽容量和中间节点的处理能力。由于互联网的设计机制导致其缺乏“接纳控制”能力，因此在网络资源不足时不能限制用户数量，而只能靠降低服务质量来继续为用户服务，也就是尽力而为的服务。</p>
+<p>拥塞其实是一个动态问题，我们没有办法用一个静态方案去解决，从这个意义上来说，拥塞是不可避免的。</p>
+<p><strong>拥塞控制与流量控制的区别</strong></p>
+<p><strong>拥塞控制</strong>：拥塞控制是作用于网络的，它是防止过多的数据注入到网络中，避免出现网络负载过大的情况；常用的方法就是：（ 1 ）慢开始、拥塞避免（ 2 ）快重传、快恢复。</p>
+<p><strong>流量控制</strong>：流量控制是作用于接收者的，它是控制发送者的发送速度从而使接收者来得及接收，防止分组丢失的。</p>
+<p>下面分析拥塞控制核心算法</p>
+<h3 id="慢开始算法"><a href="#慢开始算法" class="headerlink" title="慢开始算法"></a>慢开始算法</h3><p>当主机开始发送数据时，如果立即所大量数据字节注入到网络，那么就有可能引起网络拥塞，因为现在并不清楚网络的负荷情况。因此，较好的方法是先探测一下，即由小到大逐渐增大发送窗口，也就是说，由小到大逐渐增大拥塞窗口数值。通常在刚刚开始发送报文段时，先把拥塞窗口cwnd设置为一个最大报文段MSS的数值。即连接建好的开始先初始化cwnd &#x3D; 1，表明可以传一个SMSS大小的数据。每当收到一个ACK，cwnd++; 呈线性上升。每当过了一个RTT，cwnd &#x3D; cwnd*2; 呈指数让升。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-196.png" alt="慢开始算法"></p>
+<p>慢开始的慢并不是指cwnd的增长速率慢，而是指在TCP开始发送报文段时先设置cwnd&#x3D;1，使得发送方在开始时只发送一个报文段（目的是试探一下网络的拥塞情况），然后再指数增大cwnd。</p>
+<p>为了防止拥塞窗口cwnd增长过大引起网络拥塞，还需要设置一个慢开始门限ssthresh状态变量。慢开始门限ssthresh的用法如下：</p>
+<ol>
+<li>当 cwnd &lt; ssthresh 时，使用上述的慢开始算法。</li>
+<li>当 cwnd &gt; ssthresh 时，停止使用慢开始算法而改用拥塞避免算法。</li>
+<li>当 cwnd &#x3D; ssthresh 时，既可使用慢开始算法，也可使用拥塞控制避免算法。</li>
+</ol>
+<h3 id="拥塞避免算法"><a href="#拥塞避免算法" class="headerlink" title="拥塞避免算法"></a>拥塞避免算法</h3><p>让拥塞窗口cwnd缓慢地增大，即每经过一个往返时间RTT就把发送方的拥塞窗口cwnd加1，而不是加倍。这样拥塞窗口cwnd按线性规律缓慢增长，比慢开始算法的拥塞窗口增长速率缓慢得多。</p>
+<p>无论在慢开始阶段还是在拥塞避免阶段，只要发送方判断网络出现拥塞（其根据就是没有收到确认），就要把慢开始门限ssthresh设置为出现拥塞时的发送方窗口值的一半（但不能小于2）。然后把拥塞窗口cwnd重新设置为1，执行慢开始算法。这样做的目的就是要迅速减少主机发送到网络中的分组数，使得发生拥塞的路由器有足够时间把队列中积压的分组处理完毕。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-199.png" alt="拥塞避免算法"></p>
+<ol>
+<li><p>当TCP连接进行初始化时，把拥塞窗口cwnd置为1。前面已说过，为了便于理解，图中的窗口单位不使用字节而使用报文段的个数。慢开始门限的初始值设置为16个报文段，即 cwnd &#x3D; 16 。</p>
+</li>
+<li><p>在执行慢开始算法时，拥塞窗口 cwnd 的初始值为1。以后发送方每收到一个对新报文段的确认ACK，就把拥塞窗口值加1，然后开始下一轮的传输（图中横坐标为传输轮次）。因此拥塞窗口cwnd随着传输轮次按指数规律增长。当拥塞窗口cwnd增长到慢开始门限值ssthresh时（即当cwnd&#x3D;16时），就改为执行拥塞控制算法，拥塞窗口按线性规律增长。</p>
+</li>
+<li><p>假定拥塞窗口的数值增长到24时，网络出现超时（这很可能就是网络发生拥塞了）。更新后的ssthresh值变为12（即变为出现超时时的拥塞窗口数值24的一半），拥塞窗口再重新设置为1，并执行慢开始算法。当cwnd&#x3D;ssthresh&#x3D;12时改为执行拥塞避免算法，拥塞窗口按线性规律增长，每经过一个往返时间增加一个MSS的大小。</p>
+</li>
+</ol>
+<p><strong>强调：“拥塞避免”并非指完全能够避免了拥塞。</strong>利用以上的措施要完全避免网络拥塞还是不可能的。“拥塞避免”是说在拥塞避免阶段将拥塞窗口控制为按线性规律增长，使网络比较不容易出现拥塞。</p>
+<p><strong>关于 乘法减小（Multiplicative Decrease）和加法增大（Additive Increase）：</strong></p>
+<p>“乘法减小”指的是无论是在慢开始阶段还是在拥塞避免阶段，只要发送方判断网络出现拥塞，就把慢开始门限ssthresh设置为出现拥塞时的发送窗口大小的一半，并执行慢开始算法，所以当网络频繁出现拥塞时，ssthresh下降的很快，以大大减少注入到网络中的分组数。“加法增大”是指执行拥塞避免算法后，使拥塞窗口缓慢增大，以防止过早出现拥塞。常合起来成为AIMD算法。</p>
+<h3 id="快恢复算法"><a href="#快恢复算法" class="headerlink" title="快恢复算法"></a>快恢复算法</h3><p>快重传配合使用的还有快恢复算法，有以下两个要点：</p>
+<ol>
+<li>当发送方连续收到三个重复确认时，就执行“乘法减小”算法，把ssthresh门限减半（为了预防网络发生拥塞）。</li>
+<li>但是接下去并不执行慢开始算法，考虑到如果网络出现拥塞的话就不会收到好几个重复的确认，所以发送方现在认为网络可能没有出现拥塞。所以此时不执行慢开始算法，而是将cwnd设置为ssthresh减半后的值，然后执行拥塞避免算法，使cwnd缓慢增大。如下图：TCP Reno版本是目前使用最广泛的版本。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-201.png" alt="快速恢复"></p>
+<p>注意：在采用快恢复算法时，慢开始算法只是在TCP连接建立时和网络出现超时才使用</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://blog.jobbole.com/105500/">TCP&#x2F;IP之TCP协议：流量控制（滑动窗口协议）</a></li>
+<li><a target="_blank" rel="noopener" href="https://notfalse.net/24/tcp-flow-control">TCP 流量控制 (Flow Control)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/lpjishu/article/details/51366691">面试之路（29）-TCP流量控制和拥塞控制-滑动窗口协议详解</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/37379780">TCP流量控制、拥塞控制</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lshs/p/6038516.html">TCP系列11—重传—1、TCP重传概述</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/b56667c1.html" rel="bookmark">TCP保活机制</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/8207bbe3.html" rel="bookmark">TCP的粘包问题</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/f8c819ed.html" rel="bookmark">TCP简介</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/1fc2fe8.html" rel="bookmark">TCP连接管理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/dcf09bf2.html" rel="bookmark">深入理解TCP的TIME-WAIT</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/20ef80bb.html" title="TCP可靠性保障之重传、流量控制和拥塞控制">http://fengxiu.club/archives/20ef80bb.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tcp/" rel="tag"># tcp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/9568466.html" rel="prev" title="HTTP/2 简介">
+      <i class="fa fa-chevron-left"></i> HTTP/2 简介
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/41df0a9f.html" rel="next" title="HTTP协议简介">
+      HTTP协议简介 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E4%BC%A0"><span class="nav-number">1.</span> <span class="nav-text">重传</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%AE%9A%E6%97%B6%E6%9C%BA%E5%88%B6%E9%87%8D%E4%BC%A0"><span class="nav-number">1.1.</span> <span class="nav-text">基于定时机制重传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E9%87%8D%E4%BC%A0"><span class="nav-number">1.2.</span> <span class="nav-text">快重传</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">2.</span> <span class="nav-text">流量控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">3.</span> <span class="nav-text">拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%85%A2%E5%BC%80%E5%A7%8B%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">慢开始算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E%E9%81%BF%E5%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">拥塞避免算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E6%81%A2%E5%A4%8D%E7%AE%97%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">快恢复算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/20ef80bb.html";
+    this.page.identifier = "archives/20ef80bb.html";
+    this.page.title = "TCP可靠性保障之重传、流量控制和拥塞控制";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

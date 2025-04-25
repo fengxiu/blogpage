@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Http的演进之路之五声明，此系列文章转载自lonnieZ http的演进之路SPDY在上面的章节中我们介绍了HTTP协议的一些特点，包括长连接、pipeline、并行连接等。2012年Google推出了SPDY（speedy，翻译为“快速的”）协议，旨在根本上解决HTTP协议中存在的一些问题、提升HTTP的传输效率。而随后诞生的HTTP&#x2F;2也继承了SPDY的很多特性。因此，在介绍HTT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Http的演进之路之五">
+<meta property="og:url" content="http://fengxiu.club/archives/cb0c26ea.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="Http的演进之路之五声明，此系列文章转载自lonnieZ http的演进之路SPDY在上面的章节中我们介绍了HTTP协议的一些特点，包括长连接、pipeline、并行连接等。2012年Google推出了SPDY（speedy，翻译为“快速的”）协议，旨在根本上解决HTTP协议中存在的一些问题、提升HTTP的传输效率。而随后诞生的HTTP&#x2F;2也继承了SPDY的很多特性。因此，在介绍HTT">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-254.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-255.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-256.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-257.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-258.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-259.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-260.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-261.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-262.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-263.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-264.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-265.png">
+<meta property="article:published_time" content="2019-03-10T11:23:00.000Z">
+<meta property="article:modified_time" content="2025-04-25T08:24:51.256Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="http">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-254.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/cb0c26ea.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Http的演进之路之五 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/cb0c26ea.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Http的演进之路之五
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-10 11:23:00" itemprop="dateCreated datePublished" datetime="2019-03-10T11:23:00+00:00">2019-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-25 08:24:51" itemprop="dateModified" datetime="2025-04-25T08:24:51+00:00">2025-04-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/http/" itemprop="url" rel="index"><span itemprop="name">http</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/cb0c26ea.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/cb0c26ea.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/cb0c26ea.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/cb0c26ea.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Http的演进之路之五"><a href="#Http的演进之路之五" class="headerlink" title="Http的演进之路之五"></a>Http的演进之路之五</h1><h2 id="声明，此系列文章转载自lonnieZ-http的演进之路"><a href="#声明，此系列文章转载自lonnieZ-http的演进之路" class="headerlink" title="声明，此系列文章转载自lonnieZ http的演进之路"></a>声明，此系列文章转载自<a target="_blank" rel="noopener" href="https://www.zhihu.com/people/lonniez/activities">lonnieZ http的演进之路</a></h2><h2 id="SPDY"><a href="#SPDY" class="headerlink" title="SPDY"></a><strong>SPDY</strong></h2><p>在上面的章节中我们介绍了HTTP协议的一些特点，包括长连接、pipeline、并行连接等。2012年Google推出了SPDY（speedy，翻译为“快速的”）协议，旨在根本上解决HTTP协议中存在的一些问题、提升HTTP的传输效率。而随后诞生的HTTP&#x2F;2也继承了SPDY的很多特性。因此，在介绍HTTP&#x2F;2之前，有必要先简单了解一下SPDY的基本特征。首先，我们看一下SPDY的协议栈。由下图可见，SPDY位于HTTP和SSL之间，它属于应用层协议，当发现对端不支持SPDY的情况下，仍然可以延用HTTP&#x2F;HTTPS协议，因此它可以最大程度的兼容HTTP协议。</p>
+<span id="more"></span>
+
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-254.png" alt="upload successful"></p>
+<h2 id="SPDY的特性"><a href="#SPDY的特性" class="headerlink" title="SPDY的特性"></a>SPDY的特性</h2><p><strong>多路复用（</strong>multiplexing）</p>
+<p>从上面关于http connection的介绍可以看出，为了提高传输效率，研发人员总是想在每条connection上面尽可能多的传递资源（这是因为建立每条connection都需要消耗较多的资源，例如dns和connect的过程），因此有了keep-alive、pipeline、并行连接等技术。这些技术无不都是在connection上做文章，尽可能的复用这些连接，将它们利用到极致。但是他们都没有彻底解决在一个connection上面同时“收发”多组数据（来自于不同的资源）的问题，虽然pipleline可以同时请求多个资源，但受限于Http层的队头阻塞机制（见上文），在接收的过程中必须按照发送顺序接收。而SPDY的多路复用功能正是解决这个问题。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-255.png" alt="upload successful"></p>
+<p>上图显示了Http&#x2F;1.1与SPDY的对比。从图中可以看出前者虽然采用了pipeline的方式，在一条连接上同时发起了三个请求，但碍于队头阻塞机制，只能按照发送顺序来接收数据，即必须得到index.html后才能得到sample.png的数据。而SPDY则引入了“流（stream）”和“帧（frame）”的概念，将每个完整的request&#x2F;response过程称为一个“流”（例如图中的GET index.html），再将每个流拆分为多个“帧”（包括数据帧，控制帧等）。通过“流”和“帧”将一个完成request&#x2F;response过程“打碎”，再将多个“流”的“帧”数据“混在一起”（按照优先级）发送到服务端，服务端再通过流ID和帧ID将数据“还原”，以同样的方式将数据传回给客户端。这样就不会再有队头阻塞的困扰了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-256.png" alt="upload successful"></p>
+<p>有几点需要注意：</p>
+<ol>
+<li>一个request和其对应的response组成了一个“流”（stream）；</li>
+<li>每个“流”是由许多个“帧”（frame）组成的，“帧”根据承载内容的不同分为控制帧和数据帧，而控制帧又根据作用的不同分为多种类型的控制帧，包括：同步帧、设置帧、ping帧、header帧等等；</li>
+<li>每个帧都是二进制数据，这样有利于数据压缩。</li>
+</ol>
+<h3 id="请求优先级（request-prioritization"><a href="#请求优先级（request-prioritization" class="headerlink" title="请求优先级（request prioritization)"></a><strong>请求优先级（</strong>request prioritization)</h3><p>虽然multiplexing解决队头阻塞的问题，但是引入了另一个问题，即如何确保在有限的带宽中优先加载最重要的资源。因为这种multiplexing的机制有可能会影响重要资源的加载。</p>
+<p>SPDY允许为每个request设置优先级，这样一些重要的request就可以优先得到响应。例如首页的html就应该优先展示，然后才是一些静态资源文件、脚本文件等，这样就可以确保用户可以第一时间看到页面内容了。</p>
+<h3 id="header压缩（Compressed-Headers）"><a href="#header压缩（Compressed-Headers）" class="headerlink" title="header压缩（Compressed Headers）"></a><strong>header压缩（Compressed Headers）</strong></h3><p>在HTTP&#x2F;1.X中很多header都是重复的甚至多余的，而有些header的内容则比较“庞大”（例如cookie和user-agent等）。由于http的无状态性，header每次会携带一些重复的header信息，造成资源的浪费。因此将header进行压缩不仅可以节省资源，还可以缩短数据传递的延迟。</p>
+<h3 id="服务端推送（Server-Push）"><a href="#服务端推送（Server-Push）" class="headerlink" title="服务端推送（Server Push）"></a><strong>服务端推送（Server Push）</strong></h3><p>在HTTP&#x2F;1.X中只允许从客户端发起请求，然后服务端被动的响应请求。SPDY支持服务端主动发送多个Response给用户端的单个Request。该特性主要应用在当服务端知道它需要发送多个资源来响应单个请求的场景中。如果没有Server Push，那么所有资源都需要客户端一次一次的发起request，而有了Server Push则大大减少了这种本可以避免的往返请求。</p>
+<p>Server Push通过在header中添加X-Associated-Content头域（X-开头的头域都属于非标准头域，为自定义头域）来告知客户端会有新的内容推送过来。一般当用户第一次打开网站首页的时候，server端会将很多资源主动推送过来。</p>
+<h2 id="SPDY的性能测试"><a href="#SPDY的性能测试" class="headerlink" title="SPDY的性能测试"></a>SPDY的性能测试</h2><p>SPDY的性能并非像人们想的那样要由于当前的HTTP&#x2F;1.X或HTTPS，有些场景下它的性能还不及之前的实现。或者说SPDY提供了一种设计模型，当所有人遵循这个模型的时候，其性能会有提升，而在当前这个比较发散的互联网世界中，制定标准、统一标准始终是一件所有人都期望做但又很难做到的事情，这也是Google所致力于做到的。具体的测试结果及说明可以参见<a href="http://link.zhihu.com/?target=https://www.oschina.net/translate/not-as-spdy-as-you-thought?lang=chs&p=1">这里</a>。</p>
+<h2 id="SPDY的使命"><a href="#SPDY的使命" class="headerlink" title="SPDY的使命"></a>SPDY的使命</h2><p>Google在2012年推出Spdy的方案旨在从根本解决HTTP&#x2F;1.X中存在的诸如连接复用、头部冗余等问题。同时，SPDY也为HTTP&#x2F;2的制定提供了原型和参考依据。Google与2016年决定不再支持Spdy的开发，这也是为了给HTTP&#x2F;2让路。但在这短短的四年间，Spdy积累了不少的客户端及服务端参与，这也充分说明了Spdy在解决Http根本性问题上的优势。由此可见，Spdy作为Http&#x2F;1.X到HTTP&#x2F;2过渡期的产品，起到了很好的承上启下的衔接作用。</p>
+<h2 id="HPACK"><a href="#HPACK" class="headerlink" title="HPACK"></a><strong>HPACK</strong></h2><p>在HTTP&#x2F;1.X中，头部信息是没有压缩的，有些内容是冗余且很占流量（例如User-Agent、Cookie等信息）。因此，在SPDY中引入了头部压缩的机制，它采用<a href="http://link.zhihu.com/?target=https://en.wikipedia.org/wiki/DEFLATE">DEFLATE</a>算法（存在<a href="http://link.zhihu.com/?target=https://blog.qualys.com/ssllabs/2012/09/14/crime-information-leakage-attack-against-ssltls">CRIME</a>的问题），而在HTTP&#x2F;2中则使用新的压缩算法<a href="http://link.zhihu.com/?target=https://www.rfc-editor.org/rfc/rfc7541.txt">HPACK</a>。简单来说，HPACK将索引加入到了头部压缩的过程中。即HPACK中会维护一张静态列表和一张动态列表，在静态列表中会预置一些常用的header(详见<a href="http://link.zhihu.com/?target=https://www.rfc-editor.org/rfc/rfc7541.txt">RFC</a>)，当要发送的请求符合静态列表中的内容时，会使用其对应的index进行替换，这样就可以大大压缩头部的size了。下图大体上描述了HPACK的原理：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-257.png" alt="upload successful"></p>
+<p>从下面静态列表可以看出，表中都是一些常用的header信息，当request或response的header中内容与表内的内容相符时，可以使用表中对应的index进行替换。静态表的index大小是固定的61，因此静态表index是从1到61的索引。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-258.png" alt="upload successful"></p>
+<p>动态列表是一个FIFO（队列）的映射表，从index62开始递增。表中的第一个值是最新入队的值，其索引号也是最小的；动态表的大小也是有限制的，当有新的数据要入队列时，就要移除队尾（最老）的数据。每个动态列表与一个TCP连接是一一对应的，即每个动态列表只针对一个TCP连接，每个连接仅有一个动态列表。在HTTP&#x2F;2中引入了multiplexing机制（准确的说是SPDY引入了multiplexing），对于同一个域名的多个请求都会复用同一个TCP连接。当一个头部没有出现过的时候，就会把其插入到动态列表中，当再有相同内容的头域时就可以通过index替换了。然而，动态列表的大小是有限制的：</p>
+<blockquote>
+<p>动态列表大小&#x3D;（每个header的字节数+32）*键值对个数</p>
+</blockquote>
+<p>加32的原因是为了头所占用的额外空间和计算头被引用次数而估计的值。</p>
+<p>当头域的键值都在索引列表中时按照如下方式进行编码：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 1 |        Index (7+)         |</span><br><span class="line">+---+---------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>即当头域的键值都在列表中时，第一个bit的值为1，后面是其index值：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-259.png" alt="upload successful"></p>
+<p>从图中可以看到这里有三个头域分别是cache-control: xxx last-modified: xxx x-content-type-options: xxx 由于这三个头域的键值都已经在列表里面了，因此在这里显示“Indexed Header Field”并且仅仅使用了一个字节来替代。</p>
+<p>对于新添加的头域分为几种情况：</p>
+<ul>
+<li>键在索引中，但值不在</li>
+<li>键值都不在索引中</li>
+<li>键在索引中，但值不在，且不要加入到索引中</li>
+<li>键值都不在索引中，且不要加入到索引中</li>
+<li>键在索引中，但值不在，且绝对不要加入到索引中</li>
+<li>键值都不在索引中，且绝对不要加入到索引中</li>
+</ul>
+<h2 id="键在索引中，但值不在"><a href="#键在索引中，但值不在" class="headerlink" title="键在索引中，但值不在"></a>键在索引中，但值不在</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 0 | 1 |      Index (6+)       |</span><br><span class="line">+---+---+-----------------------+</span><br><span class="line">| H |     Value Length (7+)     |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| Value String (Length octets)  |</span><br><span class="line">+-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>从下面的抓包可以看到last-modifed是在index中的，但是其值并不在，因此这里如果想要将其加入到列表中的话，它的第一个字节为0x6C（01101100），其中前两位是01，后面是101100（index为44）。接下来的一个字节0x96 （10010110）的第一位表示是否使用了霍夫曼编码（此处是），余下的7个字节表示编码长度（此处为22），剩下的内容为霍夫曼编码内容。这里显示为“Incremental Indexing - Indexed Name”，客户端或服务端看到这种格式的头部键值对，会将其添加到自己的动态字典中。后续传输这样的内容，就符合键值都在索引中的情况了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-260.png" alt="upload successful"></p>
+<h2 id="键值都不在索引中"><a href="#键值都不在索引中" class="headerlink" title="键值都不在索引中"></a>键值都不在索引中</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 0 | 1 |           0           |</span><br><span class="line">+---+---+-----------------------+</span><br><span class="line">| H |     Name Length (7+)      |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">|  Name String (Length octets)  |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| H |     Value Length (7+)     |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| Value String (Length octets)  |</span><br><span class="line">+-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>从下面的抓包来看x-content-type-options不在索引中，它属于一个新的头域并且会被加入到索引中（从上面的截图可以看到它后来被加入到了index 64里面）。因此它的第一字节为0x40（01000000）。随后的一个字节是是否使用霍夫曼编码以及编码长度，此处是0x90（10010000），表示键使用霍夫曼，长度为16。随后为0x85（10000101），表示值使用霍夫曼，长度为5。显示为“Incremental Indexing - New Name”，客户端或服务端看到这种格式的头部键值对，会将其添加到自己的动态字典中。后续传输这样的内容，就符合键值都在索引中的情况了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-261.png" alt="upload successful"></p>
+<h2 id="键在索引中，但值不在，且不要加入到索引中"><a href="#键在索引中，但值不在，且不要加入到索引中" class="headerlink" title="键在索引中，但值不在，且不要加入到索引中"></a>键在索引中，但值不在，且不要加入到索引中</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 0 | 0 | 0 | 0 |  Index (4+)   |</span><br><span class="line">+---+---+-----------------------+</span><br><span class="line">| H |     Value Length (7+)     |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| Value String (Length octets)  |</span><br><span class="line">+-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>从下面的抓包来看path已经在索引中了，但是客户端不希望该值被保存到索引中，因此设置其为0x05（00000101），后面的一个字节为0xab（10101011），使用霍夫曼编码且长度为43。显示为“without Indexing - Indexed Name”，这种格式的头部键值对，不允许被添加到动态字典中（但可以使用霍夫曼编码）。对于一些敏感头部，比如 Cookie，这么做可以提高安全性。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-262.png" alt="upload successful"></p>
+<h2 id="键值都不在索引中，且不要加入到索引中"><a href="#键值都不在索引中，且不要加入到索引中" class="headerlink" title="键值都不在索引中，且不要加入到索引中"></a>键值都不在索引中，且不要加入到索引中</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 0 | 0 | 0 | 0 |       0       |</span><br><span class="line">+---+---+-----------------------+</span><br><span class="line">| H |     Name Length (7+)      |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">|  Name String (Length octets)  |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| H |     Value Length (7+)     |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| Value String (Length octets)  |</span><br><span class="line">+-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>从下面的抓包set-cookie不在索引中且服务端不希望其加入到索引中因此这里的第一个字节为0x00，下一个字节为0x87（10000111），键使用霍夫曼编码且长度为7，值为0xc0（11000000），值使用霍夫曼编码且长度为64。显示为“without indexing - New Name”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-263.png" alt="upload successful"></p>
+<h2 id="键在索引中，但值不在，且绝对不要加入到索引中"><a href="#键在索引中，但值不在，且绝对不要加入到索引中" class="headerlink" title="键在索引中，但值不在，且绝对不要加入到索引中"></a>键在索引中，但值不在，且绝对不要加入到索引中</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 0 | 0 | 0 | 1 |  Index (4+)   |</span><br><span class="line">+---+---+-----------------------+</span><br><span class="line">| H |     Value Length (7+)     |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| Value String (Length octets)  |</span><br><span class="line">+-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>这种情况与之前的“键在索引中，但值不在，且不要加入到索引中”类似，只是第一个字节的第四个bit变为了1，其他是一样的。区别仅在于中间是否通过了代理。如果没有代理，那么表现是一样的。如果通过了代理，则协议要求代理必须原样转发这个header的编码，不允许进行任何修改。</p>
+<h2 id="键值都不在索引中，且绝对不要加入到索引中"><a href="#键值都不在索引中，且绝对不要加入到索引中" class="headerlink" title="键值都不在索引中，且绝对不要加入到索引中"></a>键值都不在索引中，且绝对不要加入到索引中</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 0 | 0 | 0 | 1 |       0       |</span><br><span class="line">+---+---+-----------------------+</span><br><span class="line">| H |     Name Length (7+)      |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">|  Name String (Length octets)  |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| H |     Value Length (7+)     |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| Value String (Length octets)  |</span><br><span class="line">+-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>同上</p>
+<h2 id="更新动态列表大小"><a href="#更新动态列表大小" class="headerlink" title="更新动态列表大小"></a>更新动态列表大小</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| 0 | 0 | 1 |   Max size (5+)   |</span><br><span class="line">+---+---------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>上图是列表大小更新的消息体格式。列表大小可以用至少5个bit表示且最大不超过SETTINGS_HEADER_TABLE_SIZE</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-264.png" alt="upload successful"></p>
+<p>在HPACK中，会用到一个或多个字节表示无符号整数，整数的开始并不是在一个字节的开始，但总在一个字节的末尾结束。如下所示，0-2bit可以用于其他标识，那么数值只占了5个bit，因此只能表示2^5-1（例如上面的“更新动态列表大小”的消息）。因此当需要表达的值小于32时，一个字节足够了。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| ? | ? | ? |       Value       |</span><br><span class="line">+---+---+---+-------------------+</span><br></pre></td></tr></table></figure>
+
+<p>当超过2^5-1后，此时第一个字节剩下的N个bit必须全为1，第二个字节的首个bit标识是否为最后一个字节，1表示不是，0表示是。剩余字节的值为remain值，假设该值为i，则：remain &#x3D; i - （2^n - 1）；例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| ? | ? | ? | 0 | 0 | 1 | 0 | 0 |</span><br><span class="line">+---+---+---+-------------------+</span><br></pre></td></tr></table></figure>
+
+<p>N为5，单字节下的取值范围为0-31，现在它为4，再看下面的示例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| ? | ? | ? | 1 | 1 | 1 | 1 | 1 |</span><br><span class="line">+---+---+---+-------------------+</span><br><span class="line">| 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 |</span><br><span class="line">+---+---------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>此时，第一个字节的N个bit被占满，第二个字节的首位为0（表示在该字节结束），余下的大小为20，根据公式20 &#x3D; i - （31）可以计算得出51，再看上面更新动态列表大小”消息中的数值：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0   1   2   3   4   5   6   7</span><br><span class="line">+---+---+---+---+---+---+---+---+</span><br><span class="line">| ? | ? | ? | 1 | 1 | 1 | 1 | 1 |</span><br><span class="line">+---+---+---+-------------------+</span><br><span class="line">| 1 | 1 | 1 | 0 | 0 | 0 | 0 | 1 |</span><br><span class="line">+---+---------------------------+</span><br><span class="line">| 0 | 1 | 0 | 1 | 1 | 1 | 1 | 1 |</span><br><span class="line">+---+---------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>此时第二个字节的首bit为1（表示不在该字节结束），余下大小为 95*(2^7) + 97 其中97为第一个字节排除首bit后的值，95为第二个字节的值，由于第二个字节要往前移动7位（第一个字节用7bit表示数值），因此需要与2^7相乘。根据公式：95*(2^7) + 97 &#x3D; i - 31 得出最终结果为12288，具体计算算法可以参见<a href="http://link.zhihu.com/?target=https://www.jianshu.com/p/f44b930cfcac">这里</a>。</p>
+<h2 id="霍夫曼编解码"><a href="#霍夫曼编解码" class="headerlink" title="霍夫曼编解码"></a>霍夫曼编解码</h2><p>HPACK中的霍夫曼编解码可以参考<a href="http://link.zhihu.com/?target=https://httpwg.org/specs/rfc7541.html%23huffman.code">这里</a>。我们以上面的“Incremental Indexing - New Name”中的Value举例，这里的值为0x85（10000110），为使用霍夫曼编码且长度为5，后面跟着的5个字节即为编码内容：a8 e8 a8 d2 cb，对应的二进制：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10101000 11101000 10101000 11010010 11001011</span><br></pre></td></tr></table></figure>
+
+<p>参照霍夫曼编码：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/pasted-265.png" alt="upload successful"></p>
+<p>可以得到对应的结果：nosniff</p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/6fbc205f.html" rel="bookmark">HTTP 管道化(pipeline)</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/41df0a9f.html" rel="bookmark">HTTP协议简介</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/9568466.html" rel="bookmark">HTTP/2 简介</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/37f5aa4d.html" rel="bookmark">HTTP Keep-Alive</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/e3e09015.html" rel="bookmark">Http的演进之路之一</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/cb0c26ea.html" title="Http的演进之路之五">http://fengxiu.club/archives/cb0c26ea.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/http/" rel="tag"># http</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/d6ee44af.html" rel="prev" title="Http的演进之路之四">
+      <i class="fa fa-chevron-left"></i> Http的演进之路之四
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/8207bbe3.html" rel="next" title="TCP的粘包问题">
+      TCP的粘包问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Http%E7%9A%84%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF%E4%B9%8B%E4%BA%94"><span class="nav-number">1.</span> <span class="nav-text">Http的演进之路之五</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%EF%BC%8C%E6%AD%A4%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0%E8%BD%AC%E8%BD%BD%E8%87%AAlonnieZ-http%E7%9A%84%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF"><span class="nav-number">1.1.</span> <span class="nav-text">声明，此系列文章转载自lonnieZ http的演进之路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPDY"><span class="nav-number">1.2.</span> <span class="nav-text">SPDY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPDY%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text">SPDY的特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%88request-prioritization"><span class="nav-number">1.3.1.</span> <span class="nav-text">请求优先级（request prioritization)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#header%E5%8E%8B%E7%BC%A9%EF%BC%88Compressed-Headers%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">header压缩（Compressed Headers）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A8%E9%80%81%EF%BC%88Server-Push%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">服务端推送（Server Push）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPDY%E7%9A%84%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="nav-number">1.4.</span> <span class="nav-text">SPDY的性能测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPDY%E7%9A%84%E4%BD%BF%E5%91%BD"><span class="nav-number">1.5.</span> <span class="nav-text">SPDY的使命</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HPACK"><span class="nav-number">1.6.</span> <span class="nav-text">HPACK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%AE%E5%9C%A8%E7%B4%A2%E5%BC%95%E4%B8%AD%EF%BC%8C%E4%BD%86%E5%80%BC%E4%B8%8D%E5%9C%A8"><span class="nav-number">1.7.</span> <span class="nav-text">键在索引中，但值不在</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%AE%E5%80%BC%E9%83%BD%E4%B8%8D%E5%9C%A8%E7%B4%A2%E5%BC%95%E4%B8%AD"><span class="nav-number">1.8.</span> <span class="nav-text">键值都不在索引中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%AE%E5%9C%A8%E7%B4%A2%E5%BC%95%E4%B8%AD%EF%BC%8C%E4%BD%86%E5%80%BC%E4%B8%8D%E5%9C%A8%EF%BC%8C%E4%B8%94%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%85%A5%E5%88%B0%E7%B4%A2%E5%BC%95%E4%B8%AD"><span class="nav-number">1.9.</span> <span class="nav-text">键在索引中，但值不在，且不要加入到索引中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%AE%E5%80%BC%E9%83%BD%E4%B8%8D%E5%9C%A8%E7%B4%A2%E5%BC%95%E4%B8%AD%EF%BC%8C%E4%B8%94%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%85%A5%E5%88%B0%E7%B4%A2%E5%BC%95%E4%B8%AD"><span class="nav-number">1.10.</span> <span class="nav-text">键值都不在索引中，且不要加入到索引中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%AE%E5%9C%A8%E7%B4%A2%E5%BC%95%E4%B8%AD%EF%BC%8C%E4%BD%86%E5%80%BC%E4%B8%8D%E5%9C%A8%EF%BC%8C%E4%B8%94%E7%BB%9D%E5%AF%B9%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%85%A5%E5%88%B0%E7%B4%A2%E5%BC%95%E4%B8%AD"><span class="nav-number">1.11.</span> <span class="nav-text">键在索引中，但值不在，且绝对不要加入到索引中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%AE%E5%80%BC%E9%83%BD%E4%B8%8D%E5%9C%A8%E7%B4%A2%E5%BC%95%E4%B8%AD%EF%BC%8C%E4%B8%94%E7%BB%9D%E5%AF%B9%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%85%A5%E5%88%B0%E7%B4%A2%E5%BC%95%E4%B8%AD"><span class="nav-number">1.12.</span> <span class="nav-text">键值都不在索引中，且绝对不要加入到索引中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E5%8A%A8%E6%80%81%E5%88%97%E8%A1%A8%E5%A4%A7%E5%B0%8F"><span class="nav-number">1.13.</span> <span class="nav-text">更新动态列表大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%8D%E5%A4%AB%E6%9B%BC%E7%BC%96%E8%A7%A3%E7%A0%81"><span class="nav-number">1.14.</span> <span class="nav-text">霍夫曼编解码</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/cb0c26ea.html";
+    this.page.identifier = "archives/cb0c26ea.html";
+    this.page.title = "Http的演进之路之五";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

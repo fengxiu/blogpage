@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇文章将要介绍的是ParNew和CMS搭配使用的垃圾回收器组合。CMS和其他老年代收集器不同的地点是，它使用的是标记-清除算法。 CMS收集器设计的目的是避免在老年代收集时长时间停顿。它通过两种方式实现这一目标。首先，它不是采用标记-拷贝来回收老年代，而是使用可被回收链表来管理回收空间。其次，整个垃圾回收器的执行期间，绝大部分是可以和应用程序并发执行。这意味着垃圾收器不会显式停止应用程序线程执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GC日志详解3之CMS">
+<meta property="og:url" content="http://fengxiu.club/archives/f38ed32c.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="本篇文章将要介绍的是ParNew和CMS搭配使用的垃圾回收器组合。CMS和其他老年代收集器不同的地点是，它使用的是标记-清除算法。 CMS收集器设计的目的是避免在老年代收集时长时间停顿。它通过两种方式实现这一目标。首先，它不是采用标记-拷贝来回收老年代，而是使用可被回收链表来管理回收空间。其次，整个垃圾回收器的执行期间，绝大部分是可以和应用程序并发执行。这意味着垃圾收器不会显式停止应用程序线程执行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-1.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/g1-07-591x187.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-3.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-4.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/g1-10-591x187.png">
+<meta property="article:published_time" content="2019-04-18T15:14:47.000Z">
+<meta property="article:modified_time" content="2025-04-25T08:24:51.243Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="GC日志">
+<meta property="article:tag" content="CMS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-1.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/f38ed32c.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>GC日志详解3之CMS | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/f38ed32c.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GC日志详解3之CMS
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-18 15:14:47" itemprop="dateCreated datePublished" datetime="2019-04-18T15:14:47+00:00">2019-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-25 08:24:51" itemprop="dateModified" datetime="2025-04-25T08:24:51+00:00">2025-04-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/f38ed32c.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/f38ed32c.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/f38ed32c.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/f38ed32c.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇文章将要介绍的是ParNew和CMS搭配使用的垃圾回收器组合。CMS和其他老年代收集器不同的地点是，它使用的是<strong>标记-清除</strong>算法。</p>
+<p>CMS收集器设计的目的是避免在老年代收集时长时间停顿。它通过两种方式实现这一目标。首先，它不是采用<strong>标记-拷贝</strong>来回收老年代，而是使用可被回收链表来管理回收空间。其次，整个垃圾回收器的执行期间，绝大部分是可以和应用程序并发执行。这意味着垃圾收器不会显式停止应用程序线程执行来执行。但是应该注意，它仍然与应用程序线程竞争CPU时间。默认情况下，此GC算法使用的线程数等于计算机物理核心数的1&#x2F;4。</p>
+<p>如果您的主要目标是延迟，这种组合在多核机器上是一个不错的选择。减少单个GC暂停的持续时间会直接影响终端用户使用应用程序的感受，从而使他们感觉应用程序响应更快。由于大多数时候GC消耗了一些CPU资源而没有执行应用程序的代码，因此CMS垃圾回收器通常比只运行Parallel GC的垃圾回收器的吞吐量要差一些。</p>
+<!--  more  -->
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>如果想要使用这中搭配方式，需要在运行java程序时使用下面参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseParNewGC -  -XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
+<p>测试代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**************************************</span></span><br><span class="line"><span class="comment"> *      Author : zhangke</span></span><br><span class="line"><span class="comment"> *      Date   : 2019-02-20 11:34</span></span><br><span class="line"><span class="comment"> *      email  : 398757724@qq.com</span></span><br><span class="line"><span class="comment"> *      Desc   : 年轻代使用ParNew 老年代使用CMS</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *      -verbose:gc -Xms20M -Xmx20M -Xmn10M</span></span><br><span class="line"><span class="comment"> *      -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps</span></span><br><span class="line"><span class="comment"> *      -XX:MaxTenuringThreshold=1</span></span><br><span class="line"><span class="comment"> *      -XX:+UseParNewGC   -XX:+UseConcMarkSweepGC</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> ***************************************/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CMS</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">_1MB</span> <span class="operator">=</span> <span class="number">1024</span> * <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="type">byte</span>[] allocation1, allocation2, allocation3, allocation4;</span><br><span class="line">        allocation1 = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">4</span> * _1MB];</span><br><span class="line">        allocation2 = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">3</span> * _1MB];</span><br><span class="line">        allocation3 = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">4</span> * _1MB];</span><br><span class="line">        allocation4 = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">2</span> * _1MB];</span><br><span class="line">        allocation1[<span class="number">0</span>] = <span class="string">&#x27;d&#x27;</span>;</span><br><span class="line">        allocation2[<span class="number">1</span>] = <span class="string">&#x27;d&#x27;</span>;</span><br><span class="line">        <span class="comment">// 防止GC日志输出不完，应用就结束</span></span><br><span class="line">        Thread.sleep(<span class="number">10</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出日志信息如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.114+0800: 0.112: [GC (Allocation Failure) 2019-04-18T15:38:27.114+0800: 0.112: [ParNew: 5640K-&gt;376K(9216K), 0.0099638 secs] 5640K-&gt;4474K(19456K), 0.0100193 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] </span><br><span class="line"></span><br><span class="line">2019-04-18T15:38:27.126+0800: 0.124: [GC (Allocation Failure) 2019-04-18T15:38:27.126+0800: 0.124: [ParNew (promotion failed): 7699K-&gt;7322K(9216K), 0.0095832 secs]2019-04-18T15:38:27.136+0800: 0.134: [CMS: 7496K-&gt;7487K(10240K), 0.0045668 secs] 11797K-&gt;11621K(19456K), [Metaspace: 3006K-&gt;3006K(1056768K)], 0.0142215 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] </span><br><span class="line"></span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark-start]</span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.140: [GC (CMS Final Remark) [YG occupancy: 6345 K (9216 K)]2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs][1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<h3 id="年轻代（Minor-GC）"><a href="#年轻代（Minor-GC）" class="headerlink" title="年轻代（Minor GC）"></a>年轻代（Minor GC）</h3><p>日志信息如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.114+0800: 0.112: [GC (Allocation Failure) 2019-04-18T15:38:27.114+0800: 0.112: [ParNew: 5640K-&gt;376K(9216K), 0.0099638 secs] 5640K-&gt;4474K(19456K), 0.0100193 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] </span><br></pre></td></tr></table></figure>
+<p>按照显示的顺序来进行介绍：</p>
+<ol>
+<li><code>2019-04-18T15:38:27.114+0800</code>：GC开始的时间</li>
+<li><code>0.112</code>：GC开始相对于JVM启动的开始时间，单位是秒</li>
+<li><code>GC</code>:标记用于辨别是年轻代GC还是Full GC(回收年轻代和老年代)</li>
+<li><code>Allocation Failure</code>：造成GC的原因。在这个案例里，GC被启动的原因是年轻代所剩的空间不能满足对象的分配。</li>
+<li><code>ParNew</code>:GC回收器使用的名称。这里代表ParNew垃圾回收器。</li>
+<li><code>5640K-&gt;376K(9216K)</code>: GC回收前年轻代使用的空间大小-&gt;GC回收后年轻代使用的空间大小（年轻代总空间大小）</li>
+<li><code> 0.0099638 secs</code>：收集持续的时间，还没有最终的清理</li>
+<li><code>5640K-&gt;4474K(19456K)</code>:GC前堆已被使用的空间大小-&gt;GC后堆中已被使用的空间大小（堆可被使用的总大小）</li>
+<li><code>0.0100193 secs</code>:整个GC持续的时间，标记和复制年轻代活着的对象所花费的时间（包括和老年代通信的开销、对象晋升到老年代开销、垃圾收集周期结束一些最后的清理对象等的花销）</li>
+<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs] </code>：参照前面的文章这里就不具体解释</li>
+</ol>
+<h3 id="老年代"><a href="#老年代" class="headerlink" title="老年代"></a>老年代</h3><p>下面是CMS垃圾回收器的日志，这些是按照CMS的不同阶段打印出来：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark-start]</span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.140: [GC (CMS Final Remark) [YG occupancy: 6345 K (9216 K)]2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs][1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
+<p>下面分别来介绍各个阶段的情况：</p>
+<h4 id="阶段1：Initial-Mark"><a href="#阶段1：Initial-Mark" class="headerlink" title="阶段1：Initial Mark"></a>阶段1：Initial Mark</h4><p>这个是 CMS 两次 stop-the-wolrd 事件的其中一次，这个阶段的目标是：标记那些直接被 GC root 引用或者被年轻代存活对象所引用的所有对象，标记后示例如下所示<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-1.png" alt="cms-1"><br>上述例子对应的日志信息为：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [GC (CMS Initial Mark) [1 CMS-initial-mark: 7487K(10240K)] 13833K(19456K), 0.0002405 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<p>日志的意思如下：</p>
+<ol>
+<li><code>2019-04-18T15:38:27.141+0800:0.139: </code>GC 开始的时间，以及相对于 JVM 启动的相对时间（单位是秒，这里大概是4.33h），与前面 ParNew 类似，下面的分析中就直接跳过这个了；</li>
+<li><code>CMS-initial-mark：</code>初始标记阶段，它会收集所有 GC Roots 以及其直接引用的对象；</li>
+<li><code>7487K</code>：当前老年代使用的容量；</li>
+<li><code>(10240k)</code>：老年代可用的最大容量，这里是 10M；</li>
+<li><code>13833K</code>：整个堆目前使用的容量；</li>
+<li><code>(19456K)</code>：堆可用的容量，这里是19M；</li>
+<li><code>0.0002405 secs</code>：这个阶段的持续时间；</li>
+<li><code>[Times: user=0.04 sys=0.00, real=0.04 secs]</code>：与前面的类似，这里是相应 user、system and real 的时间统计。</li>
+</ol>
+<h4 id="阶段2-concurrent-Mark"><a href="#阶段2-concurrent-Mark" class="headerlink" title="阶段2 concurrent Mark"></a>阶段2 concurrent Mark</h4><p>在这个阶段GC垃圾回收器会遍历老年代，然后标记所有存活的对象，它会根据上个阶段找到的 GC Roots 遍历查找。并发标记阶段，它会与用户的应用程序并发运行。并不是老年代所有的存活对象都会被标记，因为在标记期间用户的程序可能会改变一些引用，如下图所示：<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/g1-07-591x187.png" alt="g1-07-591x187"><br>在上面的图中，与阶段1的图进行对比，就会发现有一个对象的引用已经发生了变化，这个阶段相应的日志信息如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark-start]</span><br><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-mark: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>CMS-concurrent-mark</code>：并发收集阶段，这个阶段会遍历老年代，并标记所有存活的对象；</li>
+<li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
+<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code> ：如前面所示，但是这部分的时间，其实意义不大，因为它是从并发标记的开始时间开始计算，这期间因为是并发进行，不仅仅包含 GC 线程的工作，还包括了应用线程并行的线程。</li>
+</ol>
+<h4 id="阶段3：concurrent-Preclean"><a href="#阶段3：concurrent-Preclean" class="headerlink" title="阶段3：concurrent Preclean"></a>阶段3：concurrent Preclean</h4><p>Concurrent Preclean：这也是一个并发阶段，与应用的线程并发运行，并不会stop应用的线程。上面一个阶段和应用并发运行的过程中，一些对象的引用可能会发生变化，但是这种情况发生时，JVM会将包含这个对象的区域（Card）标记为 Dirty，这也就是 Card Marking。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-3.png" alt="cms-3"><br>在pre-clean阶段，那些能够从 Dirty 对象到达的对象也会被标记，这个标记做完之后，dirty card 标记就会被清除了<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/cms-4.png" alt="cms-4"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.141+0800: 0.139: [CMS-concurrent-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>CMS-concurrent-preclean：Concurrent Preclean</code> 阶段，对在前面并发标记阶段中引用发生变化的对象进行标记；</li>
+<li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
+<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code>：同并发标记阶段中的含义。</li>
+</ol>
+<h4 id="阶段4：Concurrent-Abortable-Preclean"><a href="#阶段4：Concurrent-Abortable-Preclean" class="headerlink" title="阶段4：Concurrent Abortable Preclean"></a>阶段4：Concurrent Abortable Preclean</h4><p>这也是一个并发阶段，同样不会影响影响用户的应用线程。这个阶段是为了尽量承担最终标记阶段的工作（这个阶段会STW）。这个阶段持续时间依赖于很多的因素。这个阶段是在重复做很多相同的工作，直到满足一些条件（比如：重复迭代的次数、完成的工作量或者时钟时间等）就会退出。这个阶段的日志信息如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line">2019-04-18T15:38:27.142+0800: 0.139: [CMS-concurrent-abortable-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>CMS-concurrent-abortable-preclean</code>：Concurrent Abortable Preclean 阶段；</li>
+<li><code> 0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间，本质上，这里的 gc 线程会在 STW 之前做更多的工作，通常会持续 5s 左右；</li>
+<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs]</code>：同前面。</li>
+</ol>
+<h4 id="阶段5：Final-Remark"><a href="#阶段5：Final-Remark" class="headerlink" title="阶段5：Final Remark"></a>阶段5：Final Remark</h4><p>这是第二个 STW 阶段，也是 CMS 中的最后一个，这个阶段的目标是标记所有老年代所有的存活对象，由于之前的阶段是并发执行的，gc线程可能跟不上应用程序的变化，为了完成标记老年代所有存活对象的目标，STW就非常有必要了。</p>
+<p>通常 CMS的Final Remark 阶段会在年轻代尽可能干净的时候运行，目的是为了减少连续STW发生的可能性（年轻代存活对象过多的话，也会导致老年代涉及的存活对象会很多）。这个阶段会比前面的几个阶段更复杂一些，相关日志如下：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.142+0800: 0.140: [GC (CMS Final Remark) [YG occupancy: 6345 K (9216 K)]2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs][1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>2019-04-18T15:38:27.142+0800: 0.140:</code>阶段开始的时间，阶段开始的时间相对与JVM启动的时间，单位s</li>
+<li><code>[GC (CMS Final Remark)</code>：表示这是CMS的Final Remark阶段</li>
+<li><code>[YG occupancy: 6345 K (9216 K)]</code>：年轻代当前占内存大小，及年轻代总的内存大小</li>
+<li><code>2019-04-18T15:38:27.142+0800: 0.140: [Rescan (parallel) , 0.0006864 secs]</code>：前面的时间表示的是这个阶段开始的时间，和相对JVM启动的时间。Rescan 是当应用暂停的情况下完成对所有存活对象的标记，这个阶段是并行处理的，这里花费了 0.0006864s；</li>
+<li><code>2019-04-18T15:38:27.142+0800: 0.140: [weak refs processing, 0.0001303 secs]</code>：前面的时间表示的是这个阶段开始的时间，和相对JVM启动的时间。第一个子阶段，它的工作是处理弱引用；后面是这个阶段花费的时间</li>
+<li><code>2019-04-18T15:38:27.142+0800: 0.140: [class unloading, 0.0003487 secs]</code>：前面的时间表示的是这个阶段开始的时间，和相对JVM启动的时间。第二个子阶段，它的工作是卸载为被使用的类，后面是这个阶段花费的时间</li>
+<li><code>2019-04-18T15:38:27.143+0800: 0.141: [scrub symbol table, 0.0003745 secs]</code>：前面时间表示的是这个阶段开始的时间和相对JVM启动的开始时间。第三个子阶段，清理符号表，包含了类级元数据。寿面时间表示这个阶段花费的时间。</li>
+<li><code>2019-04-18T15:38:27.143+0800: 0.141: [scrub string table, 0.0002689 secs]</code>：前面时间表示的是这个阶段开始的时间和相对JVM启动的开始时间，这是最后的子阶段，清理字符串表，内部化字符串。后面时间表示这个阶段花费的时间。还包括暂停的时钟时间。</li>
+<li><code>[1 CMS-remark: 7487K(10240K)] 13833K(19456K), 0.0019541 secs]</code>这个阶段之后，老年代堆的使用情况（老年代总的内存大小）堆的使用量与总量（包括年轻代，年轻代在前面发生过 GC）</li>
+<li><code>[Times: user=0.01 sys=0.00, real=0.00 secs]</code> ：在不同态下执行的时间。</li>
+</ol>
+<p>经历过这五个阶段之后，老年代所有存活的对象都被标记过了，现在可以通过清除算法去清理那些老年代不再使用的对象。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/g1-10-591x187.png" alt="g1-10-591x187"></p>
+<h4 id="阶段6：Concurrent-Sweep"><a href="#阶段6：Concurrent-Sweep" class="headerlink" title="阶段6：Concurrent Sweep"></a>阶段6：Concurrent Sweep</h4><p>这里不需要STW，它是与用户的应用程序并发运行，这个阶段是：清除那些不再使用的对象，回收它们的占用空间为将来使用。如下图所示</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>CMS-concurrent-sweep</code>：这个阶段主要是清除那些没有被标记的对象，回收它们的占用空间；</li>
+<li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
+<li><code>[Times: user=0.00 sys=0.00, real=0.00 secs] </code>：同前面；</li>
+</ol>
+<h4 id="阶段7：Concurrent-Reset"><a href="#阶段7：Concurrent-Reset" class="headerlink" title="阶段7：Concurrent Reset"></a>阶段7：Concurrent Reset</h4><p>这个阶段也是并发执行的，它会重设 CMS 内部的数据结构，为下次的 GC 做准备，对应的日志信息如下：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset-start]</span><br><span class="line">2019-04-18T15:38:27.144+0800: 0.142: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br></pre></td></tr></table></figure>
+
+<p>日志详情分别如下：</p>
+<ol>
+<li><code>CMS-concurrent-reset</code> ：这个阶段的开始，目的如前面所述；</li>
+<li><code>0.000/0.000 secs</code>：这个阶段的持续时间与时钟时间；</li>
+<li><code>Times: user=0.15 sys=0.10, real=0.04 secs]</code>：同前面。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>CMS通过将大量工作分散到并发处理阶段来在减少STW时间，在这块做得非常优秀，但是CMS也有一些其他的问题，具体的可以看这篇文章<a target="_blank" rel="noopener" href="https://fengxiutianya.top/posts/1d97a19/">JVM垃圾回收器</a>：</p>
+<ol>
+<li>CMS 收集器无法处理浮动垃圾（ Floating Garbage），可能出现 “Concurrnet Mode Failure” 失败而导致另一次 Full GC 的产生，可能引发串行Full GC；</li>
+<li>空间碎片，导致无法分配大对象，CMS 收集器提供了一个 -XX:+UseCMSCompactAtFullCollection 开关参数（默认就是开启的），用于在 CMS 收集器顶不住要进行 Full GC 时开启内存碎片的合并整理过程，内存整理的过程是无法并发的，空间碎片问题没有了，但停顿时间不得不变长；</li>
+<li>对于堆比较大的应用上，GC 的时间难以预估。</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://matt33.com/2018/07/28/jvm-cms/">http://matt33.com/2018/07/28/jvm-cms/</a></li>
+<li><a target="_blank" rel="noopener" href="https://plumbr.io/handbook/garbage-collection-algorithms-implementations">GC Algorithms Implementations</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/5319940a.html" rel="bookmark">GC日志详解2之Parallel GC</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/f38ed32c.html" title="GC日志详解3之CMS">http://fengxiu.club/archives/f38ed32c.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/GC%E6%97%A5%E5%BF%97/" rel="tag"># GC日志</a>
+              <a href="/tags/CMS/" rel="tag"># CMS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/5319940a.html" rel="prev" title="GC日志详解2之Parallel GC">
+      <i class="fa fa-chevron-left"></i> GC日志详解2之Parallel GC
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/e20a716d.html" rel="next" title="Http协议中的Content-Encoding">
+      Http协议中的Content-Encoding <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">1.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B4%E8%BD%BB%E4%BB%A3%EF%BC%88Minor-GC%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">年轻代（Minor GC）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">1.2.</span> <span class="nav-text">老年代</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B51%EF%BC%9AInitial-Mark"><span class="nav-number">1.2.1.</span> <span class="nav-text">阶段1：Initial Mark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B52-concurrent-Mark"><span class="nav-number">1.2.2.</span> <span class="nav-text">阶段2 concurrent Mark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B53%EF%BC%9Aconcurrent-Preclean"><span class="nav-number">1.2.3.</span> <span class="nav-text">阶段3：concurrent Preclean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B54%EF%BC%9AConcurrent-Abortable-Preclean"><span class="nav-number">1.2.4.</span> <span class="nav-text">阶段4：Concurrent Abortable Preclean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B55%EF%BC%9AFinal-Remark"><span class="nav-number">1.2.5.</span> <span class="nav-text">阶段5：Final Remark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B56%EF%BC%9AConcurrent-Sweep"><span class="nav-number">1.2.6.</span> <span class="nav-text">阶段6：Concurrent Sweep</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%B6%E6%AE%B57%EF%BC%9AConcurrent-Reset"><span class="nav-number">1.2.7.</span> <span class="nav-text">阶段7：Concurrent Reset</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/f38ed32c.html";
+    this.page.identifier = "archives/f38ed32c.html";
+    this.page.title = "GC日志详解3之CMS";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

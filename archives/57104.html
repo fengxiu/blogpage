@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fengxiu.club","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"评论","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文还未整理完成，目前主要整理的是mysql中锁的种类，以及基本的使用方式。 一致性读事务利用MVCC进行操作称为一致性读（Consistent Rcad)。或者一致性无锁读(有的资料也称之为快照读)。所有普通的SELECT语句在READ COMMITED、REPEARABLE READ隔离级别下都算是一致性读，一致性读并不会对表中 的任何记录进行加锁操作 其他事务可以自由地对表中的记录进行改动。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql之锁介绍">
+<meta property="og:url" content="http://fengxiu.club/archives/57104.html">
+<meta property="og:site_name" content="枫秀学习日志">
+<meta property="og:description" content="本文还未整理完成，目前主要整理的是mysql中锁的种类，以及基本的使用方式。 一致性读事务利用MVCC进行操作称为一致性读（Consistent Rcad)。或者一致性无锁读(有的资料也称之为快照读)。所有普通的SELECT语句在READ COMMITED、REPEARABLE READ隔离级别下都算是一致性读，一致性读并不会对表中 的任何记录进行加锁操作 其他事务可以自由地对表中的记录进行改动。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426172230.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426172737.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426204555.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426222232.png">
+<meta property="article:published_time" content="2022-04-26T08:13:29.000Z">
+<meta property="article:modified_time" content="2022-04-26T08:13:29.000Z">
+<meta property="article:author" content="枫秀">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426172230.png">
+
+<link rel="canonical" href="http://fengxiu.club/archives/57104.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>mysql之锁介绍 | 枫秀学习日志</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫秀学习日志" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫秀学习日志</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">枫秀学习日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">99</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">228</span></a>
+
+  </li>
+        <li class="menu-item menu-item-goodarticle">
+
+    <a href="/good/" rel="section"><i class="fa fa-fw fa-bookmark"></i>技术文章摘抄</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/57104.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+      <meta itemprop="name" content="枫秀">
+      <meta itemprop="description" content="记录学习日志">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫秀学习日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          mysql之锁介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-26 08:13:29" itemprop="dateCreated datePublished" datetime="2022-04-26T08:13:29+00:00">2022-04-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/archives/57104.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/57104.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/archives/57104.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/57104.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文还未整理完成，目前主要整理的是mysql中锁的种类，以及基本的使用方式。</p>
+<h2 id="一致性读"><a href="#一致性读" class="headerlink" title="一致性读"></a>一致性读</h2><p>事务利用MVCC进行操作称为一致性读（Consistent Rcad)。或者一致性无锁读(有的资料也称之为快照读)。所有普通的SELECT语句在READ COMMITED、<br>REPEARABLE READ隔离级别下都算是一致性读，一致性读并不会对表中 的任何记录进行加锁操作 其他事务可以自由地对表中的记录进行改动。</p>
+<h2 id="共享锁和独占锁"><a href="#共享锁和独占锁" class="headerlink" title="共享锁和独占锁"></a>共享锁和独占锁</h2><ul>
+<li>共享锁（Shared Lock）简称S锁.在事务要读取一条记录时 需要先获取该记录的锁</li>
+<li>独占锁（Exclusive Lock）也常称为排他锁，简称X锁。在事务要改动一条记录时需要先获取该记录 锁。</li>
+</ul>
+<p>锁的兼容情况</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426172230.png"></p>
+<p>锁定读的语句</p>
+<p>读取记录添加S锁</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select ... LOCK IN SHARE MODE</span><br></pre></td></tr></table></figure>
+
+<p>读取添加X锁</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT ... FRO UPDATE</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+<h2 id="意向锁"><a href="#意向锁" class="headerlink" title="意向锁"></a>意向锁</h2><p>意向锁，主要用来判断当前表是否被加锁，不会对修改读取有任何阻塞操作。</p>
+<p>主要有俩种</p>
+<ul>
+<li>意向共享锁( Intention Shared Lock ）简称IS，当事务准备在某条记录上加锁时<br>需要先在表级别加IS锁</li>
+<li>意向独占锁(Intention Exclusive Lock) 简称IX锁，当事务准备在某条记录上加<br>时，需要先在表级别一个IX锁。</li>
+</ul>
+<p>他们俩都是表级锁，它们的提出仅仅为了在之后加表级别的S锁和X锁时可以快速判断表中的记录是否被上锁，以避免用遍历的方式来查看表中有没有上锁的记录:也就是说其实IS锁和IX锁是兼容的IX锁和IX锁是兼容的。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426172737.png"></p>
+<h2 id="InnoDB中的锁"><a href="#InnoDB中的锁" class="headerlink" title="InnoDB中的锁"></a>InnoDB中的锁</h2><p>首先会有上面介绍的表级别的共享锁、独占锁，以及意向锁。</p>
+<h3 id="表级别的AUTO-INC锁"><a href="#表级别的AUTO-INC锁" class="headerlink" title="表级别的AUTO-INC锁"></a>表级别的AUTO-INC锁</h3><p>系统自动给AUTO_INCREMENT修饰的列进行递增赋值的实现方式主要有下面两个</p>
+<ul>
+<li><p>采用AUTO-INC锁，也就是在执行插入语句时就加一个表级别的AUTO-INC锁，然<br>后为每条待插入记录的AUTO_INCREMENT修饰的列分配递增的值。在该语句执行<br>结束后，再把AUTO-INC锁释放掉。这样一来，一个事务在持有AUTO-INC锁的过程<br>中，其他事务的插入语句都要被阻塞，从而保证一个语句中分配的递增值是连续的。</p>
+<p>  如果我们的插入语句在执行前并不确定县体要插入多少条记录，一般是使用AUTO-INC锁为AUTO_INCREMENT修饰的列生成对应的值。</p>
+</li>
+<li><p>采用一个轻量级的锁，在为插入语句生成AUTO_INCREMENT修饰的列的值时获取这个轻量级锁 然后在生成本次插入语句需要用到的AUTO_INCREMENT修饰的值之后，就把该轻量级锁释放掉 而不需要等到整个插入语句执行完后才释放锁</p>
+<p>  如果我们的插入语句在执行前就可以确定具体要插入多少条记录，那一般采用轻量级锁的方式对AUTO_INCREMENT修饰的列进行赋值。这种方式可以避免锁定，可以提升插入性能。</p>
+</li>
+</ul>
+<h3 id="InnoDB行级锁"><a href="#InnoDB行级锁" class="headerlink" title="InnoDB行级锁"></a>InnoDB行级锁</h3><p><strong>Record Lock</strong>：</p>
+<p>记录锁，把锁加载一条记录上，这种锁有S锁和X锁之分，和上面介绍的s锁和x锁一样。</p>
+<p><strong>Gap Lock</strong><br>在REPEATABLE READ隔离级别下是可以在很大程度上解决幻读现象。解决方案有两种：使用MVCC方案解决;使用加锁方案解决。但是在使用加锁方案解决时有个大问题，就是事务在第一次执行读取操作时那些幻影记录尚不存在无法给这些幻影记录加上记录锁。因此设计gap锁，这种锁类型的官方名称为LOCK_GAP，也可以简称为gap锁。比如为number值为8的那条记录加一个gap锁。<br><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426204555.png"></p>
+<p>上图为number值为8的记录加了gap锁，这意味着不允许别的事务在number值为8的记录前面的问隙插入新记录，其实就是number列的值在区间（3，8）的新记录是不允许立即插入的.比如有另外一个事务想插入一条numbe值为4的新记录，首先要定位到该条新记录的下-条记录，也就是number值为8的记录，而这条记录上又有一个gao锁，所以就会阻塞插入操作直到拥有这个gap锁的事务提交了之后将该gap锁释放掉，其它事务才可以插入number列的值在区间(3 8)中的新记录。</p>
+<p>这个gap锁的提出仅仅是为了防止插入幻影记录而提出的。虽然gap锁有共享gap锁和独占gap锁这样的说法，但是它们起到的作用都是相同的。而且如果对一条记录加了gap锁(无论是共享gap锁还是独占gap锁)并不会限制其他事务对这条记录加记录锁或者继续加gap锁。再强调一遍gap锁的作用仅仅是为了防止插入幻影记录而已.</p>
+<p>不知道大家是否发现了一个问题。给一条记录加gap锁只是不允许其他事务向这条记录前面的间隙插入新记录，那对于最后一条记录之后的间隙，这里时利用数据页里的两条伪记录。</p>
+<ul>
+<li>Infimum记录： 表示该页面中最小的记录</li>
+<li>Supremum记录：表示该页面中最大的记录</li>
+</ul>
+<p>如果范围区间包括负无穷或者正无穷，就是给这俩条记录加上gap锁防止插入。</p>
+<p><strong>next-key lock</strong><br>这个是gap锁以及航所的合体，既可以给某条记录加锁也可以给这条记录之前的区间加锁。</p>
+<p><strong>Insert Tntention Lock</strong><br>一个事务在插入一条记录时，需要判断插入位置是否已被别的事务加了gap锁，如果有的话 插入操作需要等待，直到拥有gap锁的那个事务提交为止。但是InnoDB规定事务在等待时也需要在内存中生成一个锁结构，说明有事务想在某个问隙中插入新记录，但是现在处于等待状态。这种锁命名为Insert Tntention Lock。也可以称为插入意向锁。</p>
+<p><strong>隐式锁</strong><br>在内存中生成锁结构并且维护它们并不是一件零成本的事情，设计InnoDB的大叔出于勤俭节约的精神，提出了一个隐式锁的概念。比如一般情况下执行的INSERT语句是不需要在内存中生成锁结构的〈当然，如果即将插入的间隙已经被其他事务加了gap锁，那么本次INSERT操作会阻塞，并且当前事务会在该间隙上加一个插入意向锁)。但是这可能导致一些问题，比方说一个事务首先插入了一条记录（此时并没有与该记录关联的锁结构)，然后另一个事务执行的操作会导致修改这条记录，那么就有可能出现赃读的现象。这时InnoDB的做法是，帮助前一个事务建立一个X锁，并且是不阻塞的锁，而事务本身也会建立一个锁，但是处于阻塞状态，等待前一条记录释放。</p>
+<h2 id="加锁的情况"><a href="#加锁的情况" class="headerlink" title="加锁的情况"></a>加锁的情况</h2><h3 id="普通的SELECT语句"><a href="#普通的SELECT语句" class="headerlink" title="普通的SELECT语句"></a>普通的SELECT语句</h3><p>在不通的隔离级别下，普通的SELECT语句具有不通的表现，具体如下</p>
+<p>在READ UNCOMMITED隔离级别下，不加锁，直接读取记录的最新版本；可能出现赃读、不可重复读和幻读现象</p>
+<p>在READ COMMITED隔离级别下，不加锁；每次执行普通的SELECT语句时都会生成一个ReadView，这样避免了赃读现象，但没有避免不可重复读和幻读显现</p>
+<p>在REPEATABLE READ隔离级别下，不加锁;只在第一次执行普通的SELECT语句时生成一个 ReadView，这样就把脏读、不可重复读和幻读现象都避免了.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/fengxiu/img/20220426222232.png"></p>
+<p>暂未完结</p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章推荐</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/27224.html" rel="bookmark">Innodb索引深入研究</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/43453.html" rel="bookmark">Innodb行格式</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/63372.html" rel="bookmark">Mysql是如何执行查询</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/4858.html" rel="bookmark">mysql之mvcc</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/archives/33411.html" rel="bookmark">mysql之死锁发现与解除</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>枫秀
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://fengxiu.club/archives/57104.html" title="mysql之锁介绍">http://fengxiu.club/archives/57104.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archives/4858.html" rel="prev" title="mysql之mvcc">
+      <i class="fa fa-chevron-left"></i> mysql之mvcc
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archives/33411.html" rel="next" title="mysql之死锁发现与解除">
+      mysql之死锁发现与解除 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-disqus">评论</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E8%AF%BB"><span class="nav-number">1.</span> <span class="nav-text">一致性读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E7%8B%AC%E5%8D%A0%E9%94%81"><span class="nav-number">2.</span> <span class="nav-text">共享锁和独占锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%84%8F%E5%90%91%E9%94%81"><span class="nav-number">3.</span> <span class="nav-text">意向锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB%E4%B8%AD%E7%9A%84%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">InnoDB中的锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E7%BA%A7%E5%88%AB%E7%9A%84AUTO-INC%E9%94%81"><span class="nav-number">4.1.</span> <span class="nav-text">表级别的AUTO-INC锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB%E8%A1%8C%E7%BA%A7%E9%94%81"><span class="nav-number">4.2.</span> <span class="nav-text">InnoDB行级锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E9%94%81%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">5.</span> <span class="nav-text">加锁的情况</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E7%9A%84SELECT%E8%AF%AD%E5%8F%A5"><span class="nav-number">5.1.</span> <span class="nav-text">普通的SELECT语句</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="枫秀"
+      src="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
+  <p class="site-author-name" itemprop="name">枫秀</p>
+  <div class="site-description" itemprop="description">记录学习日志</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">228</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫秀</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://fengxiu.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://fengxiu.club/archives/57104.html";
+    this.page.identifier = "archives/57104.html";
+    this.page.title = "mysql之锁介绍";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://fengxiu.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdnjs.cloudflare.com/ajax/libs/valine/1.3.10/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'ljY0VjHRpXGNJajqYEG9usUd-gzGzoHsz',
+      appKey     : 'kK371eQflnC992Bf2YhhdBjM',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
