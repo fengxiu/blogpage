@@ -202,7 +202,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/876c7808.html">
+    <link itemprop="mainEntityOfPage" href="http://fengxiu.club/archives/9dbd6aed.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/fengxiu/img/avatar.jpg">
@@ -216,7 +216,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/archives/876c7808.html" class="post-title-link" itemprop="url">java多线程系列03线程等待与唤醒、线程休眠</a>
+            <a href="/archives/9dbd6aed.html" class="post-title-link" itemprop="url">java多线程系列04线程让步和join</a>
         </h2>
 
         <div class="post-meta">
@@ -251,8 +251,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/archives/876c7808.html#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/876c7808.html" itemprop="commentCount"></span>
+    <a title="disqus" href="/archives/9dbd6aed.html#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="archives/9dbd6aed.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -265,8 +265,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/archives/876c7808.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/archives/876c7808.html" itemprop="commentCount"></span>
+    <a title="valine" href="/archives/9dbd6aed.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/archives/9dbd6aed.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -276,14 +276,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.8k</span>
+              <span>4.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -295,20 +295,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文首先对线程的等待和唤醒概念进行简单介绍，接着介绍如何使用，并缝隙为什么这俩个功能是放在Object类中，而不是放置在Thread线程里，最后介绍下线程休眠，以及其和wait的区别。</p>
-<h2 id="线程等待和唤醒方法介绍"><a href="#线程等待和唤醒方法介绍" class="headerlink" title="线程等待和唤醒方法介绍"></a>线程等待和唤醒方法介绍</h2><p>在Object类中定义了wait(), notify()和notifyAll()三个方法用于等待和唤醒线程。</p>
-<p>wait()的作用是让当前线程进入等待状态，<strong>同时wait()也会让当前线程释放它所持有的锁</strong>。<br><strong>而notify()和notifyAll()的作用则是唤醒当前对象上的等待线程</strong>notify()是唤醒单个线程，而notifyAll()是唤醒所有的线程。</p>
-<p>Object类中关于等待&#x2F;唤醒的API详细信息如下：</p>
-<ul>
-<li><strong>notify()</strong> ：唤醒在此对象监视器上等待的单个线程。</li>
-<li>**notifyAll()**：唤醒在此对象监视器上等待的所有线程。</li>
-<li><strong>wait()</strong> ：让当前线程处于等待(阻塞)状态，直到其他线程调用此对象的notify()方法或 notifyAll()方法，当前线程被唤醒(进入就绪状态)。</li>
-<li>**wait(long timeout)**：让当前线程处于等待(阻塞)状态，直到其他线程调用此对象的 notify()方法或notifyAll()方法，或者超过指定的时间量，当前线程被唤醒(进入就绪状态)。</li>
-<li><strong>wait(long timeout, int nanos)</strong>  – 让当前线程处于等待(阻塞)状态，直到其他线程调用此对象的notify()方法或notifyAll()方法，或者其他某个线程中断当前线程，或者已超过某个实际时间量，当前线程被唤醒(进入就绪状态)。</li>
-</ul>
+          <p>本文主要对yield的使用进行介绍，然后和wait进行对比，最后介绍join以及使用方式。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/archives/876c7808.html#more" rel="contents">
+              <a class="btn" href="/archives/9dbd6aed.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -605,7 +595,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-25 08:34:14" itemprop="dateModified" datetime="2025-04-25T08:34:14+00:00">2025-04-25</time>
+                <time title="修改时间：2025-04-25 08:36:41" itemprop="dateModified" datetime="2025-04-25T08:36:41+00:00">2025-04-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -728,7 +718,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-25 08:34:14" itemprop="dateModified" datetime="2025-04-25T08:34:14+00:00">2025-04-25</time>
+                <time title="修改时间：2025-04-25 08:36:41" itemprop="dateModified" datetime="2025-04-25T08:36:41+00:00">2025-04-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -861,7 +851,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-25 08:34:14" itemprop="dateModified" datetime="2025-04-25T08:34:14+00:00">2025-04-25</time>
+                <time title="修改时间：2025-04-25 08:36:41" itemprop="dateModified" datetime="2025-04-25T08:36:41+00:00">2025-04-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -992,7 +982,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-25 08:34:14" itemprop="dateModified" datetime="2025-04-25T08:34:14+00:00">2025-04-25</time>
+                <time title="修改时间：2025-04-25 08:36:41" itemprop="dateModified" datetime="2025-04-25T08:36:41+00:00">2025-04-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1127,7 +1117,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-25 08:34:14" itemprop="dateModified" datetime="2025-04-25T08:34:14+00:00">2025-04-25</time>
+                <time title="修改时间：2025-04-25 08:36:41" itemprop="dateModified" datetime="2025-04-25T08:36:41+00:00">2025-04-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">

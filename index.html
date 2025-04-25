@@ -292,7 +292,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>前面一篇文章多次讲到SPI机制，本篇文章主要介绍下sentinel中使用到的SPI。如果对SPI不太懂，可以参考这篇文章<a href="">SPI</a></p>
+          <p>前面一篇文章多次讲到SPI机制，本篇文章主要介绍下sentinel中使用到的SPI。如果对SPI不太懂，可以参考这篇文章<a href="/archives/22420980.html">SPI</a></p>
 <p>在sentinel-core模块的resources资源目录下，有一个 META-INF&#x2F;services 目录，该目录下定义了sentinel的SPI扩展点，目前有以下三个，同时实现了自定义的SPI加载器SpiLoader，下面的扩展点都是使用这个加载器进行加载。</p>
 <ol>
 <li>com.alibaba.csp.sentinel.init.InitFunc：用于配置InitFunc接口的实现类</li>
